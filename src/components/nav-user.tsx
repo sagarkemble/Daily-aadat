@@ -15,14 +15,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { useSignOut } from "@/features/auth/hooks/use-sign-out"
-import {
-  ChevronsUpDownIcon,
-  SparklesIcon,
-  BadgeCheckIcon,
-  CreditCardIcon,
-  BellIcon,
-  LogOutIcon,
-} from "lucide-react"
+import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react"
 
 export function NavUser({
   user,

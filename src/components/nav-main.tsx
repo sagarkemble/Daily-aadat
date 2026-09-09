@@ -1,19 +1,10 @@
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+import type { ReactNode } from "react"
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
-import { ChevronRightIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 
 export function NavMain({
@@ -22,12 +13,7 @@ export function NavMain({
   items: {
     title: string
     url: string
-    icon?: React.ReactNode
-    isActive?: boolean
-    items?: {
-      title: string
-      url: string
-    }[]
+    icon?: ReactNode
   }[]
 }) {
   return (
