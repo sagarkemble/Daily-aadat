@@ -8,6 +8,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { routeTree } from "./routeTree.gen"
 import { ThemeProvider } from "./components/theme-provider"
 import AuthProvider from "./features/auth/providers/auth-provider"
+import { Toaster } from "./components/ui/toast"
 
 const router = createRouter({ routeTree })
 
@@ -29,6 +30,7 @@ if (!rootElement.innerHTML) {
           <ThemeProvider>
             <RouterProvider router={router} />
             <ReactQueryDevtools initialIsOpen={false} />
+            <Toaster />
           </ThemeProvider>
         </AuthProvider>
       </QueryClientProvider>
