@@ -48,7 +48,7 @@ export function AddActivityDialog() {
     },
   })
 
-  const { mutate: addActivity, isPending, error } = useAddActivity()
+  const { mutate: addActivity, isPending } = useAddActivity()
 
   const icon = watch("icon")
 

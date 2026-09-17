@@ -1,16 +1,7 @@
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import { ActivityCard } from "@/features/activity/components/activity-card"
 import { AddActivityDialog } from "@/features/activity/components/add-activity-dialog"
 import { useActivities } from "@/features/activity/hooks/use-activities"
 import { createFileRoute } from "@tanstack/react-router"
-import { PlusIcon } from "lucide-react"
 
 export const Route = createFileRoute("/_authenticated/activites")({
   component: RouteComponent,
