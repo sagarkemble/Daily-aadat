@@ -1,54 +1,34 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
-import type { ActivityType } from "@/features/activity/types/activity"
+import type { ActivityPlacement } from "@/features/activity/components/activity-picker-sheet"
 import type { Slot } from "../types/slots"
-import type { TemplateItem } from "../types/template"
 
-export type AddTemplateItemInput = {
+export type AddTemplateItemsInput = {
   template_id: string
-  activity_id: string
-  type: ActivityType
-  target: number | null
-  unit: string | null
   slot: Slot
-  sort_order: number
+  sort_order_start: number
+  placements: ActivityPlacement[]
 }
 
-async function addTemplateItem(input: AddTemplateItemInput) {
-  const { data, error } = await supabase
-    .from("template_items")
-    .insert({
-      template_id: input.template_id,
-      activity_id: input.activity_id,
-      type: input.type,
-      target: input.target,
-      unit: input.unit,
-      slot: input.slot,
-      sort_order: input.sort_order,
-    })
-    .select(
-      `
-      id,
+async function addTemplateItems({
+  template_id,
+  slot,
+  sort_order_start,
+  placements,
+}: AddTemplateItemsInput) {
+  if (placements.length === 0) return
+
+  const { error } = await supabase.from("template_items").insert(
+    placements.map((placement, index) => ({
       template_id,
-      activity_id,
-      type,
-      target,
-      unit,
+      activity_id: placement.activity_id,
+      type: placement.type,
+      target: placement.target,
+      unit: placement.unit,
       slot,
-      sort_order,
-      created_at,
-      updated_at,
-      activities (
-        id,
-        name,
-        icon,
-        suggested_type,
-        suggested_target,
-        suggested_unit
-      )
-    `
-    )
-    .single()
+      sort_order: sort_order_start + index,
+    }))
+  )
 
   if (error) {
     if (error.code === "23505") {
@@ -56,15 +36,12 @@ async function addTemplateItem(input: AddTemplateItemInput) {
     }
     throw error
   }
-
-  // Invalidate refreshes the editor; return value is unused.
-  return data as unknown as TemplateItem
 }
 
 export function useAddTemplateItem(templateId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: addTemplateItem,
+    mutationFn: addTemplateItems,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["templates", templateId] })
       queryClient.invalidateQueries({ queryKey: ["templates"] })

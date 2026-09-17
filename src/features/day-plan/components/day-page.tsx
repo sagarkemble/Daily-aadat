@@ -94,13 +94,19 @@ export function DayPage({ planDate, onDateChange }: DayPageProps) {
     })
   }
 
-  function handleConfirmPlacement(placement: ActivityPlacement) {
-    if (!pickerSlot) return
+  function handleConfirmPlacement(placements: ActivityPlacement[]) {
+    if (!pickerSlot || placements.length === 0) return
     addItem(
-      { planDate, slot: pickerSlot, placement },
+      { planDate, slot: pickerSlot, placements },
       {
         onSuccess: () => {
-          toast.add({ title: "Activity added", type: "success" })
+          toast.add({
+            title:
+              placements.length === 1
+                ? "Activity added"
+                : `${placements.length} activities added`,
+            type: "success",
+          })
           setPickerSlot(null)
         },
         onError: handleActionError,
@@ -200,6 +206,7 @@ export function DayPage({ planDate, onDateChange }: DayPageProps) {
       />
 
       <ActivityPickerSheet
+        key={pickerSlot ?? "closed"}
         open={pickerSlot != null}
         onOpenChange={(open) => {
           if (!open) setPickerSlot(null)

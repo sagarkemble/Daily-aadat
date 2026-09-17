@@ -56,25 +56,23 @@ export function TemplateEditor({ templateId }: TemplateEditorProps) {
     return itemsBySlot[pickerSlot].map((item) => item.activity_id)
   }, [data, itemsBySlot, pickerSlot])
 
-  function handleConfirm(placement: ActivityPlacement) {
-    if (!pickerSlot || !data) return
-
-    const sort_order = itemsBySlot[pickerSlot].length
+  function handleConfirm(placements: ActivityPlacement[]) {
+    if (!pickerSlot || !data || placements.length === 0) return
 
     addItem(
       {
         template_id: templateId,
-        activity_id: placement.activity_id,
-        type: placement.type,
-        target: placement.target,
-        unit: placement.unit,
         slot: pickerSlot,
-        sort_order,
+        sort_order_start: itemsBySlot[pickerSlot].length,
+        placements,
       },
       {
         onSuccess: () => {
           toast.add({
-            title: "Activity added",
+            title:
+              placements.length === 1
+                ? "Activity added"
+                : `${placements.length} activities added`,
             type: "success",
           })
           setPickerSlot(null)
@@ -161,6 +159,7 @@ export function TemplateEditor({ templateId }: TemplateEditorProps) {
       </div>
 
       <ActivityPickerSheet
+        key={pickerSlot ?? "closed"}
         open={pickerSlot != null}
         onOpenChange={(open) => {
           if (!open) setPickerSlot(null)
