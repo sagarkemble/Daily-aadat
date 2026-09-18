@@ -27,7 +27,7 @@ export function useReorderTemplateItems(templateId: string) {
       const orderMap = new Map(orderedIds.map((id, index) => [id, index]))
       queryClient.setQueryData<TemplateDetail>(queryKey, {
         ...previous,
-        items: previous.items.map((item) => {
+        template_items: previous.template_items.map((item) => {
           const sort_order = orderMap.get(item.id)
           return sort_order === undefined ? item : { ...item, sort_order }
         }),
