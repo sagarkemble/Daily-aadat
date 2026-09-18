@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { lazy, Suspense, useState } from "react"
 import { FaceSlightlySmiling } from "lucide-react"
 import { DynamicIcon, type IconName } from "lucide-react/dynamic"
 import { Button } from "@/components/ui/button"
@@ -7,7 +7,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import IconPicker from "@/components/icon-picker-tanstack"
+
+const IconPicker = lazy(() => import("@/components/icon-picker-tanstack"))
 
 type IconPickerPopoverProps = {
   selectedIcon: string | null
@@ -35,15 +36,19 @@ function IconPickerPopover({
           <FaceSlightlySmiling className="size-4" />
         )}
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
-        <IconPicker
-          selectedIcon={selectedIcon}
-          setSelectedIcon={(iconName) => {
-            setSelectedIcon(iconName)
-            setOpen(false)
-          }}
-        />
-      </PopoverContent>
+      {open ? (
+        <PopoverContent className="w-auto p-0" align="start">
+          <Suspense fallback={<div className="h-80 w-72" />}>
+            <IconPicker
+              selectedIcon={selectedIcon}
+              setSelectedIcon={(iconName) => {
+                setSelectedIcon(iconName)
+                setOpen(false)
+              }}
+            />
+          </Suspense>
+        </PopoverContent>
+      ) : null}
     </Popover>
   )
 }
