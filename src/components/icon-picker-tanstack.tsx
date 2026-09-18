@@ -1,5 +1,5 @@
 import * as React from "react"
-import { icons } from "lucide-react"
+import { DynamicIcon, iconNames, type IconName } from "lucide-react/dynamic"
 import { useVirtualizer } from "@tanstack/react-virtual"
 
 import { cn } from "@/lib/utils"
@@ -16,8 +16,6 @@ const IconItem = React.memo(
     setSelectedIcon?: (iconName: string) => void
     selectedIcon?: string | null
   }) => {
-    const Icon = icons[iconName as keyof typeof icons]
-
     const handleClick = React.useCallback(() => {
       setSelectedIcon?.(iconName)
     }, [iconName, setSelectedIcon])
@@ -34,7 +32,7 @@ const IconItem = React.memo(
         aria-label={`Select ${iconName} icon`}
         aria-pressed={selectedIcon === iconName}
       >
-        <Icon size={16} />
+        <DynamicIcon name={iconName as IconName} size={16} />
       </button>
     )
   }
@@ -55,14 +53,13 @@ const IconPicker = React.memo(
     const [searchQuery, setSearchQuery] = React.useState("")
     const debouncedSearchQuery = useDebounce(searchQuery, 200)
 
-    const iconsMap = React.useMemo(() => Object.keys(icons), [])
-
     const filteredIcons = React.useMemo(() => {
-      if (!debouncedSearchQuery.trim()) return iconsMap
-      return iconsMap.filter((iconName) =>
-        iconName.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+      if (!debouncedSearchQuery.trim()) return iconNames
+      const query = debouncedSearchQuery.toLowerCase()
+      return iconNames.filter((iconName) =>
+        iconName.toLowerCase().includes(query)
       )
-    }, [iconsMap, debouncedSearchQuery])
+    }, [debouncedSearchQuery])
 
     const handleSearchChange = React.useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {

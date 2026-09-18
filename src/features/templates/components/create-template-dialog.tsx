@@ -61,7 +61,7 @@ export function CreateTemplateDialog() {
       {
         name,
         description,
-        icon: selectedIcon ?? "FaceSlightlySmiling",
+        icon: selectedIcon ?? "face-slightly-smiling",
       },
       {
         onSuccess: () => {
