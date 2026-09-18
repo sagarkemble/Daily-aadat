@@ -42,7 +42,7 @@ export function TemplateEditor({ templateId }: TemplateEditorProps) {
   const itemsBySlot = useMemo(() => {
     const map = emptyItemsBySlot()
     if (!data) return map
-    for (const item of data.items) {
+    for (const item of data.template_items) {
       map[item.slot].push(item)
     }
     for (const slot of SLOTS) {

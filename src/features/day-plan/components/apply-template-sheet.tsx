@@ -9,7 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import { useFetchTemplates } from "@/features/templates/hooks/use-fetch-template"
+import { useFetchTemplates } from "@/features/templates/hooks/use-fetch-templates"
 import { useApplyTemplate } from "../hooks/use-apply-template"
 import { toast } from "@/components/ui/toast"
 

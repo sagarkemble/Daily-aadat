@@ -1,16 +1,21 @@
 import { Link, createFileRoute } from "@tanstack/react-router"
-import { FaceSlightlySmiling, icons } from "lucide-react"
+import { FaceSlightlySmiling } from "lucide-react"
+import { DynamicIcon, type IconName } from "lucide-react/dynamic"
 import { CreateTemplateDialog } from "@/features/templates/components/create-template-dialog"
-import { useFetchTemplates } from "@/features/templates/hooks/use-fetch-template"
+import { useFetchTemplates } from "@/features/templates/hooks/use-fetch-templates"
 
 export const Route = createFileRoute("/_authenticated/templates/")({
   component: RouteComponent,
 })
 
 function TemplateListIcon({ name }: { name: string }) {
-  const Icon = icons[name as keyof typeof icons]
-  if (!Icon) return <FaceSlightlySmiling className="size-5" />
-  return <Icon className="size-5" />
+  return (
+    <DynamicIcon
+      name={name as IconName}
+      className="size-5"
+      fallback={() => <FaceSlightlySmiling className="size-5" />}
+    />
+  )
 }
 
 function RouteComponent() {
@@ -48,7 +53,9 @@ function RouteComponent() {
                   <TemplateListIcon name={template.icon} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{template.name}</p>
+                  <p className="truncate text-sm font-medium">
+                    {template.name}
+                  </p>
                   <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
                     {template.description.trim()
                       ? template.description

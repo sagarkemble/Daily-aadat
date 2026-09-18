@@ -1,64 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
-import type {
-  TemplateDetail,
-  TemplateItem,
-  TemplateItemActivity,
-} from "../types/template"
-import type { Slot } from "../types/slots"
-import type { ActivityType } from "@/features/activity/types/activity"
-
-type RawActivity = TemplateItemActivity | TemplateItemActivity[] | null
-
-type RawTemplateItem = {
-  id: string
-  template_id: string
-  activity_id: string
-  type: ActivityType
-  target: number | null
-  unit: string | null
-  slot: Slot
-  sort_order: number
-  created_at: string
-  updated_at: string
-  activities: RawActivity
-}
-
-type RawTemplateRow = {
-  id: string
-  user_id: string
-  name: string
-  icon: string
-  description: string
-  created_at: string
-  updated_at: string
-  template_items: RawTemplateItem[] | null
-}
-
-function normalizeActivity(activities: RawActivity): TemplateItemActivity {
-  if (Array.isArray(activities)) {
-    return (
-      activities[0] ?? {
-        id: "",
-        name: "Unknown activity",
-        icon: "circle-dashed",
-        suggested_type: "check",
-        suggested_target: null,
-        suggested_unit: null,
-      }
-    )
-  }
-  return (
-    activities ?? {
-      id: "",
-      name: "Unknown activity",
-      icon: "circle-dashed",
-      suggested_type: "check",
-      suggested_target: null,
-      suggested_unit: null,
-    }
-  )
-}
+import type { TemplateDetail, TemplateItem } from "../types/template"
 
 async function fetchTemplate(id: string): Promise<TemplateDetail> {
   const { data, error } = await supabase
@@ -99,23 +41,15 @@ async function fetchTemplate(id: string): Promise<TemplateDetail> {
 
   if (error) throw error
 
-  const row = data as unknown as RawTemplateRow
-  const items: TemplateItem[] = [...(row.template_items ?? [])]
-    .map((item) => ({
-      ...item,
-      activities: normalizeActivity(item.activities),
-    }))
-    .sort((a, b) => a.sort_order - b.sort_order)
+  const row = data as unknown as TemplateDetail
+  console.log("data", data)
+  const template_items: TemplateItem[] = [...row.template_items].sort(
+    (a, b) => a.sort_order - b.sort_order
+  )
 
   return {
-    id: row.id,
-    user_id: row.user_id,
-    name: row.name,
-    icon: row.icon,
-    description: row.description,
-    created_at: row.created_at,
-    updated_at: row.updated_at,
-    items,
+    ...row,
+    template_items, // overrides the template_items with the sorted template_items
   }
 }
 

@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { FaceSlightlySmiling, icons } from "lucide-react"
+import { FaceSlightlySmiling } from "lucide-react"
+import { DynamicIcon, type IconName } from "lucide-react/dynamic"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -18,16 +19,21 @@ function IconPickerPopover({
   setSelectedIcon,
 }: IconPickerPopoverProps) {
   const [open, setOpen] = useState(false)
-  const Selected = selectedIcon
-    ? icons[selectedIcon as keyof typeof icons]
-    : null
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         render={<Button type="button" className={"w-fit"} variant="outline" />}
       >
-        {Selected ? <Selected className="size-4" /> : <FaceSlightlySmiling />}
+        {selectedIcon ? (
+          <DynamicIcon
+            name={selectedIcon as IconName}
+            className="size-4"
+            fallback={() => <FaceSlightlySmiling className="size-4" />}
+          />
+        ) : (
+          <FaceSlightlySmiling className="size-4" />
+        )}
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
         <IconPicker
