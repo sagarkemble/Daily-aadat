@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useNavigate } from "@tanstack/react-router"
 import { z } from "zod"
 import { Loader2, PlusIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -22,11 +21,14 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/toast"
+import IconPickerPopover from "@/components/icon-picker-popover"
 import { useCreateTemplate } from "../hooks/use-create-template"
 
 const schema = z.object({
   name: z.string().trim().min(1, "Name is required"),
+  description: z.string().trim(),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -40,35 +42,46 @@ export function CreateTemplateDialog() {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { name: "" },
+    defaultValues: { name: "", description: "" },
   })
 
   const { mutate: createTemplate, isPending } = useCreateTemplate()
+  const [selectedIcon, setSelectedIcon] = useState<string | null>(null)
 
   function handleOpenChange(isOpen: boolean) {
     setOpen(isOpen)
-    if (!isOpen) reset()
+    if (!isOpen) {
+      reset()
+      setSelectedIcon(null)
+    }
   }
 
-  function onSubmit({ name }: FormValues) {
-    createTemplate(name, {
-      onSuccess: () => {
-        toast.add({
-          title: "Template created",
-          description: `"${name}" is ready`,
-          type: "success",
-        })
-        handleOpenChange(false)
+  function onSubmit({ name, description }: FormValues) {
+    createTemplate(
+      {
+        name,
+        description,
+        icon: selectedIcon ?? "FaceSlightlySmiling",
       },
-      onError: (error) => {
-        handleOpenChange(false)
-        toast.add({
-          title: "Error",
-          description: error.message,
-          type: "error",
-        })
-      },
-    })
+      {
+        onSuccess: () => {
+          toast.add({
+            title: "Template created",
+            description: `"${name}" is ready`,
+            type: "success",
+          })
+          handleOpenChange(false)
+        },
+        onError: (error) => {
+          handleOpenChange(false)
+          toast.add({
+            title: "Error",
+            description: error.message,
+            type: "error",
+          })
+        },
+      }
+    )
   }
 
   return (
@@ -87,6 +100,14 @@ export function CreateTemplateDialog() {
           </DialogHeader>
 
           <FieldGroup className="gap-4">
+            <Field>
+              <FieldLabel>Icon</FieldLabel>
+              <IconPickerPopover
+                selectedIcon={selectedIcon}
+                setSelectedIcon={setSelectedIcon}
+              />
+            </Field>
+
             <Field data-invalid={!!errors.name || undefined}>
               <FieldLabel htmlFor="template-name">Name</FieldLabel>
               <Input
@@ -96,6 +117,19 @@ export function CreateTemplateDialog() {
                 {...register("name")}
               />
               <FieldError errors={[errors.name]} />
+            </Field>
+
+            <Field data-invalid={!!errors.description || undefined}>
+              <FieldLabel htmlFor="template-description">
+                Description
+              </FieldLabel>
+              <Textarea
+                id="template-description"
+                placeholder="Optional short note about this template"
+                aria-invalid={!!errors.description}
+                {...register("description")}
+              />
+              <FieldError errors={[errors.description]} />
             </Field>
           </FieldGroup>
 

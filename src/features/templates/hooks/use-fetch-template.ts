@@ -5,7 +5,7 @@ import type { Template } from "../types/template"
 async function fetchTemplates() {
   const { data, error } = await supabase
     .from("templates")
-    .select("id, user_id, name, created_at, updated_at")
+    .select("id, user_id, name, icon, description, created_at, updated_at")
     .order("name")
 
   if (error) throw error

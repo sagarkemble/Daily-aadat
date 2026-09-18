@@ -1,10 +1,17 @@
 import { Link, createFileRoute } from "@tanstack/react-router"
+import { FaceSlightlySmiling, icons } from "lucide-react"
 import { CreateTemplateDialog } from "@/features/templates/components/create-template-dialog"
 import { useFetchTemplates } from "@/features/templates/hooks/use-fetch-template"
 
 export const Route = createFileRoute("/_authenticated/templates/")({
   component: RouteComponent,
 })
+
+function TemplateListIcon({ name }: { name: string }) {
+  const Icon = icons[name as keyof typeof icons]
+  if (!Icon) return <FaceSlightlySmiling className="size-5" />
+  return <Icon className="size-5" />
+}
 
 function RouteComponent() {
   const { data, isPending, isError, error } = useFetchTemplates()
@@ -35,12 +42,19 @@ function RouteComponent() {
               <Link
                 to="/templates/$templateId"
                 params={{ templateId: template.id }}
-                className="block rounded-xl border bg-card p-4 shadow-xs transition-colors hover:bg-muted/50"
+                className="flex items-start gap-3 rounded-xl border bg-card p-4 shadow-xs transition-colors hover:bg-muted/50"
               >
-                <p className="truncate text-sm font-medium">{template.name}</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Tap to edit slots
-                </p>
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground">
+                  <TemplateListIcon name={template.icon} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">{template.name}</p>
+                  <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                    {template.description.trim()
+                      ? template.description
+                      : "Tap to edit slots"}
+                  </p>
+                </span>
               </Link>
             </li>
           ))}

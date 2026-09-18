@@ -28,6 +28,8 @@ type RawTemplateRow = {
   id: string
   user_id: string
   name: string
+  icon: string
+  description: string
   created_at: string
   updated_at: string
   template_items: RawTemplateItem[] | null
@@ -66,6 +68,8 @@ async function fetchTemplate(id: string): Promise<TemplateDetail> {
       id,
       user_id,
       name,
+      icon,
+      description,
       created_at,
       updated_at,
       template_items (
@@ -107,6 +111,8 @@ async function fetchTemplate(id: string): Promise<TemplateDetail> {
     id: row.id,
     user_id: row.user_id,
     name: row.name,
+    icon: row.icon,
+    description: row.description,
     created_at: row.created_at,
     updated_at: row.updated_at,
     items,
