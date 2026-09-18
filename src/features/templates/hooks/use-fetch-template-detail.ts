@@ -53,7 +53,7 @@ async function fetchTemplate(id: string): Promise<TemplateDetail> {
   }
 }
 
-export function useTemplate(id: string) {
+export function useFetchTemplateDetail(id: string) {
   return useQuery({
     queryKey: ["templates", id],
     queryFn: () => fetchTemplate(id),

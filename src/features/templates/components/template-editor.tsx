@@ -10,7 +10,7 @@ import {
 import { useAddTemplateItem } from "../hooks/use-add-template-item"
 import { useRemoveTemplateItem } from "../hooks/use-remove-template-item"
 import { useReorderTemplateItems } from "../hooks/use-reorder-template-items"
-import { useTemplate } from "../hooks/use-template"
+import { useFetchTemplateDetail } from "../hooks/use-fetch-template-detail"
 import { SLOTS, type Slot } from "../types/slots"
 import type { TemplateItem } from "../types/template"
 import { TemplateSlotSection } from "./template-slot-section"
@@ -30,7 +30,7 @@ function emptyItemsBySlot(): Record<Slot, TemplateItem[]> {
 }
 
 export function TemplateEditor({ templateId }: TemplateEditorProps) {
-  const { data, isPending, isError, error } = useTemplate(templateId)
+  const { data, isPending, isError, error } = useFetchTemplateDetail(templateId)
   const { mutate: addItem, isPending: isAdding } =
     useAddTemplateItem(templateId)
   const { mutate: removeItem, isPending: isRemoving } =
