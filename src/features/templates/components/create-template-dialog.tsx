@@ -33,7 +33,6 @@ type FormValues = z.infer<typeof schema>
 
 export function CreateTemplateDialog() {
   const [open, setOpen] = useState(false)
-  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -46,22 +45,23 @@ export function CreateTemplateDialog() {
 
   const { mutate: createTemplate, isPending } = useCreateTemplate()
 
+  function handleOpenChange(isOpen: boolean) {
+    setOpen(isOpen)
+    if (!isOpen) reset()
+  }
+
   function onSubmit({ name }: FormValues) {
     createTemplate(name, {
-      onSuccess: (template) => {
+      onSuccess: () => {
         toast.add({
           title: "Template created",
           description: `"${name}" is ready`,
           type: "success",
         })
-        reset()
-        setOpen(false)
-        void navigate({
-          to: "/templates/$templateId",
-          params: { templateId: template.id },
-        })
+        handleOpenChange(false)
       },
       onError: (error) => {
+        handleOpenChange(false)
         toast.add({
           title: "Error",
           description: error.message,
@@ -72,13 +72,7 @@ export function CreateTemplateDialog() {
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        setOpen(nextOpen)
-        if (!nextOpen) reset()
-      }}
-    >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={<Button size="sm" />}>
         <PlusIcon />
         Create
@@ -88,7 +82,7 @@ export function CreateTemplateDialog() {
           <DialogHeader>
             <DialogTitle>New template</DialogTitle>
             <DialogDescription>
-              Give it a name like Home or College. You can add activities later.
+              Templates are collections of activities that you can reuse.
             </DialogDescription>
           </DialogHeader>
 
