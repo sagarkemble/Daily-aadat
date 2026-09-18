@@ -21,6 +21,7 @@ import { toast } from "@/components/ui/toast"
 import { useActivities } from "@/features/activity/hooks/use-activities"
 import { useAddActivity } from "@/features/activity/hooks/use-add-activities"
 import { ActivityIcon } from "@/features/activity/components/activity-icon"
+import { ActivityIconPicker } from "@/features/activity/components/activity-icon-picker"
 import type { Activity, ActivityType } from "@/features/activity/types/activity"
 
 export type ActivityPlacement = {
@@ -443,26 +444,17 @@ export function ActivityPickerSheet({
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="picker-create-icon">Icon</FieldLabel>
-                  <div className="flex items-center gap-2">
-                    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border bg-muted">
-                      <ActivityIcon
-                        name={createDraft.icon || "circle-dashed"}
-                        className="size-4"
-                      />
-                    </span>
-                    <Input
-                      id="picker-create-icon"
-                      placeholder="banana"
-                      value={createDraft.icon}
-                      onChange={(e) => {
-                        setCreateDraft((current) => ({
-                          ...current,
-                          icon: e.target.value,
-                        }))
-                        setCreateError(null)
-                      }}
-                    />
-                  </div>
+                  <ActivityIconPicker
+                    id="picker-create-icon"
+                    value={createDraft.icon}
+                    onChange={(icon) => {
+                      setCreateDraft((current) => ({
+                        ...current,
+                        icon,
+                      }))
+                      setCreateError(null)
+                    }}
+                  />
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="picker-create-type">

@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2, PlusIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -23,7 +23,7 @@ import {
   addActivityInputSchema,
   type AddActivityInput,
 } from "../types/add-activity-input"
-import { ActivityIcon } from "./activity-icon"
+import { ActivityIconPicker } from "./activity-icon-picker"
 import { useAddActivity } from "../hooks/use-add-activities"
 import { toast } from "@/components/ui/toast"
 
@@ -34,6 +34,7 @@ export function AddActivityDialog() {
   const {
     register,
     handleSubmit,
+    control,
     watch,
     formState: { errors },
   } = useForm<AddActivityInput>({
@@ -49,8 +50,7 @@ export function AddActivityDialog() {
   })
 
   const { mutate: addActivity, isPending } = useAddActivity()
-
-  const icon = watch("icon")
+  const suggestedType = watch("suggested_type")
 
   function onSubmit(_data: AddActivityInput) {
     addActivity(_data, {
@@ -102,20 +102,18 @@ export function AddActivityDialog() {
 
             <Field data-invalid={!!errors.icon || undefined}>
               <FieldLabel htmlFor="activity-icon">Icon</FieldLabel>
-              <div className="flex items-center gap-2">
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border bg-muted">
-                  <ActivityIcon
-                    name={icon || "circle-dashed"}
-                    className="size-4"
+              <Controller
+                name="icon"
+                control={control}
+                render={({ field }) => (
+                  <ActivityIconPicker
+                    id="activity-icon"
+                    value={field.value}
+                    onChange={field.onChange}
+                    invalid={!!errors.icon}
                   />
-                </span>
-                <Input
-                  id="activity-icon"
-                  placeholder="banana"
-                  aria-invalid={!!errors.icon}
-                  {...register("icon")}
-                />
-              </div>
+                )}
+              />
               <FieldError errors={[errors.icon]} />
             </Field>
 
@@ -134,30 +132,32 @@ export function AddActivityDialog() {
               <FieldError errors={[errors.suggested_type]} />
             </Field>
 
-            <div className="grid grid-cols-2 gap-3">
-              <Field data-invalid={!!errors.suggested_target || undefined}>
-                <FieldLabel htmlFor="activity-target">Target</FieldLabel>
-                <Input
-                  id="activity-target"
-                  type="number"
-                  min={1}
-                  placeholder="10"
-                  aria-invalid={!!errors.suggested_target}
-                  {...register("suggested_target")}
-                />
-                <FieldError errors={[errors.suggested_target]} />
-              </Field>
-              <Field data-invalid={!!errors.suggested_unit || undefined}>
-                <FieldLabel htmlFor="activity-unit">Unit</FieldLabel>
-                <Input
-                  id="activity-unit"
-                  placeholder="glasses"
-                  aria-invalid={!!errors.suggested_unit}
-                  {...register("suggested_unit")}
-                />
-                <FieldError errors={[errors.suggested_unit]} />
-              </Field>
-            </div>
+            {suggestedType === "count" ? (
+              <div className="grid grid-cols-2 gap-3">
+                <Field data-invalid={!!errors.suggested_target || undefined}>
+                  <FieldLabel htmlFor="activity-target">Target</FieldLabel>
+                  <Input
+                    id="activity-target"
+                    type="number"
+                    min={1}
+                    placeholder="10"
+                    aria-invalid={!!errors.suggested_target}
+                    {...register("suggested_target")}
+                  />
+                  <FieldError errors={[errors.suggested_target]} />
+                </Field>
+                <Field data-invalid={!!errors.suggested_unit || undefined}>
+                  <FieldLabel htmlFor="activity-unit">Unit</FieldLabel>
+                  <Input
+                    id="activity-unit"
+                    placeholder="glasses"
+                    aria-invalid={!!errors.suggested_unit}
+                    {...register("suggested_unit")}
+                  />
+                  <FieldError errors={[errors.suggested_unit]} />
+                </Field>
+              </div>
+            ) : null}
 
             <Field data-invalid={!!errors.note || undefined}>
               <FieldLabel htmlFor="activity-note">Note</FieldLabel>

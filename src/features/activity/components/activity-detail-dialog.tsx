@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
 import {
@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/toast"
 import { ActivityIcon } from "./activity-icon"
+import { ActivityIconPicker } from "./activity-icon-picker"
 import type { Activity } from "../types/activity"
 import {
   addActivityInputSchema,
@@ -73,15 +74,17 @@ export function ActivityDetailDialog({
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     reset,
+    watch,
     formState: { errors },
   } = useForm<AddActivityInput>({
     resolver: zodResolver(addActivityInputSchema),
     defaultValues: toFormValues(activity),
   })
 
-  const icon = watch("icon")
+  const suggestedType = watch("suggested_type")
+  const isCount = activity.suggested_type === "count"
   const goal =
     activity.suggested_target != null
       ? `${activity.suggested_target}${activity.suggested_unit ? ` ${activity.suggested_unit}` : ""}`
@@ -99,10 +102,14 @@ export function ActivityDetailDialog({
         name: data.name,
         icon: data.icon,
         suggested_type: data.suggested_type,
-        suggested_target: data.suggested_target
-          ? Number(data.suggested_target)
-          : null,
-        suggested_unit: data.suggested_unit || null,
+        suggested_target:
+          data.suggested_type === "count" && data.suggested_target
+            ? Number(data.suggested_target)
+            : null,
+        suggested_unit:
+          data.suggested_type === "count" && data.suggested_unit
+            ? data.suggested_unit
+            : null,
         note: data.note || null,
       },
       {
@@ -156,7 +163,11 @@ export function ActivityDetailDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => setStep("view")}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setStep("view")}
+          >
             Cancel
           </Button>
           <Button type="button" onClick={startEdit}>
@@ -209,7 +220,11 @@ export function ActivityDetailDialog({
   if (step === "edit") {
     return (
       <DialogContent className="sm:max-w-md">
-        <form id="edit-activity-form" onSubmit={handleSubmit(onSave)} className="flex flex-col gap-4">
+        <form
+          id="edit-activity-form"
+          onSubmit={handleSubmit(onSave)}
+          className="flex flex-col gap-4"
+        >
           <DialogHeader>
             <DialogTitle>Edit activity</DialogTitle>
             <DialogDescription>
@@ -231,25 +246,25 @@ export function ActivityDetailDialog({
 
             <Field data-invalid={!!errors.icon || undefined}>
               <FieldLabel htmlFor="edit-activity-icon">Icon</FieldLabel>
-              <div className="flex items-center gap-2">
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border bg-muted">
-                  <ActivityIcon
-                    name={icon || "circle-dashed"}
-                    className="size-4"
+              <Controller
+                name="icon"
+                control={control}
+                render={({ field }) => (
+                  <ActivityIconPicker
+                    id="edit-activity-icon"
+                    value={field.value}
+                    onChange={field.onChange}
+                    invalid={!!errors.icon}
                   />
-                </span>
-                <Input
-                  id="edit-activity-icon"
-                  placeholder="banana"
-                  aria-invalid={!!errors.icon}
-                  {...register("icon")}
-                />
-              </div>
+                )}
+              />
               <FieldError errors={[errors.icon]} />
             </Field>
 
             <Field data-invalid={!!errors.suggested_type || undefined}>
-              <FieldLabel htmlFor="edit-activity-type">Suggested type</FieldLabel>
+              <FieldLabel htmlFor="edit-activity-type">
+                Suggested type
+              </FieldLabel>
               <select
                 id="edit-activity-type"
                 className={selectClassName}
@@ -263,30 +278,32 @@ export function ActivityDetailDialog({
               <FieldError errors={[errors.suggested_type]} />
             </Field>
 
-            <div className="grid grid-cols-2 gap-3">
-              <Field data-invalid={!!errors.suggested_target || undefined}>
-                <FieldLabel htmlFor="edit-activity-target">Target</FieldLabel>
-                <Input
-                  id="edit-activity-target"
-                  type="number"
-                  min={1}
-                  placeholder="10"
-                  aria-invalid={!!errors.suggested_target}
-                  {...register("suggested_target")}
-                />
-                <FieldError errors={[errors.suggested_target]} />
-              </Field>
-              <Field data-invalid={!!errors.suggested_unit || undefined}>
-                <FieldLabel htmlFor="edit-activity-unit">Unit</FieldLabel>
-                <Input
-                  id="edit-activity-unit"
-                  placeholder="glasses"
-                  aria-invalid={!!errors.suggested_unit}
-                  {...register("suggested_unit")}
-                />
-                <FieldError errors={[errors.suggested_unit]} />
-              </Field>
-            </div>
+            {suggestedType === "count" ? (
+              <div className="grid grid-cols-2 gap-3">
+                <Field data-invalid={!!errors.suggested_target || undefined}>
+                  <FieldLabel htmlFor="edit-activity-target">Target</FieldLabel>
+                  <Input
+                    id="edit-activity-target"
+                    type="number"
+                    min={1}
+                    placeholder="10"
+                    aria-invalid={!!errors.suggested_target}
+                    {...register("suggested_target")}
+                  />
+                  <FieldError errors={[errors.suggested_target]} />
+                </Field>
+                <Field data-invalid={!!errors.suggested_unit || undefined}>
+                  <FieldLabel htmlFor="edit-activity-unit">Unit</FieldLabel>
+                  <Input
+                    id="edit-activity-unit"
+                    placeholder="glasses"
+                    aria-invalid={!!errors.suggested_unit}
+                    {...register("suggested_unit")}
+                  />
+                  <FieldError errors={[errors.suggested_unit]} />
+                </Field>
+              </div>
+            ) : null}
 
             <Field data-invalid={!!errors.note || undefined}>
               <FieldLabel htmlFor="edit-activity-note">Note</FieldLabel>
@@ -309,7 +326,11 @@ export function ActivityDetailDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" form="edit-activity-form" disabled={isUpdating}>
+            <Button
+              type="submit"
+              form="edit-activity-form"
+              disabled={isUpdating}
+            >
               {isUpdating ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
@@ -342,8 +363,12 @@ export function ActivityDetailDialog({
       <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
         <dt className="text-muted-foreground">Type</dt>
         <dd>{typeLabel[activity.suggested_type]}</dd>
-        <dt className="text-muted-foreground">Goal hint</dt>
-        <dd>{goal}</dd>
+        {isCount ? (
+          <>
+            <dt className="text-muted-foreground">Target</dt>
+            <dd>{goal}</dd>
+          </>
+        ) : null}
         {activity.note ? (
           <>
             <dt className="text-muted-foreground">Note</dt>
