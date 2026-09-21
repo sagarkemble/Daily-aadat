@@ -16,7 +16,6 @@ export function useRemoveTemplateItem(templateId: string) {
     mutationFn: removeTemplateItem,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["templates", templateId] })
-      queryClient.invalidateQueries({ queryKey: ["templates"] })
     },
   })
 }
