@@ -1,4 +1,4 @@
-import type { ActivityType } from "@/features/activity/types/activity"
+import type { Activity, ActivityType } from "@/features/activity/types/activity"
 import type { Slot } from "./slots"
 
 export type Template = {
@@ -11,22 +11,7 @@ export type Template = {
   updated_at: string
 }
 
-/** List row with nested count from Supabase `template_items(count)` */
-export type TemplateListItem = Template & {
-  item_count: number
-}
-
-/** Activity fields joined for live name/icon on template items */
-export type TemplateItemActivity = {
-  id: string
-  name: string
-  icon: string
-  suggested_type: ActivityType
-  suggested_target: number | null
-  suggested_unit: string | null
-} | null
-
-export type TemplateItem = {
+export type TemplateActivity = {
   id: string
   template_id: string
   activity_id: string
@@ -37,11 +22,11 @@ export type TemplateItem = {
   sort_order: number
   created_at: string
   updated_at: string
-  activities: TemplateItemActivity
+  activity: Activity | null
 }
 
 export type TemplateDetail = Template & {
-  template_items: TemplateItem[]
+  activities: TemplateActivity[]
 }
 
 //example of the data being recived from database

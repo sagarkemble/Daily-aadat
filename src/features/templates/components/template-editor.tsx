@@ -12,14 +12,14 @@ import { useRemoveTemplateItem } from "../hooks/use-remove-template-item"
 import { useReorderTemplateItems } from "../hooks/use-reorder-template-items"
 import { useFetchTemplateDetail } from "../hooks/use-fetch-template-detail"
 import { SLOTS, type Slot } from "../types/slots"
-import type { TemplateItem } from "../types/template"
+import type { TemplateActivity } from "../types/template"
 import { TemplateSlotSection } from "./template-slot-section"
 
 type TemplateEditorProps = {
   templateId: string
 }
 
-function emptyItemsBySlot(): Record<Slot, TemplateItem[]> {
+function emptyItemsBySlot(): Record<Slot, TemplateActivity[]> {
   return {
     early_morning: [],
     morning: [],
@@ -42,7 +42,7 @@ export function TemplateEditor({ templateId }: TemplateEditorProps) {
   const itemsBySlot = useMemo(() => {
     const map = emptyItemsBySlot()
     if (!data) return map
-    for (const item of data.template_items) {
+    for (const item of data.activities) {
       map[item.slot].push(item)
     }
     for (const slot of SLOTS) {

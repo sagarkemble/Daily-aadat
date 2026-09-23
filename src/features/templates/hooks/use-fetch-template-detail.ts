@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
-import type { TemplateDetail, TemplateItem } from "../types/template"
+import type { TemplateActivity, TemplateDetail } from "../types/template"
 
 async function fetchTemplate(id: string): Promise<TemplateDetail> {
   const { data, error } = await supabase
@@ -14,7 +14,7 @@ async function fetchTemplate(id: string): Promise<TemplateDetail> {
       description,
       created_at,
       updated_at,
-      template_items (
+      activities:template_items(
         id,
         template_id,
         activity_id,
@@ -25,13 +25,16 @@ async function fetchTemplate(id: string): Promise<TemplateDetail> {
         sort_order,
         created_at,
         updated_at,
-        activities (
+        activity:activities (
           id,
+          user_id,
           name,
           icon,
           suggested_type,
           suggested_target,
-          suggested_unit
+          suggested_unit,
+          note,
+          source
         )
       )
     `
@@ -43,13 +46,13 @@ async function fetchTemplate(id: string): Promise<TemplateDetail> {
 
   const row = data as unknown as TemplateDetail
   console.log("data", data)
-  const template_items: TemplateItem[] = [...row.template_items].sort(
+  const activities: TemplateActivity[] = [...row.activities].sort(
     (a, b) => a.sort_order - b.sort_order
   )
 
   return {
     ...row,
-    template_items, // overrides the template_items with the sorted template_items
+    activities, // overrides the activities with the sorted activities
   }
 }
 
