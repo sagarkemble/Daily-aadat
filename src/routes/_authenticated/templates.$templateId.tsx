@@ -1,5 +1,5 @@
+import TemplateEditor from "@/features/templates/components/template-editor"
 import { createFileRoute } from "@tanstack/react-router"
-import { TemplateEditor } from "@/features/templates/components/template-editor"
 
 export const Route = createFileRoute("/_authenticated/templates/$templateId")({
   component: RouteComponent,

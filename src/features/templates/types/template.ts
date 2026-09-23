@@ -25,7 +25,13 @@ export type TemplateActivity = {
   activity: Activity | null
 }
 
+export type TemplateActivitiesBySlot = Record<Slot, TemplateActivity[]>
+
 export type TemplateDetail = Template & {
+  activities: TemplateActivitiesBySlot
+}
+
+export type fetchedTemplateDetail = TemplateDetail & {
   activities: TemplateActivity[]
 }
 

@@ -1,6 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
-import type { TemplateActivity, TemplateDetail } from "../types/template"
+import type {
+  TemplateActivitiesBySlot,
+  TemplateActivity,
+  TemplateDetail,
+  fetchedTemplateDetail,
+} from "../types/template"
+import { SLOTS, type Slot } from "../types/slots"
 
 async function fetchTemplate(id: string): Promise<TemplateDetail> {
   const { data, error } = await supabase
@@ -44,16 +50,28 @@ async function fetchTemplate(id: string): Promise<TemplateDetail> {
 
   if (error) throw error
 
-  const row = data as unknown as TemplateDetail
+  const row = data as unknown as fetchedTemplateDetail
   console.log("data", data)
-  const activities: TemplateActivity[] = [...row.activities].sort(
-    (a, b) => a.sort_order - b.sort_order
-  )
 
+  const activitiesBySlot: TemplateActivitiesBySlot = {
+    early_morning: [],
+    morning: [],
+    afternoon: [],
+    evening: [],
+    night: [],
+  }
+
+  row.activities.forEach((activity) => {
+    activitiesBySlot[activity.slot].push(activity)
+  })
+
+  for (const slot of SLOTS) {
+    activitiesBySlot[slot].sort((a, b) => a.sort_order - b.sort_order)
+  }
   return {
     ...row,
-    activities, // overrides the activities with the sorted activities
-  }
+    activities: activitiesBySlot, // overrides the activities with the sorted activities
+  } as TemplateDetail
 }
 
 export function useFetchTemplateDetail(id: string) {

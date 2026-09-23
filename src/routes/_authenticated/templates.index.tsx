@@ -1,8 +1,8 @@
 import { Link, createFileRoute } from "@tanstack/react-router"
 import { FaceSlightlySmiling } from "lucide-react"
 import { DynamicIcon, type IconName } from "lucide-react/dynamic"
-import { CreateTemplateDialog } from "@/features/templates/components/create-template-dialog"
 import { useFetchTemplates } from "@/features/templates/hooks/use-fetch-templates"
+import { CreateTemplateDialog } from "@/features/templates/components/create-template-dialog"
 
 export const Route = createFileRoute("/_authenticated/templates/")({
   component: RouteComponent,
