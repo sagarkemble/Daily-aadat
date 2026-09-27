@@ -35,6 +35,17 @@ export type fetchedTemplateDetail = TemplateDetail & {
   activities: TemplateActivity[]
 }
 
+export type NewTemplateActivity = {
+  template_id: string
+  activity_id: string
+  type: ActivityType
+  target: number | null
+  unit: string | null
+  slot: Slot
+  sort_order: number
+}
+
+
 //example of the data being recived from database
 // the template_items field is an array of TemplateItem objects
 // each TemplateItem object has an activities field that is a TemplateItemActivity object

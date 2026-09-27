@@ -1,0 +1,2 @@
+alter table public.template_items
+  drop constraint template_items_template_id_slot_activity_id_key;

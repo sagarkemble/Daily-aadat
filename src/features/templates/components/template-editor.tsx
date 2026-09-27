@@ -1,6 +1,8 @@
 import React from "react"
 import { useFetchTemplateDetail } from "../hooks/use-fetch-template-detail"
 import { toast } from "@/components/ui/toast"
+import { SLOTS } from "../types/slots"
+import { TemplateSlot } from "./template-slot"
 
 type TemplateEditorProps = {
   templateId: string
@@ -15,7 +17,21 @@ const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
       description: error.message,
       type: "error",
     })
-  return <div>template-editor</div>
+
+  console.log(data)
+
+  return (
+    <div className="flex flex-col gap-4">
+      {SLOTS.map((slot) => (
+        <TemplateSlot
+          key={slot}
+          templateId={templateId}
+          slot={slot}
+          activities={data?.activities[slot] ?? []}
+        />
+      ))}
+    </div>
+  )
 }
 
 export default TemplateEditor
