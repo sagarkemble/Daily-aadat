@@ -1,11 +1,74 @@
 import { supabase } from "@/lib/supabase"
+import { SLOTS } from "@/features/templates/types/slots"
 import { useQuery } from "@tanstack/react-query"
-import type { DayPlan } from "../types/day-plan"
+import type {
+  DayPlanActivity,
+  DayPlanWithActivities,
+  FetchedDayPlan,
+  SlotWithActivities,
+} from "../types/day-plan"
 
-async function fetchDayPlan(date: string) {
+function groupActivitiesBySlot(
+  activities: DayPlanActivity[]
+): SlotWithActivities {
+  const activitiesBySlot: SlotWithActivities = {
+    early_morning: [],
+    morning: [],
+    afternoon: [],
+    evening: [],
+    night: [],
+  }
+
+  for (const activity of activities) {
+    activitiesBySlot[activity.slot].push({
+      ...activity,
+    })
+  }
+
+  for (const slot of SLOTS) {
+    activitiesBySlot[slot].sort((a, b) => a.slot_order - b.slot_order)
+  }
+
+  return activitiesBySlot
+}
+
+async function fetchDayPlan(
+  date: string
+): Promise<DayPlanWithActivities | null> {
   const { data, error } = await supabase
     .from("day_plans")
-    .select("*")
+    .select(
+      `
+      id,
+      plan_date,
+      status,
+      template_id,
+      ended_at,
+      created_at,
+      updated_at,
+      activities:day_items(
+        id,
+        day_plan_id,
+        kind,
+        activity_id,
+        name_snapshot,
+        icon_snapshot,
+        type,
+        target,
+        unit,
+        slot,
+        slot_order:sort_order,
+        state,
+        started_at,
+        stopped_at,
+        duration:duration_ms,
+        count_value,
+        created_at,
+        updated_at,
+        note_snapshot
+      )
+    `
+    )
     .eq("plan_date", date)
     .maybeSingle()
 
@@ -13,7 +76,16 @@ async function fetchDayPlan(date: string) {
     throw error
   }
 
-  return data as DayPlan | null
+  if (!data) {
+    return null
+  }
+
+  const row = data as unknown as FetchedDayPlan
+
+  return {
+    ...row,
+    activities: groupActivitiesBySlot(row.activities),
+  }
 }
 
 function useFetchDayPlan(date: string) {

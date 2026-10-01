@@ -1,13 +1,15 @@
-## Agent skills
+## Skills & Delegation
 
-### Issue tracker
+Before starting a task, check skills/ for a relevant skill and follow it when applicable.
+For substantial research, exploration, codebase investigation, or multi-file analysis, delegate to a sub-agent instead of doing everything inline.
+Keep delegated output concise: return findings and actionable conclusions, not raw research or large dumps.
+Keep the main context lean.
 
-Issues live as markdown files under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+## UI — ShadCNify Everything
 
-### Triage labels
+For every UI task, first use the relevant shadcn/ui skill.
+ShadCNify the UI: prefer shadcn/ui components and patterns over custom implementations.
+Before creating a custom UI element, check whether shadcn/ui already provides the appropriate component or primitive.
 
-Five default triage roles: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
-
-### Domain docs
-
-Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+Compose existing shadcn primitives instead of inventing custom UI components.
+Follow the project's existing shadcn theme, variants, spacing, typography, responsiveness, and accessibility patterns.

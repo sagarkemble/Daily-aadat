@@ -1,16 +1,19 @@
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
 import { useNavigate } from "@tanstack/react-router"
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
+import SelectTemplateDialog from "@/features/activity/components/select-template-dialog"
 import CalendarPopover from "./calendar-popover"
-import { format } from "date-fns"
+import { addDays, format, subDays } from "date-fns"
+import { useUnplanDay } from "../hooks/use-unplan-day"
 
 type DayPageHeaderProps = {
   date: string
+  isPlanned: boolean
 }
 
-const DayPageHeader = ({ date }: DayPageHeaderProps) => {
+const DayPageHeader = ({ date, isPlanned }: DayPageHeaderProps) => {
   const navigate = useNavigate()
+  const { mutate: unplanDay, isPending } = useUnplanDay()
   function handleDateChange(date: Date) {
     const formattedDate = format(date, "yyyy-MM-dd")
     navigate({
@@ -18,15 +21,43 @@ const DayPageHeader = ({ date }: DayPageHeaderProps) => {
       search: { date: formattedDate },
     })
   }
+  function handlePreviousDay() {
+    const previousDate = subDays(date, 1)
+    const formattedDate = format(previousDate, "yyyy-MM-dd")
+    navigate({
+      to: "/",
+      search: { date: formattedDate },
+    })
+  }
+  function handleNextDay() {
+    const nextDate = addDays(date, 1)
+    const formattedDate = format(nextDate, "yyyy-MM-dd")
+    navigate({
+      to: "/",
+      search: { date: formattedDate },
+    })
+  }
+  function handleUnplanDay() {
+    unplanDay(date)
+  }
   return (
-    <div className="date-navigator">
-      <Button variant="outline" size="icon">
-        <ArrowLeftIcon className="h-4 w-4" />
-      </Button>
-      <CalendarPopover date={date} onDateChange={handleDateChange} />
-      <Button variant="outline" size="icon">
-        <ArrowRightIcon className="h-4 w-4" />
-      </Button>
+    <div className="flex flex-col gap-3">
+      <div className="date-navigator">
+        <Button variant="outline" size="icon" onClick={handlePreviousDay}>
+          <ArrowLeftIcon className="h-4 w-4" />
+        </Button>
+        <CalendarPopover date={date} onDateChange={handleDateChange} />
+        <Button variant="outline" size="icon" onClick={handleNextDay}>
+          <ArrowRightIcon className="h-4 w-4" />
+        </Button>
+      </div>
+      {isPlanned ? (
+        <Button variant="outline" onClick={handleUnplanDay}>
+          Unplan Day
+        </Button>
+      ) : (
+        <SelectTemplateDialog date={date} />
+      )}
     </div>
   )
 }

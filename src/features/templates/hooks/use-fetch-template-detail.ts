@@ -8,7 +8,7 @@ import type {
 } from "../types/template"
 import { SLOTS, type Slot } from "../types/slots"
 
-async function fetchTemplate(id: string): Promise<TemplateDetail> {
+export async function fetchTemplateDetail(id: string): Promise<TemplateDetail> {
   const { data, error } = await supabase
     .from("templates")
     .select(
@@ -77,7 +77,7 @@ async function fetchTemplate(id: string): Promise<TemplateDetail> {
 export function useFetchTemplateDetail(id: string) {
   return useQuery({
     queryKey: ["templates", id],
-    queryFn: () => fetchTemplate(id),
+    queryFn: () => fetchTemplateDetail(id),
     enabled: !!id,
   })
 }

@@ -12,9 +12,12 @@ async function fetchTemplates() {
   return (data ?? []) as Template[]
 }
 
-export function useFetchTemplates() {
+export function useFetchTemplates({
+  enabled = true,
+}: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: ["templates"],
     queryFn: fetchTemplates,
+    enabled,
   })
 }
