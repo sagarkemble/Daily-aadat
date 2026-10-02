@@ -15,7 +15,7 @@ async function fetchActivities() {
   return data as Activity[]
 }
 
-export function useActivities() {
+export function useFetchActivities() {
   return useQuery({
     queryKey: ["activities"],
     queryFn: fetchActivities,

@@ -12,7 +12,7 @@ import { ActivityPickerRow } from "./activity-picker-row"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useActivities } from "@/features/activity/hooks/use-fetch-activities"
+import { useFetchActivities } from "@/features/activity/hooks/use-fetch-activities"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useId, useMemo, useState } from "react"
 import { useDebounce } from "@/hooks/use-debounce"
@@ -36,7 +36,7 @@ const ActivityPickerDialog = ({
   sortOrderStart,
 }: ActivityPickerDialogProps) => {
   const searchId = useId()
-  const { data, isLoading, error } = useActivities()
+  const { data, isLoading, error } = useFetchActivities()
   const activities = data ?? []
   const [configuredActivities, setConfiguredActivities] = useState<
     ActivityWithConfiguration[]
