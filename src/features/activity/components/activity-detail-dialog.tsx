@@ -20,24 +20,33 @@ import {
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/toast"
 import { ActivityIcon } from "./activity-icon"
-import { ActivityIconPicker } from "./activity-icon-picker"
-import type { Activity } from "../types/activity"
+import type { Activity, ActivityType } from "../types/activity"
 import {
   addActivityInputSchema,
   type AddActivityInput,
 } from "../types/add-activity-input"
 import { useDeleteActivities } from "../hooks/use-delete-activities"
 import { useUpdateActivities } from "../hooks/use-update-activities"
+import IconPickerPopover from "@/components/icon-picker-popover"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
-const typeLabel: Record<Activity["suggested_type"], string> = {
+const typeLabel: Record<ActivityType, string> = {
   check: "Check",
   timed: "Timed",
   count: "Count",
 }
-
-const selectClassName =
-  "h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-
+const TYPE_ITEMS = [
+  { label: "Check", value: "check" },
+  { label: "Timed", value: "timed" },
+  { label: "Count", value: "count" },
+] as const
 type Step = "view" | "confirm-edit" | "edit" | "confirm-delete"
 
 function toFormValues(activity: Activity): AddActivityInput {
@@ -61,6 +70,7 @@ export function ActivityDetailDialog({
 }) {
   const isCustom = activity.source === "custom"
   const [step, setStep] = useState<Step>("view")
+  const [selectedIcon, setSelectedIcon] = useState(activity.icon)
 
   useEffect(() => {
     if (!open) setStep("view")
@@ -73,9 +83,9 @@ export function ActivityDetailDialog({
   const {
     register,
     handleSubmit,
-    control,
     reset,
     watch,
+    control,
     formState: { errors },
   } = useForm<AddActivityInput>({
     resolver: zodResolver(addActivityInputSchema),
@@ -99,7 +109,7 @@ export function ActivityDetailDialog({
       {
         ...activity,
         name: data.name,
-        icon: data.icon,
+        icon: selectedIcon,
         suggested_type: data.suggested_type,
         suggested_target:
           data.suggested_type === "count" && data.suggested_target
@@ -146,6 +156,7 @@ export function ActivityDetailDialog({
           description: error.message,
           type: "error",
         })
+        onClose()
       },
     })
   }
@@ -235,26 +246,20 @@ export function ActivityDetailDialog({
               <FieldLabel htmlFor="edit-activity-name">Name</FieldLabel>
               <Input
                 id="edit-activity-name"
-                placeholder="Banana"
+                placeholder="Drive"
                 aria-invalid={!!errors.name}
                 {...register("name")}
+                disabled={isUpdating}
               />
               <FieldError errors={[errors.name]} />
             </Field>
 
             <Field data-invalid={!!errors.icon || undefined}>
               <FieldLabel htmlFor="edit-activity-icon">Icon</FieldLabel>
-              <Controller
-                name="icon"
-                control={control}
-                render={({ field }) => (
-                  <ActivityIconPicker
-                    id="edit-activity-icon"
-                    value={field.value}
-                    onChange={field.onChange}
-                    invalid={!!errors.icon}
-                  />
-                )}
+              <IconPickerPopover
+                selectedIcon={selectedIcon}
+                setSelectedIcon={setSelectedIcon}
+                disabled={isUpdating}
               />
               <FieldError errors={[errors.icon]} />
             </Field>
@@ -263,16 +268,38 @@ export function ActivityDetailDialog({
               <FieldLabel htmlFor="edit-activity-type">
                 Suggested type
               </FieldLabel>
-              <select
-                id="edit-activity-type"
-                className={selectClassName}
-                aria-invalid={!!errors.suggested_type}
-                {...register("suggested_type")}
-              >
-                <option value="check">Check</option>
-                <option value="timed">Timed</option>
-                <option value="count">Count</option>
-              </select>
+              <Controller
+                name="suggested_type"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    items={TYPE_ITEMS}
+                    value={field.value}
+                    disabled={isUpdating}
+                    onValueChange={(value) => {
+                      if (value == null) return
+                      field.onChange(value)
+                    }}
+                  >
+                    <SelectTrigger
+                      id="edit-activity-type"
+                      className="w-full"
+                      aria-invalid={!!errors.suggested_type}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {TYPE_ITEMS.map((item) => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
               <FieldError errors={[errors.suggested_type]} />
             </Field>
 
@@ -287,6 +314,7 @@ export function ActivityDetailDialog({
                     placeholder="10"
                     aria-invalid={!!errors.suggested_target}
                     {...register("suggested_target")}
+                    disabled={isUpdating}
                   />
                   <FieldError errors={[errors.suggested_target]} />
                 </Field>
@@ -297,6 +325,7 @@ export function ActivityDetailDialog({
                     placeholder="glasses"
                     aria-invalid={!!errors.suggested_unit}
                     {...register("suggested_unit")}
+                    disabled={isUpdating}
                   />
                   <FieldError errors={[errors.suggested_unit]} />
                 </Field>
@@ -340,11 +369,6 @@ export function ActivityDetailDialog({
           <ActivityIcon name={activity.icon} className="size-5" />
         </div>
         <DialogTitle>{activity.name}</DialogTitle>
-        <DialogDescription>
-          {isCustom
-            ? "One of your custom activities."
-            : "From the shared catalog. View only."}
-        </DialogDescription>
       </DialogHeader>
 
       <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">

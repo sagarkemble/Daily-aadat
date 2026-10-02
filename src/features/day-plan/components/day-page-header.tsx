@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { useNavigate } from "@tanstack/react-router"
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
-import SelectTemplateDialog from "@/features/activity/components/select-template-dialog"
+import SelectTemplateDialog from "@/features/templates/components/select-template-dialog"
 import CalendarPopover from "./calendar-popover"
 import { addDays, format, subDays } from "date-fns"
 import { useUnplanDay } from "../hooks/use-unplan-day"

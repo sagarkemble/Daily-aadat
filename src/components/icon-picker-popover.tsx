@@ -13,18 +13,27 @@ const IconPicker = lazy(() => import("@/components/icon-picker-tanstack"))
 type IconPickerPopoverProps = {
   selectedIcon: string | null
   setSelectedIcon: (icon: string) => void
+  disabled?: boolean
 }
 
 function IconPickerPopover({
   selectedIcon,
   setSelectedIcon,
+  disabled,
 }: IconPickerPopoverProps) {
   const [open, setOpen] = useState(false)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
-        render={<Button type="button" className={"w-fit"} variant="outline" />}
+        render={
+          <Button
+            type="button"
+            className={"w-fit"}
+            variant="outline"
+            disabled={disabled}
+          />
+        }
       >
         {selectedIcon ? (
           <DynamicIcon
