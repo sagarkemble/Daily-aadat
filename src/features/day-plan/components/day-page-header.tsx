@@ -5,6 +5,7 @@ import SelectTemplateDialog from "@/features/activity/components/select-template
 import CalendarPopover from "./calendar-popover"
 import { addDays, format, subDays } from "date-fns"
 import { useUnplanDay } from "../hooks/use-unplan-day"
+import { useEndDay } from "../hooks/use-end-day"
 
 type DayPageHeaderProps = {
   date: string
@@ -20,6 +21,10 @@ const DayPageHeader = ({ date, isPlanned }: DayPageHeaderProps) => {
       to: "/",
       search: { date: formattedDate },
     })
+  }
+  const { mutate: endDay, isPending: isEnding } = useEndDay()
+  function handleEndDay() {
+    endDay(date)
   }
   function handlePreviousDay() {
     const previousDate = subDays(date, 1)
@@ -52,9 +57,14 @@ const DayPageHeader = ({ date, isPlanned }: DayPageHeaderProps) => {
         </Button>
       </div>
       {isPlanned ? (
-        <Button variant="outline" onClick={handleUnplanDay}>
-          Unplan Day
-        </Button>
+        <>
+          <Button variant="outline" onClick={handleUnplanDay}>
+            Unplan Day
+          </Button>
+          <Button variant="outline" onClick={handleEndDay}>
+            End Day
+          </Button>
+        </>
       ) : (
         <SelectTemplateDialog date={date} />
       )}

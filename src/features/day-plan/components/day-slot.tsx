@@ -7,38 +7,43 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item"
-import { ActivityIcon } from "@/features/activity/components/activity-icon"
-import type { ActivityType } from "@/features/activity/types/activity"
+import { ItemGroup } from "@/components/ui/item"
 import type { Slot } from "@/features/templates/types/slots"
 import { SLOT_LABELS } from "@/features/templates/types/slots"
 import type { DayPlanActivity } from "../types/day-plan"
+import ActivityPickerDialog from "./activity-picker/activity-picker-dialog"
+import { useDeleteActivity } from "../hooks/use-delete-activity"
+import { useApplyActivityCommand } from "../hooks/use-apply-activity-command"
+import {
+  applyDayItemCommand,
+  type DayItemCommand,
+} from "../lib/day-item-command"
+import { DayItemRow } from "./day-item-row"
 
 type DaySlotProps = {
   slot: Slot
   activities: DayPlanActivity[]
+  dayPlanId: string
 }
 
-const TYPE_LABELS: Record<ActivityType, string> = {
-  check: "Check",
-  timed: "Timed",
-  count: "Count",
+function nextSortOrder(activities: DayPlanActivity[]) {
+  if (activities.length === 0) return 0
+  return Math.max(...activities.map((activity) => activity.slot_order)) + 1
 }
 
-function formatTarget(activity: DayPlanActivity) {
-  if (activity.target == null) return null
-  return [activity.target, activity.unit].filter(Boolean).join(" ")
-}
+const DaySlot = ({ slot, activities, dayPlanId }: DaySlotProps) => {
+  const { mutate: deleteActivity, isPending: isDeleting } =
+    useDeleteActivity()
+  const { mutate: applyCommand, isPending: isApplying } =
+    useApplyActivityCommand()
 
-const DaySlot = ({ slot, activities }: DaySlotProps) => {
+  function run(activity: DayPlanActivity, command: DayItemCommand) {
+    const next = applyDayItemCommand(activity, command)
+    applyCommand({ activityId: activity.id, activity: next })
+  }
+
   const count = activities.length
+  const busy = isDeleting || isApplying
 
   return (
     <Card>
@@ -46,36 +51,26 @@ const DaySlot = ({ slot, activities }: DaySlotProps) => {
         <CardTitle>{SLOT_LABELS[slot]}</CardTitle>
         {count === 0 ? <CardDescription>No activities</CardDescription> : null}
         <CardAction>
+          <ActivityPickerDialog
+            slot={slot}
+            dayPlanId={dayPlanId}
+            sortOrderStart={nextSortOrder(activities)}
+          />
           <Badge variant="secondary">{count}</Badge>
         </CardAction>
       </CardHeader>
       {count > 0 ? (
         <CardContent>
           <ItemGroup>
-            {activities.map((activity) => {
-              const target = formatTarget(activity)
-              return (
-                <Item key={activity.id} variant="outline" size="sm">
-                  <ItemMedia variant="icon">
-                    <span className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
-                      {activity.icon_snapshot ? (
-                        <ActivityIcon
-                          name={activity.icon_snapshot}
-                          className="size-4"
-                        />
-                      ) : null}
-                    </span>
-                  </ItemMedia>
-                  <ItemContent>
-                    <ItemTitle>{activity.name_snapshot}</ItemTitle>
-                    {target ? (
-                      <ItemDescription>{target}</ItemDescription>
-                    ) : null}
-                  </ItemContent>
-                  <Badge variant="outline">{TYPE_LABELS[activity.type]}</Badge>
-                </Item>
-              )
-            })}
+            {activities.map((activity) => (
+              <DayItemRow
+                key={activity.id}
+                activity={activity}
+                disabled={busy}
+                onCommand={run}
+                onDelete={deleteActivity}
+              />
+            ))}
           </ItemGroup>
         </CardContent>
       ) : null}

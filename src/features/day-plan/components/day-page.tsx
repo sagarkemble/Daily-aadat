@@ -19,6 +19,7 @@ const DayPage = ({ date }: DayPageProps) => {
           key={slot}
           slot={slot}
           activities={data?.activities[slot] || []}
+          dayPlanId={data?.id || ""}
         />
       ))}
     </div>

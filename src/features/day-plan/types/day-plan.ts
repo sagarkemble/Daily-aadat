@@ -46,6 +46,21 @@ export type FetchedDayPlan = DayPlan & {
   activities: DayPlanActivity[]
 }
 
+export type NewDayPlanActivity = {
+  day_plan_id: string
+  kind: "activity"
+  activity_id: string
+  name_snapshot: string
+  icon_snapshot: string
+  type: ActivityType
+  target: number | null
+  unit: string | null
+  slot: Slot
+  sort_order: number
+  state: State
+  note_snapshot: string | null
+}
+
 export type ActivityKind = "activity" | "todo"
 
 export type { DayPlan }
