@@ -1,6 +1,6 @@
 import { AddActivityDialog } from "./add-activity-dialog"
 import { ActivityCard } from "./activity-card"
-import { useActivities } from "../hooks/use-activities"
+import { useActivities } from "../hooks/use-fetch-activities"
 import { ActivityCardSkeleton } from "./activity-card-skeleton"
 import { EmptyActivity } from "./empty-activity"
 import { ClipboardListIcon } from "lucide-react"
