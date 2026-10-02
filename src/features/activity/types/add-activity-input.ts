@@ -6,7 +6,6 @@ export const addActivityInputSchema = z.object({
   suggested_type: z.enum(["check", "timed", "count"]),
   suggested_target: z.string().optional(),
   suggested_unit: z.string().optional(),
-  note: z.string().optional(),
 })
 
 export type AddActivityInput = z.infer<typeof addActivityInputSchema>

@@ -47,7 +47,6 @@ function toFormValues(activity: Activity): AddActivityInput {
     suggested_type: activity.suggested_type,
     suggested_target: activity.suggested_target?.toString() ?? "",
     suggested_unit: activity.suggested_unit ?? "",
-    note: activity.note ?? "",
   }
 }
 
@@ -110,7 +109,6 @@ export function ActivityDetailDialog({
           data.suggested_type === "count" && data.suggested_unit
             ? data.suggested_unit
             : null,
-        note: data.note || null,
       },
       {
         onSuccess: () => {
@@ -304,17 +302,6 @@ export function ActivityDetailDialog({
                 </Field>
               </div>
             ) : null}
-
-            <Field data-invalid={!!errors.note || undefined}>
-              <FieldLabel htmlFor="edit-activity-note">Note</FieldLabel>
-              <Input
-                id="edit-activity-note"
-                placeholder="Optional"
-                aria-invalid={!!errors.note}
-                {...register("note")}
-              />
-              <FieldError errors={[errors.note]} />
-            </Field>
           </FieldGroup>
 
           <DialogFooter>
@@ -367,12 +354,6 @@ export function ActivityDetailDialog({
           <>
             <dt className="text-muted-foreground">Target</dt>
             <dd>{goal}</dd>
-          </>
-        ) : null}
-        {activity.note ? (
-          <>
-            <dt className="text-muted-foreground">Note</dt>
-            <dd>{activity.note}</dd>
           </>
         ) : null}
       </dl>

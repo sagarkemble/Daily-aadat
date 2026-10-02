@@ -45,7 +45,6 @@ export function AddActivityDialog() {
       suggested_type: "check",
       suggested_target: "",
       suggested_unit: "",
-      note: "",
     },
   })
 
@@ -158,17 +157,6 @@ export function AddActivityDialog() {
                 </Field>
               </div>
             ) : null}
-
-            <Field data-invalid={!!errors.note || undefined}>
-              <FieldLabel htmlFor="activity-note">Note</FieldLabel>
-              <Input
-                id="activity-note"
-                placeholder="Optional"
-                aria-invalid={!!errors.note}
-                {...register("note")}
-              />
-              <FieldError errors={[errors.note]} />
-            </Field>
           </FieldGroup>
 
           <DialogFooter>

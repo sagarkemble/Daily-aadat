@@ -3,7 +3,7 @@ import type { Activity } from "../types/activity"
 import { supabase } from "@/lib/supabase"
 
 const activitySelect =
-  "id, name, icon, suggested_type, suggested_target, suggested_unit, note, source, user_id"
+  "id, name, icon, suggested_type, suggested_target, suggested_unit, source, user_id"
 
 export async function deleteActivities(id: string) {
   const { data, error } = await supabase

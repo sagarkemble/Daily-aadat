@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input"
 import {
   Item,
   ItemContent,
-  ItemDescription,
   ItemFooter,
   ItemMedia,
   ItemTitle,
@@ -63,9 +62,6 @@ function ConfigureActivityDialogRow({
       </ItemMedia>
       <ItemContent>
         <ItemTitle>{activity.name}</ItemTitle>
-        {activity.note ? (
-          <ItemDescription>{activity.note}</ItemDescription>
-        ) : null}
       </ItemContent>
       <ItemFooter>
         <FieldGroup className="gap-3">

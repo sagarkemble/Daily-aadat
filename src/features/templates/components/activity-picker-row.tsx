@@ -35,8 +35,7 @@ const ActivityPickerRow = ({
   selected,
   onSelectActivity,
 }: ActivityPickerRowProps) => {
-  const target = formatTarget(activity)
-  const description = target ?? activity.note
+  const description = formatTarget(activity)
 
   return (
     <Item

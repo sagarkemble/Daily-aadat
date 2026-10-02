@@ -22,12 +22,11 @@ async function addActivity(input: AddActivityInput) {
         input.suggested_type === "count" && input.suggested_unit
           ? input.suggested_unit
           : null,
-      note: input.note || null,
       source: "custom",
       user_id: user.id,
     })
     .select(
-      "id, name, icon, suggested_type, suggested_target, suggested_unit, note, source, user_id"
+      "id, name, icon, suggested_type, suggested_target, suggested_unit, source, user_id"
     )
     .single()
 

@@ -6,7 +6,7 @@ async function fetchActivities() {
   const { data, error } = await supabase
     .from("activities")
     .select(
-      "id, name, icon, suggested_type, suggested_target, suggested_unit, note, source, user_id"
+      "id, name, icon, suggested_type, suggested_target, suggested_unit, source, user_id"
     )
     .is("archived_at", null)
     .order("name")

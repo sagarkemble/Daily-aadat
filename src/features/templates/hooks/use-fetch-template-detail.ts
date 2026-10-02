@@ -39,7 +39,6 @@ export async function fetchTemplateDetail(id: string): Promise<TemplateDetail> {
           suggested_type,
           suggested_target,
           suggested_unit,
-          note,
           source
         )
       )

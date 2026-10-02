@@ -124,7 +124,7 @@ const ActivityPickerDialog = ({
       slot,
       sort_order: sortOrderStart + index, // pick order
       state: "pending" as const,
-      note_snapshot: activity.note,
+      note_snapshot: null,
     }))
   }
 

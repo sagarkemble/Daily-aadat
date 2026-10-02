@@ -9,6 +9,5 @@ export type Activity = {
   suggested_type: ActivityType
   suggested_target: number | null
   suggested_unit: string | null
-  note: string | null
   source: ActivitySource
 }

@@ -56,7 +56,7 @@ async function applyTemplate({
       slot: item.slot,
       sort_order: item.sort_order,
       state: "pending",
-      note_snapshot: item.activity.note,
+      note_snapshot: null,
     }
   })
 
