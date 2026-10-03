@@ -20,7 +20,11 @@ import {
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/toast"
 import { DynamicIcon } from "@/components/dynamic-icon"
-import type { Activity, ActivityType } from "../types/activity"
+import {
+  activityTypeItems,
+  activityTypeLabels,
+  type Activity,
+} from "../types/activity"
 import {
   addActivityInputSchema,
   type AddActivityInput,
@@ -37,16 +41,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-const typeLabel: Record<ActivityType, string> = {
-  check: "Check",
-  timed: "Timed",
-  count: "Count",
-}
-const TYPE_ITEMS = [
-  { label: "Check", value: "check" },
-  { label: "Timed", value: "timed" },
-  { label: "Count", value: "count" },
-] as const
 type Step = "view" | "confirm-edit" | "edit" | "confirm-delete"
 
 function toFormValues(activity: Activity): AddActivityInput {
@@ -273,7 +267,7 @@ export function ActivityDetailDialog({
                 control={control}
                 render={({ field }) => (
                   <Select
-                    items={TYPE_ITEMS}
+                    items={activityTypeItems}
                     value={field.value}
                     disabled={isUpdating}
                     onValueChange={(value) => {
@@ -290,7 +284,7 @@ export function ActivityDetailDialog({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {TYPE_ITEMS.map((item) => (
+                        {activityTypeItems.map((item) => (
                           <SelectItem key={item.value} value={item.value}>
                             {item.label}
                           </SelectItem>
@@ -373,7 +367,7 @@ export function ActivityDetailDialog({
 
       <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
         <dt className="text-muted-foreground">Type</dt>
-        <dd>{typeLabel[activity.suggested_type]}</dd>
+        <dd>{activityTypeLabels[activity.suggested_type]}</dd>
         {isCount ? (
           <>
             <dt className="text-muted-foreground">Target</dt>

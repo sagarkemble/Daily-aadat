@@ -7,19 +7,16 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import { DynamicIcon } from "@/components/dynamic-icon"
-import type { Activity, ActivityType } from "@/features/activity/types/activity"
+import {
+  activityTypeLabels,
+  type Activity,
+} from "@/features/activity/types/activity"
 
 type ActivityPickerRowProps = {
   order: number
   activity: Activity
   selected: boolean
   onSelectActivity: (activity: Activity) => void
-}
-
-const TYPE_LABELS: Record<ActivityType, string> = {
-  check: "Check",
-  timed: "Timed",
-  count: "Count",
 }
 
 function formatTarget(activity: Activity) {
@@ -55,7 +52,9 @@ const ActivityPickerRow = ({
         {description ? <ItemDescription>{description}</ItemDescription> : null}
       </ItemContent>
       {selected ? <Badge variant="secondary">{order}</Badge> : null}
-      <Badge variant="outline">{TYPE_LABELS[activity.suggested_type]}</Badge>
+      <Badge variant="outline">
+        {activityTypeLabels[activity.suggested_type]}
+      </Badge>
     </Item>
   )
 }

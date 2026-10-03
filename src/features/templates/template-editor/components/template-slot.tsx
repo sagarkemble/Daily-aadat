@@ -18,9 +18,15 @@ type SlotProps = {
   templateId: string
   slot: Slot
   activities: TemplateActivity[]
+  isLoading?: boolean
 }
 
-const TemplateSlot = ({ templateId, slot, activities }: SlotProps) => {
+const TemplateSlot = ({
+  templateId,
+  slot,
+  activities,
+  isLoading,
+}: SlotProps) => {
   const count = activities.length
   return (
     <Card>

@@ -35,12 +35,7 @@ import {
 } from "../types/add-activity-input"
 import { useAddActivity } from "../hooks/use-add-activities"
 import { toast } from "@/components/ui/toast"
-
-const TYPE_ITEMS = [
-  { label: "Check", value: "check" },
-  { label: "Timed", value: "timed" },
-  { label: "Count", value: "count" },
-] as const
+import { activityTypeItems } from "../types/activity"
 
 const emptyValues: AddActivityInput = {
   name: "",
@@ -160,7 +155,7 @@ export function AddActivityDialog() {
                 control={control}
                 render={({ field }) => (
                   <Select
-                    items={TYPE_ITEMS}
+                    items={activityTypeItems}
                     value={field.value}
                     disabled={isPending}
                     onValueChange={(value) => {
@@ -177,7 +172,7 @@ export function AddActivityDialog() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {TYPE_ITEMS.map((item) => (
+                        {activityTypeItems.map((item) => (
                           <SelectItem key={item.value} value={item.value}>
                             {item.label}
                           </SelectItem>

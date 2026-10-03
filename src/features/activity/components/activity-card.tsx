@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { DynamicIcon } from "@/components/dynamic-icon"
-import type { Activity } from "../types/activity"
+import { activityTypeLabels, type Activity } from "../types/activity"
 import { ActivityDetailDialog } from "./activity-detail-dialog"
 
 export function ActivityCard({ activity }: { activity: Activity }) {
@@ -29,8 +29,8 @@ export function ActivityCard({ activity }: { activity: Activity }) {
           <span className="block truncate text-sm font-medium">
             {activity.name}
           </span>
-          <span className="block text-xs text-muted-foreground capitalize">
-            {activity.suggested_type}
+          <span className="block text-xs text-muted-foreground">
+            {activityTypeLabels[activity.suggested_type]}
           </span>
         </span>
       </DialogTrigger>

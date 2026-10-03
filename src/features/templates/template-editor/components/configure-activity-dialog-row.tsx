@@ -10,13 +10,11 @@ import {
 } from "@/components/ui/item"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { DynamicIcon } from "@/components/dynamic-icon"
-import type { Activity, ActivityType } from "@/features/activity/types/activity"
-
-const ACTIVITY_TYPES: { value: ActivityType; label: string }[] = [
-  { value: "check", label: "Check" },
-  { value: "timed", label: "Timed" },
-  { value: "count", label: "Count" },
-]
+import {
+  activityTypeItems,
+  type Activity,
+  type ActivityType,
+} from "@/features/activity/types/activity"
 
 export type ConfigureActivityValue = {
   type: ActivityType
@@ -75,7 +73,7 @@ function ConfigureActivityDialogRow({
               value={[value.type]}
               onValueChange={handleTypeChange}
             >
-              {ACTIVITY_TYPES.map((type) => (
+              {activityTypeItems.map((type) => (
                 <ToggleGroupItem key={type.value} value={type.value}>
                   {type.label}
                 </ToggleGroupItem>

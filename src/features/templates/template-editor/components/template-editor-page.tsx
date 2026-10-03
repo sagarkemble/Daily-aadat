@@ -29,6 +29,7 @@ const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
               templateId={templateId}
               slot={slot}
               activities={data.activities[slot] ?? []}
+              isLoading={isLoading}
             />
           ))}
     </div>
