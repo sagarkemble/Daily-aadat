@@ -38,7 +38,7 @@ type SelectTemplateDialogProps = {
 
 const SelectTemplateDialog = ({ date }: SelectTemplateDialogProps) => {
   const [open, setOpen] = useState(false)
-  const { data, isLoading, error } = useFetchTemplates({ enabled: open })
+  const { data, isLoading, error } = useFetchTemplates()
   const [isTemplateApplying, setIsTemplateApplying] = useState(false)
   const templates = data ?? []
   const { mutate: applyTemplate, isPending } = useApplyTemplate()
