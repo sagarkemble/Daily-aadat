@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/item"
 import { ActivityIcon } from "@/features/activity/components/activity-icon"
 import type { ActivityType } from "@/features/activity/types/activity"
-import type { TemplateActivity } from "../types/template"
+import type { TemplateActivity } from "../../types/template"
 import { Loader2, Trash } from "lucide-react"
-import { useDeleteTemplateActivity } from "../hooks/use-delete-template-activity"
+import { useDeleteTemplateActivity } from "../../hooks/use-delete-template-activity"
 
 type TemplateActivityRowProps = {
   activity: TemplateActivity

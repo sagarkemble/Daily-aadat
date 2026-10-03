@@ -26,9 +26,9 @@ import { toast } from "@/components/ui/toast"
 import { useFetchActivities } from "@/features/activity/hooks/use-fetch-activities"
 import type { Activity } from "@/features/activity/types/activity"
 import { useDebounce } from "@/hooks/use-debounce"
-import { useAddTemplateActivities } from "../hooks/use-add-template-activities"
-import { SLOT_LABELS, type Slot } from "../types/slots"
-import type { NewTemplateActivity } from "../types/template"
+import { useAddTemplateActivities } from "../../hooks/use-add-template-activities"
+import { SLOT_LABELS, type Slot } from "../../types/slots"
+import type { NewTemplateActivity } from "../../types/template"
 import { ActivityPickerRow } from "./activity-picker-row"
 import {
   ConfigureActivityDialogRow,

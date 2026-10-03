@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ItemGroup } from "@/components/ui/item"
-import type { Slot } from "../types/slots"
-import { SLOT_LABELS } from "../types/slots"
-import type { TemplateActivity } from "../types/template"
+import type { Slot } from "../../types/slots"
+import { SLOT_LABELS } from "../../types/slots"
+import type { TemplateActivity } from "../../types/template"
 import { TemplateActivityRow } from "./template-activity-row"
 import { ActivityPickerDialog } from "./activity-picker-dialog"
 
