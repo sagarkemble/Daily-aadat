@@ -1,5 +1,5 @@
 import { useId } from "react"
-import { DynamicIcon, type IconName } from "lucide-react/dynamic"
+import { DynamicIcon } from "@/components/dynamic-icon"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
@@ -62,7 +62,7 @@ const ActivityPickerConfigureRow = ({
     <Item variant="outline" size="sm">
       <ItemMedia variant="icon">
         <span className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
-          <DynamicIcon name={activity.icon as IconName} />
+          <DynamicIcon name={activity.icon} />
         </span>
       </ItemMedia>
       <ItemContent>

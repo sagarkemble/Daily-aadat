@@ -6,7 +6,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item"
-import { ActivityIcon } from "@/features/activity/components/activity-icon"
+import { DynamicIcon } from "@/components/dynamic-icon"
 import type { ActivityType } from "@/features/activity/types/activity"
 import type { TemplateActivity } from "../../types/template"
 import { Loader2, Trash } from "lucide-react"
@@ -41,7 +41,7 @@ const TemplateActivityRow = ({ activity }: TemplateActivityRowProps) => {
     <Item variant="outline" size="sm">
       <ItemMedia variant="icon">
         <span className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
-          {icon ? <ActivityIcon name={icon} className="size-4" /> : null}
+          {icon ? <DynamicIcon name={icon} className="size-4" /> : null}
         </span>
       </ItemMedia>
       <ItemContent>

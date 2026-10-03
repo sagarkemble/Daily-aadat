@@ -9,7 +9,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item"
-import { ActivityIcon } from "@/features/activity/components/activity-icon"
+import { DynamicIcon } from "@/components/dynamic-icon"
 import { MinusIcon, PlusIcon, TrashIcon } from "lucide-react"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
@@ -41,7 +41,7 @@ export function DayItemRow({
       <ItemMedia variant="icon">
         <span className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
           {activity.icon_snapshot ? (
-            <ActivityIcon name={activity.icon_snapshot} className="size-4" />
+            <DynamicIcon name={activity.icon_snapshot} className="size-4" />
           ) : null}
         </span>
       </ItemMedia>

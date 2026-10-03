@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
-import { ActivityIcon } from "./activity-icon"
+import { DynamicIcon } from "@/components/dynamic-icon"
 import type { Activity } from "../types/activity"
 import { ActivityDetailDialog } from "./activity-detail-dialog"
 
@@ -23,7 +23,7 @@ export function ActivityCard({ activity }: { activity: Activity }) {
         }
       >
         <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground">
-          <ActivityIcon name={activity.icon} className="size-4" />
+          <DynamicIcon name={activity.icon} className="size-4" />
         </span>
         <span className="min-w-0">
           <span className="block truncate text-sm font-medium">

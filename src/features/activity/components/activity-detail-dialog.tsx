@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/toast"
-import { ActivityIcon } from "./activity-icon"
+import { DynamicIcon } from "@/components/dynamic-icon"
 import type { Activity, ActivityType } from "../types/activity"
 import {
   addActivityInputSchema,
@@ -366,7 +366,7 @@ export function ActivityDetailDialog({
     <DialogContent>
       <DialogHeader>
         <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <ActivityIcon name={activity.icon} className="size-5" />
+          <DynamicIcon name={activity.icon} className="size-5" />
         </div>
         <DialogTitle>{activity.name}</DialogTitle>
       </DialogHeader>

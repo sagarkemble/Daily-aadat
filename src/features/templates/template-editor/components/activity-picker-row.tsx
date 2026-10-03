@@ -6,7 +6,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item"
-import { ActivityIcon } from "@/features/activity/components/activity-icon"
+import { DynamicIcon } from "@/components/dynamic-icon"
 import type { Activity, ActivityType } from "@/features/activity/types/activity"
 
 type ActivityPickerRowProps = {
@@ -47,7 +47,7 @@ const ActivityPickerRow = ({
     >
       <ItemMedia variant="icon">
         <span className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
-          <ActivityIcon name={activity.icon} />
+          <DynamicIcon name={activity.icon} />
         </span>
       </ItemMedia>
       <ItemContent>

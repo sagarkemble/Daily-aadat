@@ -1,5 +1,6 @@
 import * as React from "react"
-import { DynamicIcon, iconNames, type IconName } from "lucide-react/dynamic"
+import { iconNames } from "lucide-react/dynamic"
+import { DynamicIcon } from "@/components/dynamic-icon"
 import { useVirtualizer } from "@tanstack/react-virtual"
 
 import { cn } from "@/lib/utils"
@@ -32,7 +33,7 @@ const IconItem = React.memo(
         aria-label={`Select ${iconName} icon`}
         aria-pressed={selectedIcon === iconName}
       >
-        <DynamicIcon name={iconName as IconName} size={16} />
+        <DynamicIcon name={iconName} size={16} />
       </button>
     )
   }

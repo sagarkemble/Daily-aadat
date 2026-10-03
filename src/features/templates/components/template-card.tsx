@@ -7,7 +7,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item"
-import { ActivityIcon } from "@/features/activity/components/activity-icon"
+import { DynamicIcon } from "@/components/dynamic-icon"
 import type { Template } from "../types/template"
 
 export function TemplateCard({ template }: { template: Template }) {
@@ -22,10 +22,9 @@ export function TemplateCard({ template }: { template: Template }) {
       }
     >
       <ItemMedia variant="icon">
-        <ActivityIcon
-          name={template.icon}
-          fallback={() => <FaceSlightlySmiling />}
-        />
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground">
+          <DynamicIcon name={template.icon} className="size-4" />
+        </span>
       </ItemMedia>
       <ItemContent>
         <ItemTitle>{template.name}</ItemTitle>

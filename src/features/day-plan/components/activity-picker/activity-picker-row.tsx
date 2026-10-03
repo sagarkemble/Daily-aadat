@@ -1,4 +1,4 @@
-import { DynamicIcon, type IconName } from "lucide-react/dynamic"
+import { DynamicIcon } from "@/components/dynamic-icon"
 import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item"
 import { Badge } from "@/components/ui/badge"
 import type { Activity } from "@/features/activity/types/activity"
@@ -20,7 +20,7 @@ const ActivityPickerRow = ({
     <Item variant="outline" size="sm" onClick={() => onSelect(activity)}>
       <ItemMedia variant="icon">
         <span className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
-          <DynamicIcon name={activity.icon as IconName} />
+          <DynamicIcon name={activity.icon} />
         </span>
       </ItemMedia>
       <ItemContent>

@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState } from "react"
 import { FaceSlightlySmiling } from "lucide-react"
-import { DynamicIcon, type IconName } from "lucide-react/dynamic"
+import { DynamicIcon } from "@/components/dynamic-icon"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -37,7 +37,7 @@ function IconPickerPopover({
       >
         {selectedIcon ? (
           <DynamicIcon
-            name={selectedIcon as IconName}
+            name={selectedIcon}
             className="size-4"
             fallback={() => <FaceSlightlySmiling className="size-4" />}
           />

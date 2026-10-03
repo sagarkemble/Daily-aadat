@@ -27,7 +27,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "@/components/ui/toast"
-import { ActivityIcon } from "@/features/activity/components/activity-icon"
+import { DynamicIcon } from "@/components/dynamic-icon"
 import { useFetchTemplates } from "@/features/templates/hooks/use-fetch-templates"
 import type { Template } from "@/features/templates/types/template"
 import { useApplyTemplate } from "@/features/day-plan/hooks/use-apply-template"
@@ -111,7 +111,7 @@ const SelectTemplateDialog = ({ date }: SelectTemplateDialogProps) => {
                 >
                   <ItemMedia variant="icon">
                     <span className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
-                      <ActivityIcon name={template.icon} />
+                      <DynamicIcon name={template.icon} />
                     </span>
                   </ItemMedia>
                   <ItemContent>
