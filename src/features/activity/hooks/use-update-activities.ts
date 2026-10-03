@@ -3,7 +3,7 @@ import type { Activity } from "../types/activity"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 export async function updateActivities(activity: Activity) {
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("activities")
     .update({
       name: activity.name,

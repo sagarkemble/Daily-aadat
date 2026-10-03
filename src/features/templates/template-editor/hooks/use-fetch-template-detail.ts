@@ -2,11 +2,10 @@ import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
 import type {
   TemplateActivitiesBySlot,
-  TemplateActivity,
   TemplateDetail,
   fetchedTemplateDetail,
 } from "../../types/template"
-import { SLOTS, type Slot } from "../../types/slots"
+import { SLOTS } from "../../types/slots"
 
 export async function fetchTemplateDetail(id: string): Promise<TemplateDetail> {
   const { data, error } = await supabase

@@ -12,7 +12,7 @@ async function deleteTemplateActivity(id: string) {
   return data
 }
 
-export function useDeleteTemplateActivity(id: string) {
+export function useDeleteTemplateActivity() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: deleteTemplateActivity,

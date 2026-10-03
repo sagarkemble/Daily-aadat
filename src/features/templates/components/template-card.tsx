@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router"
-import { FaceSlightlySmiling } from "lucide-react"
 import {
   Item,
   ItemContent,

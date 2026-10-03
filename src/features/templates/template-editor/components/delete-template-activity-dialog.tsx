@@ -27,7 +27,7 @@ export function DeleteTemplateActivityDialog({
 }: DeleteTemplateActivityDialogProps) {
   const [open, setOpen] = useState(false)
   const { mutate: deleteActivity, isPending } =
-    useDeleteTemplateActivity(activityId)
+    useDeleteTemplateActivity()
 
   const label = name?.trim() ? name : "this activity"
 

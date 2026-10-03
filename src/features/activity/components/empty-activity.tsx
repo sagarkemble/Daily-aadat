@@ -1,4 +1,3 @@
-import { ClipboardListIcon } from "lucide-react"
 import {
   Empty,
   EmptyDescription,

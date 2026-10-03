@@ -1,12 +1,6 @@
 import { useAuthStore } from "@/features/auth/stores/auth-store"
-import {
-  fetchTemplateDetail,
-  useFetchTemplateDetail,
-} from "@/features/templates/template-editor/hooks/use-fetch-template-detail"
-import type {
-  Template,
-  TemplateDetail,
-} from "@/features/templates/types/template"
+import { fetchTemplateDetail } from "@/features/templates/template-editor/hooks/use-fetch-template-detail"
+import type { TemplateDetail } from "@/features/templates/types/template"
 import { supabase } from "@/lib/supabase"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 

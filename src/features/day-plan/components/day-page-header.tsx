@@ -14,7 +14,7 @@ type DayPageHeaderProps = {
 
 const DayPageHeader = ({ date, isPlanned }: DayPageHeaderProps) => {
   const navigate = useNavigate()
-  const { mutate: unplanDay, isPending } = useUnplanDay()
+  const { mutate: unplanDay } = useUnplanDay()
   function handleDateChange(date: Date) {
     const formattedDate = format(date, "yyyy-MM-dd")
     navigate({
@@ -22,7 +22,7 @@ const DayPageHeader = ({ date, isPlanned }: DayPageHeaderProps) => {
       search: { date: formattedDate },
     })
   }
-  const { mutate: endDay, isPending: isEnding } = useEndDay()
+  const { mutate: endDay } = useEndDay()
   function handleEndDay() {
     endDay(date)
   }

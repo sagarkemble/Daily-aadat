@@ -6,7 +6,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { dateFromCalendarDay } from "../lib/calendar-day"
 
 type CalendarPopoverProps = {
   date: string

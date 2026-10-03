@@ -39,9 +39,8 @@ type SelectTemplateDialogProps = {
 const SelectTemplateDialog = ({ date }: SelectTemplateDialogProps) => {
   const [open, setOpen] = useState(false)
   const { data, isLoading, error } = useFetchTemplates()
-  const [isTemplateApplying, setIsTemplateApplying] = useState(false)
   const templates = data ?? []
-  const { mutate: applyTemplate, isPending } = useApplyTemplate()
+  const { mutate: applyTemplate } = useApplyTemplate()
 
   useEffect(() => {
     if (!error) return
@@ -53,9 +52,7 @@ const SelectTemplateDialog = ({ date }: SelectTemplateDialogProps) => {
   }, [error])
 
   function handleSelectTemplate(template: Template) {
-    setIsTemplateApplying(true)
     applyTemplate({ template_id: template.id, date })
-    setIsTemplateApplying(false)
   }
 
   return (
