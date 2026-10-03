@@ -21,11 +21,13 @@ import {
   type DayItemCommand,
 } from "../lib/day-item-command"
 import { DayItemRow } from "./day-item-row"
+import DayActivityRowSkeleton from "./day-activity-row-skeleton"
 
 type DaySlotProps = {
   slot: Slot
   activities: DayPlanActivity[]
   dayPlanId: string
+  isLoading: boolean
 }
 
 function nextSortOrder(activities: DayPlanActivity[]) {
@@ -33,10 +35,9 @@ function nextSortOrder(activities: DayPlanActivity[]) {
   return Math.max(...activities.map((activity) => activity.slot_order)) + 1
 }
 
-const DaySlot = ({ slot, activities, dayPlanId }: DaySlotProps) => {
+const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
   const { mutate: addActivities, isPending: isAdding } = useAddActivity()
-  const { mutate: deleteActivity, isPending: isDeleting } =
-    useDeleteActivity()
+  const { mutate: deleteActivity, isPending: isDeleting } = useDeleteActivity()
   const { mutate: applyCommand, isPending: isApplying } =
     useApplyActivityCommand()
 
@@ -73,7 +74,9 @@ const DaySlot = ({ slot, activities, dayPlanId }: DaySlotProps) => {
     <Card>
       <CardHeader className="border-b">
         <CardTitle>{SLOT_LABELS[slot]}</CardTitle>
-        {count === 0 ? <CardDescription>No activities</CardDescription> : null}
+        {count === 0 && !isLoading ? (
+          <CardDescription>No activities</CardDescription>
+        ) : null}
         <CardAction>
           <ActivityPickerDialog
             onAdd={handleAddActivities}
@@ -82,7 +85,14 @@ const DaySlot = ({ slot, activities, dayPlanId }: DaySlotProps) => {
           <Badge variant="secondary">{count}</Badge>
         </CardAction>
       </CardHeader>
-      {count > 0 ? (
+      {isLoading ? (
+        <CardContent>
+          <ItemGroup>
+            <DayActivityRowSkeleton />
+            <DayActivityRowSkeleton />
+          </ItemGroup>
+        </CardContent>
+      ) : count > 0 ? (
         <CardContent>
           <ItemGroup>
             {activities.map((activity) => (

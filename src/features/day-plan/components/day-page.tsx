@@ -9,7 +9,6 @@ type DayPageProps = {
 
 const DayPage = ({ date }: DayPageProps) => {
   const { data, isLoading, error } = useFetchDayPlan(date)
-  if (isLoading) return <div>Loading...</div>
   if (error) return <div>Error: {error.message}</div>
   return (
     <div className="flex flex-col gap-4">
@@ -20,6 +19,7 @@ const DayPage = ({ date }: DayPageProps) => {
           slot={slot}
           activities={data?.activities[slot] || []}
           dayPlanId={data?.id || ""}
+          isLoading={isLoading}
         />
       ))}
     </div>
