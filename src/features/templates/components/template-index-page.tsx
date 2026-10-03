@@ -1,14 +1,20 @@
+import { LayoutTemplateIcon } from "lucide-react"
+import { ItemGroup } from "@/components/ui/item"
 import { useFetchTemplates } from "../hooks/use-fetch-templates"
 import { CreateTemplateDialog } from "./create-template-dialog"
-import { Link } from "@tanstack/react-router"
-import { DynamicIcon, type IconName } from "lucide-react/dynamic"
-import { FaceSlightlySmiling } from "lucide-react"
+import { EmptyTemplate } from "./empty-template"
+import { TemplateCard } from "./template-card"
+import { TemplateCardSkeleton } from "./template-card-skeleton"
+
+const SKELETON_COUNT = 6
 
 const TemplateIndexPage = () => {
   const { data, isPending, isError, error } = useFetchTemplates()
 
-  if (isPending) return <div>Loading…</div>
   if (isError) return <div>{error.message}</div>
+
+  const templates = data ?? []
+  const showCreate = !isPending && templates.length > 0
 
   return (
     <div className="flex flex-col gap-6">
@@ -19,51 +25,31 @@ const TemplateIndexPage = () => {
             Reusable day shapes like Home or College.
           </p>
         </div>
-        <CreateTemplateDialog />
+        {showCreate ? <CreateTemplateDialog /> : null}
       </div>
 
-      {data.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          No templates yet. Create your first one.
-        </p>
-      ) : (
-        <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {data.map((template) => (
-            <li key={template.id}>
-              <Link
-                to="/templates/$templateId"
-                params={{ templateId: template.id }}
-                className="flex items-start gap-3 rounded-xl border bg-card p-4 shadow-xs transition-colors hover:bg-muted/50"
-              >
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground">
-                  <TemplateListIcon name={template.icon} />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">
-                    {template.name}
-                  </p>
-                  <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
-                    {template.description.trim()
-                      ? template.description
-                      : "Tap to edit slots"}
-                  </p>
-                </span>
-              </Link>
-            </li>
+      {isPending ? (
+        <ItemGroup className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+            <TemplateCardSkeleton key={index} />
           ))}
-        </ul>
+        </ItemGroup>
+      ) : templates.length === 0 ? (
+        <EmptyTemplate
+          title="No templates yet"
+          description="Create your first one to reuse a day shape like Home or College."
+          icon={<LayoutTemplateIcon />}
+        >
+          <CreateTemplateDialog />
+        </EmptyTemplate>
+      ) : (
+        <ItemGroup className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {templates.map((template) => (
+            <TemplateCard key={template.id} template={template} />
+          ))}
+        </ItemGroup>
       )}
     </div>
-  )
-}
-
-function TemplateListIcon({ name }: { name: string }) {
-  return (
-    <DynamicIcon
-      name={name as IconName}
-      className="size-5"
-      fallback={() => <FaceSlightlySmiling className="size-5" />}
-    />
   )
 }
 
