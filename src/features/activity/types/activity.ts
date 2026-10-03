@@ -26,3 +26,9 @@ export type Activity = {
   suggested_unit: string | null
   source: ActivitySource
 }
+
+export type ActivityWithConfiguration = Activity & {
+  type: ActivityType
+  target: number | null
+  unit: string | null
+}

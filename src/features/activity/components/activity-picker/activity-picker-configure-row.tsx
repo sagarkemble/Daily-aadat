@@ -19,19 +19,13 @@ import {
 } from "@/components/ui/select"
 import {
   activityTypeItems,
-  type Activity,
   type ActivityType,
+  type ActivityWithConfiguration,
 } from "@/features/activity/types/activity"
 
 type ActivityPickerConfigureRowProps = {
   activity: ActivityWithConfiguration
   onChange: (activity: ActivityWithConfiguration) => void
-}
-
-export type ActivityWithConfiguration = Activity & {
-  type: ActivityType
-  target: number | null
-  unit: string | null
 }
 
 const ActivityPickerConfigureRow = ({
