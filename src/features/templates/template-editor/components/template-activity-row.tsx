@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge"
 import {
   Item,
+  ItemActions,
   ItemContent,
   ItemDescription,
   ItemMedia,
@@ -9,8 +10,7 @@ import {
 import { DynamicIcon } from "@/components/dynamic-icon"
 import { activityTypeLabels } from "@/features/activity/types/activity"
 import type { TemplateActivity } from "../../types/template"
-import { Loader2, Trash } from "lucide-react"
-import { useDeleteTemplateActivity } from "../hooks/use-delete-template-activity"
+import { DeleteTemplateActivityDialog } from "./delete-template-activity-dialog"
 
 type TemplateActivityRowProps = {
   activity: TemplateActivity
@@ -22,14 +22,8 @@ function formatTarget(activity: TemplateActivity) {
 }
 
 const TemplateActivityRow = ({ activity }: TemplateActivityRowProps) => {
-  const { mutate: deleteActivity, isPending } = useDeleteTemplateActivity(
-    activity.id
-  )
   const target = formatTarget(activity)
   const icon = activity.activity?.icon
-  function handleDelete() {
-    deleteActivity(activity.id)
-  }
 
   return (
     <Item variant="outline" size="sm">
@@ -42,9 +36,13 @@ const TemplateActivityRow = ({ activity }: TemplateActivityRowProps) => {
         <ItemTitle>{activity.activity?.name}</ItemTitle>
         {target ? <ItemDescription>{target}</ItemDescription> : null}
       </ItemContent>
-      <Trash className="size-4" onClick={handleDelete} />
-      {isPending ? <Loader2 className="size-4 animate-spin" /> : null}
-      <Badge variant="outline">{activityTypeLabels[activity.type]}</Badge>
+      <ItemActions>
+        <Badge variant="outline">{activityTypeLabels[activity.type]}</Badge>
+        <DeleteTemplateActivityDialog
+          activityId={activity.id}
+          name={activity.activity?.name}
+        />
+      </ItemActions>
     </Item>
   )
 }

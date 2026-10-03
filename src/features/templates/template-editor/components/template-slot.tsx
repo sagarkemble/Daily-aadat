@@ -13,6 +13,7 @@ import { SLOT_LABELS } from "../../types/slots"
 import type { TemplateActivity } from "../../types/template"
 import { TemplateActivityRow } from "./template-activity-row"
 import { ActivityPickerDialog } from "./activity-picker-dialog"
+import TemplateActivityRowSkeleton from "./template-activity-row-skeleton"
 
 type SlotProps = {
   templateId: string
@@ -32,7 +33,9 @@ const TemplateSlot = ({
     <Card>
       <CardHeader className="border-b">
         <CardTitle>{SLOT_LABELS[slot]}</CardTitle>
-        {count === 0 ? <CardDescription>No activities</CardDescription> : null}
+        {count === 0 && !isLoading ? (
+          <CardDescription>No activities</CardDescription>
+        ) : null}
         <CardAction>
           <ActivityPickerDialog
             templateId={templateId}
@@ -42,7 +45,14 @@ const TemplateSlot = ({
           <Badge variant="secondary">{count}</Badge>
         </CardAction>
       </CardHeader>
-      {count > 0 ? (
+      {isLoading ? (
+        <CardContent>
+          <ItemGroup>
+            <TemplateActivityRowSkeleton />
+            <TemplateActivityRowSkeleton />
+          </ItemGroup>
+        </CardContent>
+      ) : count > 0 ? (
         <CardContent>
           <ItemGroup>
             {activities.map((activity) => (

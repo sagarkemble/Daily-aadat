@@ -21,17 +21,15 @@ const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
         isLoading={isLoading}
       />
 
-      {isLoading || !data
-        ? null
-        : SLOTS.map((slot) => (
-            <TemplateSlot
-              key={slot}
-              templateId={templateId}
-              slot={slot}
-              activities={data.activities[slot] ?? []}
-              isLoading={isLoading}
-            />
-          ))}
+      {SLOTS.map((slot) => (
+        <TemplateSlot
+          key={slot}
+          templateId={templateId}
+          slot={slot}
+          activities={data?.activities[slot] ?? []}
+          isLoading={isLoading}
+        />
+      ))}
     </div>
   )
 }
