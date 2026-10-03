@@ -1,5 +1,5 @@
 import React from "react"
-import { useFetchTemplateDetail } from "../../hooks/use-fetch-template-detail"
+import { useFetchTemplateDetail } from "../hooks/use-fetch-template-detail"
 import { toast } from "@/components/ui/toast"
 import { SLOTS } from "../../types/slots"
 import { TemplateSlot } from "./template-slot"

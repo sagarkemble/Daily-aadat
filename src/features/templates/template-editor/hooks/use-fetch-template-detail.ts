@@ -5,8 +5,8 @@ import type {
   TemplateActivity,
   TemplateDetail,
   fetchedTemplateDetail,
-} from "../types/template"
-import { SLOTS, type Slot } from "../types/slots"
+} from "../../types/template"
+import { SLOTS, type Slot } from "../../types/slots"
 
 export async function fetchTemplateDetail(id: string): Promise<TemplateDetail> {
   const { data, error } = await supabase

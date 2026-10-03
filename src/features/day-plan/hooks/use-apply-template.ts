@@ -2,7 +2,7 @@ import { useAuthStore } from "@/features/auth/stores/auth-store"
 import {
   fetchTemplateDetail,
   useFetchTemplateDetail,
-} from "@/features/templates/hooks/use-fetch-template-detail"
+} from "@/features/templates/template-editor/hooks/use-fetch-template-detail"
 import type {
   Template,
   TemplateDetail,
