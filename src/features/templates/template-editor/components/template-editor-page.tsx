@@ -1,8 +1,7 @@
-import React from "react"
 import { useFetchTemplateDetail } from "../hooks/use-fetch-template-detail"
-import { toast } from "@/components/ui/toast"
 import { SLOTS } from "../../types/slots"
 import { TemplateSlot } from "./template-slot"
+import TemplateEditorHeader from "./template-editor-header"
 
 type TemplateEditorProps = {
   templateId: string
@@ -10,26 +9,28 @@ type TemplateEditorProps = {
 
 const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
   const { data, isLoading, error } = useFetchTemplateDetail(templateId)
-  if (isLoading) return <div>Loading...</div>
-  if (error)
-    toast.add({
-      title: "Error",
-      description: error.message,
-      type: "error",
-    })
-
-  console.log(data)
+  if (error) return <div>{error.message}</div>
 
   return (
     <div className="flex flex-col gap-4">
-      {SLOTS.map((slot) => (
-        <TemplateSlot
-          key={slot}
-          templateId={templateId}
-          slot={slot}
-          activities={data?.activities[slot] ?? []}
-        />
-      ))}
+      <TemplateEditorHeader
+        templateId={templateId}
+        name={data?.name ?? ""}
+        description={data?.description ?? ""}
+        icon={data?.icon ?? ""}
+        isLoading={isLoading}
+      />
+
+      {isLoading || !data
+        ? null
+        : SLOTS.map((slot) => (
+            <TemplateSlot
+              key={slot}
+              templateId={templateId}
+              slot={slot}
+              activities={data.activities[slot] ?? []}
+            />
+          ))}
     </div>
   )
 }
