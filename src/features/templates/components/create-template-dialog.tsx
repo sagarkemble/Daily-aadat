@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
 import { Loader2, PlusIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -25,69 +24,67 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/toast"
 import IconPickerPopover from "@/components/icon-picker-popover"
 import { useCreateTemplate } from "../hooks/use-create-template"
+import {
+  createTemplateInputSchema,
+  type CreateTemplateInput,
+} from "../types/create-template-input"
 
-const schema = z.object({
-  name: z.string().trim().min(1, "Name is required"),
-  description: z.string().trim(),
-})
+const DEFAULT_TEMPLATE_ICON = "face-slightly-smiling"
 
-type FormValues = z.infer<typeof schema>
+const emptyValues: CreateTemplateInput = {
+  name: "",
+  description: "",
+  icon: DEFAULT_TEMPLATE_ICON,
+}
 
 export function CreateTemplateDialog() {
   const [open, setOpen] = useState(false)
+  const [selectedIcon, setSelectedIcon] = useState(DEFAULT_TEMPLATE_ICON)
   const {
     register,
     handleSubmit,
+    setValue,
     reset,
     formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: { name: "", description: "" },
+  } = useForm<CreateTemplateInput>({
+    resolver: zodResolver(createTemplateInputSchema),
+    defaultValues: emptyValues,
   })
-
   const { mutate: createTemplate, isPending } = useCreateTemplate()
-  const [selectedIcon, setSelectedIcon] = useState<string | null>(null)
 
-  function handleOpenChange(isOpen: boolean) {
-    setOpen(isOpen)
-    if (!isOpen) {
-      reset()
-      setSelectedIcon(null)
+  function handleOpenChange(nextOpen: boolean) {
+    setOpen(nextOpen)
+    if (!nextOpen) {
+      reset(emptyValues)
+      setSelectedIcon(DEFAULT_TEMPLATE_ICON)
     }
   }
 
-  function onSubmit({ name, description }: FormValues) {
-    createTemplate(
-      {
-        name,
-        description,
-        icon: selectedIcon ?? "face-slightly-smiling",
+  function onSubmit(data: CreateTemplateInput) {
+    createTemplate(data, {
+      onSuccess: () => {
+        toast.add({
+          title: "Template created",
+          description: `"${data.name}" is ready`,
+          type: "success",
+        })
+        handleOpenChange(false)
       },
-      {
-        onSuccess: () => {
-          toast.add({
-            title: "Template created",
-            description: `"${name}" is ready`,
-            type: "success",
-          })
-          handleOpenChange(false)
-        },
-        onError: (error) => {
-          handleOpenChange(false)
-          toast.add({
-            title: "Error",
-            description: error.message,
-            type: "error",
-          })
-        },
-      }
-    )
+      onError: (error) => {
+        toast.add({
+          title: "Error",
+          description: error.message,
+          type: "error",
+        })
+        handleOpenChange(false)
+      },
+    })
   }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={<Button size="sm" />}>
-        <PlusIcon />
+        <PlusIcon data-icon="inline-start" />
         Create
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -100,41 +97,52 @@ export function CreateTemplateDialog() {
           </DialogHeader>
 
           <FieldGroup className="gap-4">
-            <Field>
-              <FieldLabel>Icon</FieldLabel>
-              <IconPickerPopover
-                selectedIcon={selectedIcon}
-                setSelectedIcon={setSelectedIcon}
-              />
-            </Field>
-
-            <Field data-invalid={!!errors.name || undefined}>
+            <Field
+              data-invalid={!!errors.name || undefined}
+              data-disabled={isPending || undefined}
+            >
               <FieldLabel htmlFor="template-name">Name</FieldLabel>
               <Input
                 id="template-name"
                 placeholder="Home"
                 aria-invalid={!!errors.name}
                 {...register("name")}
+                disabled={isPending}
               />
               <FieldError errors={[errors.name]} />
             </Field>
 
-            <Field data-invalid={!!errors.description || undefined}>
+            <Field data-disabled={isPending || undefined}>
+              <FieldLabel htmlFor="template-icon">Icon</FieldLabel>
+              <IconPickerPopover
+                selectedIcon={selectedIcon}
+                setSelectedIcon={(icon) => {
+                  setSelectedIcon(icon)
+                  setValue("icon", icon)
+                }}
+                disabled={isPending}
+              />
+            </Field>
+
+            <Field data-disabled={isPending || undefined}>
               <FieldLabel htmlFor="template-description">
                 Description
               </FieldLabel>
               <Textarea
                 id="template-description"
                 placeholder="Optional short note about this template"
-                aria-invalid={!!errors.description}
                 {...register("description")}
+                disabled={isPending}
               />
-              <FieldError errors={[errors.description]} />
             </Field>
           </FieldGroup>
 
           <DialogFooter>
-            <DialogClose render={<Button type="button" variant="outline" />}>
+            <DialogClose
+              render={
+                <Button type="button" variant="outline" disabled={isPending} />
+              }
+            >
               Cancel
             </DialogClose>
             <Button type="submit" disabled={isPending}>
