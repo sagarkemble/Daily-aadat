@@ -43,8 +43,7 @@ const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
   const { mutate: deleteActivity, isPending: isDeleting } = useDeleteActivity()
   const { mutate: applyCommand, isPending: isApplying } =
     useApplyActivityCommand()
-  const { mutate: reorderActivities, isPending: isReordering } =
-    useReorderDayPlanActivities()
+  const { mutateAsync: reorderActivities } = useReorderDayPlanActivities()
   function handleAddActivities(configured: ActivityWithConfiguration[]) {
     const sortOrderStart = nextSortOrder(activities)
     const dayItems: NewDayPlanActivity[] = configured.map(
@@ -72,28 +71,15 @@ const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
   }
 
   function handleReorderFinish(newOrder: React.ReactElement[]) {
-    const newActivities = newOrder.map((item, index) => {
-      return {
-        ...(item.props as { activity: DayPlanActivity }).activity,
-        sort_order: index,
-      }
-    })
+    const newActivities = newOrder.map((item, index) => ({
+      ...(item.props as { activity: DayPlanActivity }).activity,
+      sort_order: index,
+    }))
 
-    console.log(newActivities)
-
-    reorderActivities(newActivities, {
-      onSuccess: () => {
-        toast.add({
-          title: "Activities reordered",
-          description: "The activities have been reordered successfully",
-        })
-      },
-      onError: () => {
-        toast.add({
-          title: "Failed to reorder activities",
-          description: "The activities could not be reordered",
-        })
-      },
+    toast.promise(reorderActivities(newActivities), {
+      loading: { title: "Reordering activities…" },
+      success: { title: "Activities reordered" },
+      error: { title: "Failed to reorder activities" },
     })
   }
 

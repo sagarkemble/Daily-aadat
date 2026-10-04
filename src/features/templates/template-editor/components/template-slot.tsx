@@ -36,8 +36,7 @@ const TemplateSlot = ({
   activities,
   isLoading,
 }: SlotProps) => {
-  const { mutate: reorderActivities, isPending: isReordering } =
-    useReorderTemplateActivities()
+  const { mutateAsync: reorderActivities } = useReorderTemplateActivities()
   const { mutate: addActivities, isPending: isAdding } =
     useAddTemplateActivities()
   const count = activities.length
@@ -63,19 +62,10 @@ const TemplateSlot = ({
       }
     })
 
-    reorderActivities(newActivities, {
-      onSuccess: () => {
-        toast.add({
-          title: "Activities reordered",
-          description: "The activities have been reordered successfully",
-        })
-      },
-      onError: () => {
-        toast.add({
-          title: "Failed to reorder activities",
-          description: "The activities could not be reordered",
-        })
-      },
+    toast.promise(reorderActivities(newActivities), {
+      loading: { title: "Reordering activities…" },
+      success: { title: "Activities reordered" },
+      error: { title: "Failed to reorder activities" },
     })
   }
 
