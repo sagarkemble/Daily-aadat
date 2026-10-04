@@ -10,12 +10,18 @@ import { Badge } from "@/components/ui/badge"
 import { ItemGroup } from "@/components/ui/item"
 import type { Slot } from "../../types/slots"
 import { SLOT_LABELS } from "../../types/slots"
-import type { NewTemplateActivity, TemplateActivity } from "../../types/template"
+import type {
+  NewTemplateActivity,
+  TemplateActivity,
+} from "../../types/template"
 import { TemplateActivityRow } from "./template-activity-row"
 import { ActivityPickerDialog } from "@/features/activity/components/activity-picker/activity-picker-dialog"
 import type { ActivityWithConfiguration } from "@/features/activity/types/activity"
 import TemplateActivityRowSkeleton from "./template-activity-row-skeleton"
 import { useAddTemplateActivities } from "../hooks/use-add-template-activities"
+import { ReorderList } from "@/components/ui/reorder-list"
+import { useReorderTemplateActivities } from "../hooks/use-reorder-template-activites"
+import { toast } from "@/components/ui/toast"
 
 type SlotProps = {
   templateId: string
@@ -30,6 +36,8 @@ const TemplateSlot = ({
   activities,
   isLoading,
 }: SlotProps) => {
+  const { mutate: reorderActivities, isPending: isReordering } =
+    useReorderTemplateActivities()
   const { mutate: addActivities, isPending: isAdding } =
     useAddTemplateActivities()
   const count = activities.length
@@ -45,6 +53,30 @@ const TemplateSlot = ({
       sort_order: count + index,
     }))
     addActivities(items)
+  }
+
+  function handleReorderFinish(newOrder: React.ReactElement[]) {
+    const newActivities = newOrder.map((item, index) => {
+      return {
+        ...(item.props as { activity: TemplateActivity }).activity,
+        sort_order: index,
+      }
+    })
+
+    reorderActivities(newActivities, {
+      onSuccess: () => {
+        toast.add({
+          title: "Activities reordered",
+          description: "The activities have been reordered successfully",
+        })
+      },
+      onError: () => {
+        toast.add({
+          title: "Failed to reorder activities",
+          description: "The activities could not be reordered",
+        })
+      },
+    })
   }
 
   return (
@@ -72,9 +104,14 @@ const TemplateSlot = ({
       ) : count > 0 ? (
         <CardContent>
           <ItemGroup>
-            {activities.map((activity) => (
-              <TemplateActivityRow key={activity.id} activity={activity} />
-            ))}
+            <ReorderList
+              onReorderFinish={handleReorderFinish}
+              className="rounded-lg"
+            >
+              {activities.map((activity) => (
+                <TemplateActivityRow key={activity.id} activity={activity} />
+              ))}
+            </ReorderList>
           </ItemGroup>
         </CardContent>
       ) : null}

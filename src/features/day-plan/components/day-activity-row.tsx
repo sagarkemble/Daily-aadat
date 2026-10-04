@@ -15,7 +15,7 @@ import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
 import { useEffect, useState } from "react"
 
-type DayItemRowProps = {
+type DayActivityRowProps = {
   activity: DayPlanActivity
   disabled?: boolean
   onCommand: (activity: DayPlanActivity, command: DayItemCommand) => void
@@ -27,12 +27,12 @@ function formatTarget(activity: DayPlanActivity) {
   return [activity.target, activity.unit].filter(Boolean).join(" ")
 }
 
-export function DayItemRow({
+export function DayActivityRow({
   activity,
   disabled,
   onCommand,
   onDelete,
-}: DayItemRowProps) {
+}: DayActivityRowProps) {
   const target = formatTarget(activity)
   const skipped = activity.state === "skipped"
 

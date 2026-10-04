@@ -10,9 +10,11 @@ type DayPageProps = {
 const DayPage = ({ date }: DayPageProps) => {
   const { data, isLoading, error } = useFetchDayPlan(date)
   if (error) return <div>Error: {error.message}</div>
+
   return (
     <div className="flex flex-col gap-4">
       <DayPageHeader date={date} isPlanned={data != null} />
+
       {SLOTS.map((slot) => (
         <DaySlot
           key={slot}

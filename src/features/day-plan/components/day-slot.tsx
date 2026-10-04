@@ -20,8 +20,11 @@ import {
   applyDayItemCommand,
   type DayItemCommand,
 } from "../lib/day-item-command"
-import { DayItemRow } from "./day-item-row"
+import { DayActivityRow } from "./day-activity-row"
 import DayActivityRowSkeleton from "./day-activity-row-skeleton"
+import { ReorderList } from "@/components/ui/reorder-list"
+import { useReorderDayPlanActivities } from "../hooks/use-reorder-day-plan-activities"
+import { toast } from "@/components/ui/toast"
 
 type DaySlotProps = {
   slot: Slot
@@ -40,7 +43,8 @@ const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
   const { mutate: deleteActivity, isPending: isDeleting } = useDeleteActivity()
   const { mutate: applyCommand, isPending: isApplying } =
     useApplyActivityCommand()
-
+  const { mutate: reorderActivities, isPending: isReordering } =
+    useReorderDayPlanActivities()
   function handleAddActivities(configured: ActivityWithConfiguration[]) {
     const sortOrderStart = nextSortOrder(activities)
     const dayItems: NewDayPlanActivity[] = configured.map(
@@ -62,9 +66,35 @@ const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
     addActivities(dayItems)
   }
 
-  function run(activity: DayPlanActivity, command: DayItemCommand) {
+  function onCommand(activity: DayPlanActivity, command: DayItemCommand) {
     const next = applyDayItemCommand(activity, command)
     applyCommand({ activityId: activity.id, activity: next })
+  }
+
+  function handleReorderFinish(newOrder: React.ReactElement[]) {
+    const newActivities = newOrder.map((item, index) => {
+      return {
+        ...(item.props as { activity: DayPlanActivity }).activity,
+        sort_order: index,
+      }
+    })
+
+    console.log(newActivities)
+
+    reorderActivities(newActivities, {
+      onSuccess: () => {
+        toast.add({
+          title: "Activities reordered",
+          description: "The activities have been reordered successfully",
+        })
+      },
+      onError: () => {
+        toast.add({
+          title: "Failed to reorder activities",
+          description: "The activities could not be reordered",
+        })
+      },
+    })
   }
 
   const count = activities.length
@@ -95,15 +125,20 @@ const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
       ) : count > 0 ? (
         <CardContent>
           <ItemGroup>
-            {activities.map((activity) => (
-              <DayItemRow
-                key={activity.id}
-                activity={activity}
-                disabled={busy}
-                onCommand={run}
-                onDelete={deleteActivity}
-              />
-            ))}
+            <ReorderList
+              onReorderFinish={handleReorderFinish}
+              className="rounded-lg"
+            >
+              {activities.map((activity) => (
+                <DayActivityRow
+                  key={activity.id}
+                  activity={activity}
+                  disabled={busy}
+                  onCommand={onCommand}
+                  onDelete={deleteActivity}
+                />
+              ))}
+            </ReorderList>
           </ItemGroup>
         </CardContent>
       ) : null}

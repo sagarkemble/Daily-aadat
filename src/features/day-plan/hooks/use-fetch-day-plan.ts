@@ -85,7 +85,7 @@ async function fetchDayPlan(
   return {
     ...row,
     activities: groupActivitiesBySlot(row.activities),
-  }
+  } as DayPlanWithActivities
 }
 
 function useFetchDayPlan(date: string) {
