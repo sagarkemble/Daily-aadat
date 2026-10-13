@@ -70,9 +70,9 @@ const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
     applyCommand({ activityId: activity.id, activity: next })
   }
 
-  function handleReorderFinish(newOrder: React.ReactElement[]) {
-    const newActivities = newOrder.map((item, index) => ({
-      ...(item.props as { activity: DayPlanActivity }).activity,
+  function handleReorderFinish(newOrder: DayPlanActivity[]) {
+    const newActivities = newOrder.map((activity, index) => ({
+      ...activity,
       sort_order: index,
     }))
 
@@ -112,19 +112,19 @@ const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
         <CardContent>
           <ItemGroup>
             <ReorderList
+              items={activities}
+              getItemId={(activity) => activity.id}
               onReorderFinish={handleReorderFinish}
               className="rounded-lg"
-            >
-              {activities.map((activity) => (
+              renderItem={(activity) => (
                 <DayActivityRow
-                  key={activity.id}
                   activity={activity}
                   disabled={busy}
                   onCommand={onCommand}
                   onDelete={deleteActivity}
                 />
-              ))}
-            </ReorderList>
+              )}
+            />
           </ItemGroup>
         </CardContent>
       ) : null}

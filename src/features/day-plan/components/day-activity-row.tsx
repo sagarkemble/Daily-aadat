@@ -117,18 +117,18 @@ function TimedControls({
   onCommand: (activity: DayPlanActivity, command: DayItemCommand) => void
 }) {
   const running = activity.state === "running"
-  const [now, setNow] = useState(() => Date.now())
+  const [, setTick] = useState(0)
   useEffect(() => {
     if (!running) return
-    const id = setInterval(() => setNow(Date.now()), 1000)
+    const id = setInterval(() => setTick((n) => n + 1), 1000)
     return () => clearInterval(id)
   }, [running])
   const banked = activity.duration ?? 0
   const session =
     running && activity.started_at
-      ? now - new Date(activity.started_at).getTime()
+      ? Date.now() - new Date(activity.started_at).getTime()
       : 0
-  const displayedMs = banked + session
+  const displayedMs = banked + Math.max(0, session)
 
   // 3. Turn ms into "m:ss" right here
   const totalSec = Math.max(0, Math.floor(displayedMs / 1000))

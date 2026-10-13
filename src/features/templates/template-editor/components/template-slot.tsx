@@ -54,13 +54,11 @@ const TemplateSlot = ({
     addActivities(items)
   }
 
-  function handleReorderFinish(newOrder: React.ReactElement[]) {
-    const newActivities = newOrder.map((item, index) => {
-      return {
-        ...(item.props as { activity: TemplateActivity }).activity,
-        sort_order: index,
-      }
-    })
+  function handleReorderFinish(newOrder: TemplateActivity[]) {
+    const newActivities = newOrder.map((activity, index) => ({
+      ...activity,
+      sort_order: index,
+    }))
 
     toast.promise(reorderActivities(newActivities), {
       loading: { title: "Reordering activities…" },
@@ -95,13 +93,14 @@ const TemplateSlot = ({
         <CardContent>
           <ItemGroup>
             <ReorderList
+              items={activities}
+              getItemId={(activity) => activity.id}
               onReorderFinish={handleReorderFinish}
               className="rounded-lg"
-            >
-              {activities.map((activity) => (
-                <TemplateActivityRow key={activity.id} activity={activity} />
-              ))}
-            </ReorderList>
+              renderItem={(activity) => (
+                <TemplateActivityRow activity={activity} />
+              )}
+            />
           </ItemGroup>
         </CardContent>
       ) : null}

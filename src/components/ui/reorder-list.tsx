@@ -1,5 +1,7 @@
 "use client"
-import React, { useRef, useState } from "react"
+
+import { useLayoutEffect, useRef, useState } from "react"
+import type { ReactNode } from "react"
 
 import { Grip } from "lucide-react"
 import { Reorder, useDragControls, useMotionValue } from "motion/react"
@@ -7,28 +9,52 @@ import { Reorder, useDragControls, useMotionValue } from "motion/react"
 import { useRaisedShadow } from "@/components/ui/use-raised-shadow"
 import { cn } from "@/lib/utils"
 
-const ReorderList: React.FC<ReorderListProps> = ({
+function idsEqual(a: string[], b: string[]) {
+  return a.length === b.length && a.every((id, index) => id === b[index])
+}
+
+function sameIdSet(a: string[], b: string[]) {
+  if (a.length !== b.length) return false
+  const ids = new Set(a)
+  return b.every((id) => ids.has(id))
+}
+
+function ReorderList<T>({
+  items,
+  getItemId,
   className,
   itemClassName,
   withDragHandle = false,
   onReorderFinish,
-  ...props
-}) => {
-  const [items, setItems] = useState<React.ReactElement[]>(
-    React.Children.toArray(props.children).filter((child) =>
-      React.isValidElement(child)
-    ) as React.ReactElement[]
-  )
-  const itemsRef = useRef(items)
-  itemsRef.current = items
+  renderItem,
+}: ReorderListProps<T>) {
+  const parentIds = items.map(getItemId)
+  const parentIdsKey = parentIds.join("\0")
+  const [ids, setIds] = useState(parentIds)
+  const idsRef = useRef(ids)
+  idsRef.current = ids
   const orderAtDragStartRef = useRef<string[] | null>(null)
 
-  const handleReorder = (newOrder: unknown[]) => {
-    setItems(newOrder as React.ReactElement[])
+  useLayoutEffect(() => {
+    if (orderAtDragStartRef.current) return
+    setIds((prev) => {
+      if (idsEqual(prev, parentIds) || sameIdSet(prev, parentIds)) return prev
+      return parentIds
+    })
+  }, [parentIds, parentIdsKey])
+
+  const itemById = new Map(items.map((item) => [getItemId(item), item]))
+  const orderedItems = ids.flatMap((id) => {
+    const item = itemById.get(id)
+    return item ? [item] : []
+  })
+
+  const handleReorder = (newOrder: string[]) => {
+    setIds(newOrder)
   }
 
   const handleDragStart = () => {
-    orderAtDragStartRef.current = itemsRef.current.map((item) => String(item.key))
+    orderAtDragStartRef.current = idsRef.current
   }
 
   const handleDragEnd = () => {
@@ -36,55 +62,61 @@ const ReorderList: React.FC<ReorderListProps> = ({
     orderAtDragStartRef.current = null
     if (!previousKeys) return
 
-    const next = itemsRef.current
-    const nextKeys = next.map((item) => String(item.key))
-    const unchanged =
-      previousKeys.length === nextKeys.length &&
-      previousKeys.every((key, index) => key === nextKeys[index])
-    if (unchanged) return
+    const next = idsRef.current
+    if (idsEqual(previousKeys, next)) return
 
-    onReorderFinish?.(next)
+    const nextItems = next.flatMap((id) => {
+      const item = itemById.get(id)
+      return item ? [item] : []
+    })
+    onReorderFinish?.(nextItems)
   }
 
   return (
     <Reorder.Group
       data-slot="reorder-list-group"
       axis="y"
+      values={ids}
+      onReorder={handleReorder}
       className={cn(
         "!m-0 flex list-none flex-col gap-1 !p-0 select-none",
         className
       )}
-      values={items}
-      onReorder={handleReorder}
-      {...props}
     >
-      {items.map((item, index) => (
-        <ReorderListItem
-          key={item?.key || index}
-          item={item}
-          withDragHandle={withDragHandle}
-          className={itemClassName}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        />
-      ))}
+      {orderedItems.map((item) => {
+        const id = getItemId(item)
+        return (
+          <ReorderListItem
+            key={id}
+            id={id}
+            withDragHandle={withDragHandle}
+            className={itemClassName}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            {renderItem(item)}
+          </ReorderListItem>
+        )
+      })}
     </Reorder.Group>
   )
 }
 
-const ReorderListItem: React.FC<{
-  item: React.ReactElement
-  className?: string
-  withDragHandle?: boolean
-  onDragStart?: () => void
-  onDragEnd?: () => void
-}> = ({
-  item,
+function ReorderListItem({
+  id,
   className,
   withDragHandle = false,
   onDragStart,
   onDragEnd,
-}) => {
+  children,
+}: {
+  id: string
+  className?: string
+  withDragHandle?: boolean
+  onDragStart?: () => void
+  onDragEnd?: () => void
+  children: ReactNode
+}) {
   const y = useMotionValue(0)
   const boxShadow = useRaisedShadow(y)
   const dragControls = useDragControls()
@@ -92,8 +124,8 @@ const ReorderListItem: React.FC<{
   return (
     <Reorder.Item
       data-slot="reorder-list-item"
-      id={item?.key ?? ""}
-      value={item}
+      id={id}
+      value={id}
       className={cn(
         "!m-0 list-none bg-background !p-0",
         !withDragHandle ? "cursor-grab" : "",
@@ -107,36 +139,27 @@ const ReorderListItem: React.FC<{
     >
       {withDragHandle ? (
         <div className="relative flex items-center gap-2">
-          {React.isValidElement<{ className?: string }>(item)
-            ? React.cloneElement(item, {
-                className: cn("w-full pr-12", item.props.className),
-              })
-            : item}
+          <div className="w-full pr-12">{children}</div>
           <Grip
             className="absolute top-1/2 right-4 size-6 -translate-y-1/2 cursor-grab text-muted-foreground"
             onPointerDown={(e) => dragControls.start(e)}
           />
         </div>
       ) : (
-        item
+        children
       )}
     </Reorder.Item>
   )
 }
 
-export interface ReorderListProps extends Partial<
-  React.ComponentProps<typeof Reorder.Group>
-> {
-  /** @public (required) - The children of the list */
-  children: React.ReactElement[]
-  /** @public (optional) - The className of the list */
+export interface ReorderListProps<T> {
+  items: T[]
+  getItemId: (item: T) => string
+  renderItem: (item: T) => ReactNode
   className?: string
-  /** @public (optional) - The className of the item */
   itemClassName?: string
-  /** @public (optional) - With drag handle */
   withDragHandle?: boolean
-  /** @public (optional) - When the list is reordered */
-  onReorderFinish?: (newOrder: React.ReactElement[]) => void
+  onReorderFinish?: (items: T[]) => void
 }
 
 export { ReorderList }
