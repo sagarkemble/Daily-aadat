@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/empty"
 import {
   Item,
+  ItemActions,
   ItemContent,
   ItemDescription,
   ItemGroup,
@@ -31,6 +32,7 @@ import { DynamicIcon } from "@/components/dynamic-icon"
 import { useFetchTemplates } from "@/features/templates/hooks/use-fetch-templates"
 import type { Template } from "@/features/templates/types/template"
 import { useApplyTemplate } from "@/features/day-plan/hooks/use-apply-template"
+import { Spinner } from "@/components/ui/spinner"
 
 type SelectTemplateDialogProps = {
   date: string
@@ -40,8 +42,8 @@ const SelectTemplateDialog = ({ date }: SelectTemplateDialogProps) => {
   const [open, setOpen] = useState(false)
   const { data, isLoading, error } = useFetchTemplates()
   const templates = data ?? []
-  const { mutate: applyTemplate } = useApplyTemplate()
-
+  const { mutate: applyTemplate, isPending } = useApplyTemplate()
+  const [applyingId, setApplyingId] = useState<string | null>(null)
   useEffect(() => {
     if (!error) return
     toast.add({
@@ -52,7 +54,31 @@ const SelectTemplateDialog = ({ date }: SelectTemplateDialogProps) => {
   }, [error])
 
   function handleSelectTemplate(template: Template) {
-    applyTemplate({ template_id: template.id, date })
+    if (isPending) return
+    setApplyingId(template.id)
+    applyTemplate(
+      { template_id: template.id, date },
+      {
+        onSuccess: () => {
+          setApplyingId(null)
+          setOpen(false)
+          toast.add({
+            title: "Template applied",
+            description: "The template has been applied to the day.",
+            type: "success",
+          })
+        },
+        onError: () => {
+          setApplyingId(null)
+          setOpen(false)
+          toast.add({
+            title: "Could not apply template",
+            description: "Try again in a moment.",
+            type: "error",
+          })
+        },
+      }
+    )
   }
 
   return (
@@ -98,27 +124,37 @@ const SelectTemplateDialog = ({ date }: SelectTemplateDialogProps) => {
             </Empty>
           ) : (
             <ItemGroup>
-              {templates.map((template) => (
-                <Item
-                  key={template.id}
-                  variant="outline"
-                  size="sm"
-                  render={<button type="button" />}
-                  onClick={() => handleSelectTemplate(template)}
-                >
-                  <ItemMedia variant="icon">
-                    <span className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
-                      <DynamicIcon name={template.icon} />
-                    </span>
-                  </ItemMedia>
-                  <ItemContent>
-                    <ItemTitle>{template.name}</ItemTitle>
-                    {template.description.trim() ? (
-                      <ItemDescription>{template.description}</ItemDescription>
+              {templates.map((template) => {
+                const applying = template.id === applyingId
+                return (
+                  <Item
+                    key={template.id}
+                    variant="outline"
+                    size="sm"
+                    render={<button type="button" disabled={isPending} />}
+                    onClick={() => handleSelectTemplate(template)}
+                  >
+                    <ItemMedia variant="icon">
+                      <span className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
+                        <DynamicIcon name={template.icon} />
+                      </span>
+                    </ItemMedia>
+                    <ItemContent>
+                      <ItemTitle>{template.name}</ItemTitle>
+                      {template.description.trim() ? (
+                        <ItemDescription>
+                          {template.description}
+                        </ItemDescription>
+                      ) : null}
+                    </ItemContent>
+                    {applying ? (
+                      <ItemActions>
+                        <Spinner />
+                      </ItemActions>
                     ) : null}
-                  </ItemContent>
-                </Item>
-              ))}
+                  </Item>
+                )
+              })}
             </ItemGroup>
           )}
         </ScrollArea>
