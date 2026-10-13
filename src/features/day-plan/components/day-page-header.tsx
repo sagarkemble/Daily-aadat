@@ -6,6 +6,7 @@ import CalendarPopover from "./calendar-popover"
 import { addDays, format, subDays } from "date-fns"
 import { useUnplanDay } from "../hooks/use-unplan-day"
 import { useEndDay } from "../hooks/use-end-day"
+import { toast } from "@/components/ui/toast"
 
 type DayPageHeaderProps = {
   date: string
@@ -14,7 +15,7 @@ type DayPageHeaderProps = {
 
 const DayPageHeader = ({ date, isPlanned }: DayPageHeaderProps) => {
   const navigate = useNavigate()
-  const { mutate: unplanDay } = useUnplanDay()
+  const { mutateAsync: unplanDay, isPending } = useUnplanDay()
   function handleDateChange(date: Date) {
     const formattedDate = format(date, "yyyy-MM-dd")
     navigate({
@@ -43,7 +44,11 @@ const DayPageHeader = ({ date, isPlanned }: DayPageHeaderProps) => {
     })
   }
   function handleUnplanDay() {
-    unplanDay(date)
+    toast.promise(unplanDay(date), {
+      loading: "Unplanning day...",
+      success: "Day unplanned",
+      error: "Could not unplan day",
+    })
   }
   return (
     <div className="flex flex-col gap-3">
@@ -58,7 +63,11 @@ const DayPageHeader = ({ date, isPlanned }: DayPageHeaderProps) => {
       </div>
       {isPlanned ? (
         <>
-          <Button variant="outline" onClick={handleUnplanDay}>
+          <Button
+            variant="outline"
+            onClick={handleUnplanDay}
+            disabled={isPending}
+          >
             Unplan Day
           </Button>
           <Button variant="outline" onClick={handleEndDay}>
