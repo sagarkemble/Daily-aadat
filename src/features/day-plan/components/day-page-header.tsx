@@ -5,7 +5,6 @@ import SelectTemplateDialog from "@/features/day-plan/components/select-template
 import CalendarPopover from "./calendar-popover"
 import { addDays, format, subDays } from "date-fns"
 import { useUnplanDay } from "../hooks/use-unplan-day"
-import { useEndDay } from "../hooks/use-end-day"
 import { toast } from "@/components/ui/toast"
 import { useState } from "react"
 import { Spinner } from "@/components/ui/spinner"
@@ -42,10 +41,6 @@ const DayPageHeader = ({ date, isPlanned }: DayPageHeaderProps) => {
       to: "/",
       search: { date: formattedDate },
     })
-  }
-  const { mutate: endDay } = useEndDay()
-  function handleEndDay() {
-    endDay(date)
   }
   function handlePreviousDay() {
     const previousDate = subDays(date, 1)
