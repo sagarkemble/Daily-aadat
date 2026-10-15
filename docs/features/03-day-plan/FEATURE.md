@@ -39,8 +39,8 @@ The **Day plan** is the app home. One screen for a chosen calendar date: plan an
 |-------|--------|
 | `kind` | `activity` \| `todo` |
 | Snapshot (activity) | `activityId`, `name`, `icon`, **`type` (per placement)**, count `target`/`unit` if count |
-| `title` / `name_snapshot` (todo) | Free text; todo **is** this `day_items` row (`kind = todo`). `day_plan_id` null = undated pile (see Todos) |
-| `slot` | One of the 5 slots when on this day; `unslotted` only while the todo is in the pile |
+| `todo_id` (todo) | Placement of a `todos` row on this day (`kind = todo`). Pending / done / skipped live on `todos` (see Todos) |
+| `slot` | One of the 5 slots for anything on this day (todo pile is not `unslotted` on `day_items`) |
 | `order` | Position within slot / todos list |
 | `state` | `pending` \| `done` \| `skipped` \| `running` (timed only) |
 | Timed | `startedAt`, `stoppedAt`, `durationMs` — **v1: one session per item per day** |
@@ -66,7 +66,7 @@ Early morning · Morning · Afternoon · Evening · Night
 | Check activity | Done · Skip |
 | Timed activity | Start · Stop (+ live elapsed) |
 | Count activity | +1 · show progress (e.g. 6/10) |
-| Todo in slot | Done / undo · Unassign (not Skip; not delete) |
+| Todo in slot | Done / undo · Skip / undo skip · Unassign (not delete) |
 
 - **+ Activity** in a slot → Activities picker (multi-select, tap order) → **choose tracking type** for each → placements added to that slot  
 - **+ Todo** (planned day only) → pick from the pile / other dates, or type a new title already attached to this slot (see Todos)  
@@ -84,7 +84,7 @@ Same screen, not a separate route. Live Done / Start / +1 stay on the default vi
 Wipe this date back to an empty canvas so a different template can be applied (College → clear → Home).
 
 - **Unplan day** (when the day has items and is not ended) → confirm  
-- Deletes **activities** on that date; **detaches** todos (`day_plan_id` null) so they return to the pile  
+- Deletes **activities** and todo **placements** on that date; `todos` pile rows remain (FK cascade / delete placements)  
 - Sets status `empty`, clears `template_id`  
 - Does **not** change any template  
 - Distinct from **apply overwrite** (replace activities in one step) and from **End day** (lock and keep history)  
@@ -120,8 +120,8 @@ Wipe this date back to an empty canvas so a different template can be applied (C
 
 - Plan **anytime** — not night-only  
 - Skip on a day does **not** change the template (row stays, marked skipped)  
-- Delete in Edit day removes an **activity** snapshot from this date only; a **todo** is unassigned, not destroyed  
-- Unplan day clears the date’s activities and detaches todos; templates are unchanged  
+- Delete in Edit day removes an **activity** snapshot from this date only; a **todo** placement is removed (unassign), the `todos` row stays  
+- Unplan day clears the date’s activities and todo placements; pile todos and templates are unchanged  
 - Same activity OK in different slots; once per slot  
 - Viewing another date uses the same Day UI  
 - Ended days are viewable; editing requires **re-open confirm**  
@@ -136,7 +136,7 @@ Wipe this date back to an empty canvas so a different template can be applied (C
 - [ ] Check Done, timed Start/Stop with elapsed, count +1 work on the day  
 - [ ] Skip marks item skipped; template unchanged  
 - [ ] Edit day: reorder within a slot and delete a row; template unchanged  
-- [ ] Unplan day (confirm) clears activities, detaches todos → empty CTA; can apply a different template  
+- [ ] Unplan day (confirm) clears activities and todo placements → empty CTA; pile todos remain; can apply a different template  
 - [ ] Open another date from Week → same Day UI; can return to Today  
 - [ ] End day moves status to ended; re-open requires confirm  
 - [ ] Overwrite confirm when applying template onto a non-empty day  
