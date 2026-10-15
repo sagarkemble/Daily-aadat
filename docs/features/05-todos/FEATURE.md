@@ -63,9 +63,34 @@ No date on this row. Assignment is a placement, not a column here.
 - Day UI: icon + name like an activity; Done/Skip like a **check** item; join `todos` for live **state**  
 - Done and Skip are mutually exclusive (same as check activities)  
 
-### Schema vs current DB
+### Final schema (locked — migration not applied until we say so)
 
-New `todos` table (`name`, `icon`, `state`) + `todo_id` on `day_items` + unique one-placement-per-todo. Tighten `kind = 'todo'` check: `todo_id` required, `name_snapshot` + `icon_snapshot` required, no `activity_id` / `type`. **Do not** nullable-`day_plan_id` or put `user_id` on `day_items`.
+**`todos`** (new)
+
+| Column | Type | Constraints |
+|--------|------|-------------|
+| `id` | uuid | PK, default `gen_random_uuid()` |
+| `user_id` | uuid | not null → `users(id)` on delete cascade |
+| `name` | text | not null, `length(trim(name)) > 0` |
+| `icon` | text | not null (Lucide kebab-case, same as activities; no DB enum) |
+| `state` | text | not null default `'pending'`, check `pending \| done \| skipped` |
+| `created_at` | timestamptz | not null default `now()` |
+| `updated_at` | timestamptz | not null default `now()`, `set_updated_at` trigger |
+
+- Indexes: `(user_id)`, `(user_id, state)`  
+- RLS: select/insert/update/delete where `user_id = auth.uid()`  
+
+**`day_items`** (alter only)
+
+| Change | Detail |
+|--------|--------|
+| Add `todo_id` | uuid null → `todos(id)` **on delete cascade** |
+| Unique | one row per `todo_id` where `kind = 'todo'` |
+| Index | `todo_id` |
+| Kind check | **Activity:** `todo_id` is null; rest unchanged. **Todo:** `todo_id` not null; `activity_id` null; `name_snapshot` + `icon_snapshot` not null; `type` null; `note_snapshot` null; `slot` in the five slots (not `unslotted`); `state = 'pending'`; not `running` |
+| RLS extra | insert/update: if `todo_id` set, that todo’s `user_id` must be `auth.uid()` (and you still own the plan) |
+
+Unchanged: `day_plan_id` not null + on delete cascade; no `user_id` on `day_items`; activity rows; `ended` columns.
 
 ---
 
