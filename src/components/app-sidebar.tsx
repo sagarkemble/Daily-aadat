@@ -17,6 +17,7 @@ import {
   LayoutTemplateIcon,
   ListIcon,
   CalendarIcon,
+  ListTodoIcon,
 } from "lucide-react"
 
 const data = {
@@ -40,6 +41,11 @@ const data = {
       title: "Settings",
       url: "/settings",
       icon: <Settings2Icon />,
+    },
+    {
+      title: "Todos",
+      url: "/todos",
+      icon: <ListTodoIcon />,
     },
   ],
   user: {
