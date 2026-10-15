@@ -37,7 +37,7 @@ const TemplateSlot = ({
   isLoading,
 }: SlotProps) => {
   const { mutateAsync: reorderActivities } = useReorderTemplateActivities()
-  const { mutate: addActivities, isPending: isAdding } =
+  const { mutateAsync: addActivities, isPending: isAdding } =
     useAddTemplateActivities()
   const count = activities.length
 
@@ -51,7 +51,11 @@ const TemplateSlot = ({
       slot,
       sort_order: count + index,
     }))
-    addActivities(items)
+    toast.promise(addActivities(items), {
+      loading: { title: "Adding activities…" },
+      success: { title: "Activities added" },
+      error: { title: "Failed to add activities" },
+    })
   }
 
   function handleReorderFinish(newOrder: TemplateActivity[]) {

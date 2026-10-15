@@ -39,7 +39,7 @@ function nextSortOrder(activities: DayPlanActivity[]) {
 }
 
 const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
-  const { mutate: addActivities, isPending: isAdding } = useAddActivity()
+  const { mutateAsync: addActivities, isPending: isAdding } = useAddActivity()
   const { mutate: deleteActivity, isPending: isDeleting } = useDeleteActivity()
   const { mutate: applyCommand, isPending: isApplying } =
     useApplyActivityCommand()
@@ -62,7 +62,11 @@ const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
         note_snapshot: null,
       })
     )
-    addActivities(dayItems)
+    toast.promise(addActivities(dayItems), {
+      loading: { title: "Adding activities…" },
+      success: { title: "Activities added" },
+      error: { title: "Failed to add activities" },
+    })
   }
 
   function onCommand(activity: DayPlanActivity, command: DayItemCommand) {
