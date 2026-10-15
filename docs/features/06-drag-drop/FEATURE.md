@@ -10,7 +10,9 @@ No UI mockups for this feature (spec only).
 
 ## Goal
 
-Make reordering the day **easy and interactive**: drag activities and todos within a slot, across the five slots, and between slots and the **Todos** catch-all — so the day reads as one flexible timeline.
+Make reordering the day **easy and interactive**: drag activities and todos **within** a slot, and drag **activities** across the five slots — so the day reads as one flexible timeline.
+
+Todos do **not** use an on-day catch-all. Undated todos live in the [Todos](../05-todos/FEATURE.md) list. Same-day todo slot change in the todos v1 path is **unassign + pick**, not drag (current app drag is within a slot only).
 
 ---
 
@@ -39,17 +41,13 @@ Not on Activities tab, Week, or Month grids.
 - Updates `order` among siblings  
 
 ### Move across slots
-- Drag an activity or todo from one slot onto another slot section  
+- Drag an **activity** from one slot onto another slot section  
 - Lands at drop position (end of slot if dropped on section header)  
-
-### Todos ↔ slots
-- Drag **unslotted** todo into a slot → gets that `slot`  
-- Drag todo from a slot into **Todos** section → `unslotted`  
-- Drag activity into Todos section → **not allowed** (activities always belong in a slot; show no-drop / snap back)  
+- **Todo** cross-slot drag is out of the todos v1 path (see Todos: unassign, then + Todo into the other slot)  
 
 ### Visual feedback
 - Drag ghost / lifted row  
-- Valid drop targets highlighted (slots + Todos for todos only)  
+- Valid drop targets highlighted (slots)  
 - Invalid target: snap back  
 
 ---
@@ -71,8 +69,8 @@ Not on Activities tab, Week, or Month grids.
 
 - [ ] Reorder two activities within Afternoon  
 - [ ] Drag Gym from Early morning to Morning  
-- [ ] Drag unslotted todo into Afternoon; drag back to Todos  
-- [ ] Cannot drop an activity into the Todos section  
+- [ ] Todo rows reorder within a slot (same as activities)  
+- [ ] Todo is not dragged into a different slot in v1 (unassign + pick instead)  
 - [ ] Cannot drop a duplicate of the same activity into a slot that already has it  
 - [ ] Drag disabled on ended day until re-open  
 - [ ] Same drag works in template editor for activities  
