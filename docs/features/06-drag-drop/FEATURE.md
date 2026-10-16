@@ -12,7 +12,7 @@ No UI mockups for this feature (spec only).
 
 Make reordering the day **easy and interactive**: drag activities and todos **within** a slot, and drag **activities** across the five slots — so the day reads as one flexible timeline.
 
-Todos do **not** use an on-day catch-all. Undated todos live in the [Todos](../05-todos/FEATURE.md) list. Same-day todo slot change in the todos v1 path is **unassign + pick**, not drag (current app drag is within a slot only).
+Todos do **not** use an on-day catch-all. Undated todos live in the [Todos](../05-todos/FEATURE.md) list. Same-day todo slot change in the todos v1 path is **+ Todo picker + confirm**, not drag (current app drag is within a slot only).
 
 ---
 
@@ -43,7 +43,7 @@ Not on Activities tab, Week, or Month grids.
 ### Move across slots
 - Drag an **activity** from one slot onto another slot section  
 - Lands at drop position (end of slot if dropped on section header)  
-- **Todo** cross-slot drag is out of the todos v1 path (see Todos: unassign, then + Todo into the other slot)  
+- **Todo** cross-slot drag is out of the todos v1 path (see Todos: **+ Todo** picker + confirm)  
 
 ### Visual feedback
 - Drag ghost / lifted row  
@@ -70,7 +70,7 @@ Not on Activities tab, Week, or Month grids.
 - [ ] Reorder two activities within Afternoon  
 - [ ] Drag Gym from Early morning to Morning  
 - [ ] Todo rows reorder within a slot (same as activities)  
-- [ ] Todo is not dragged into a different slot in v1 (unassign + pick instead)  
+- [ ] Todo is not dragged into a different slot in v1 (**+ Todo** picker + confirm instead)  
 - [ ] Cannot drop a duplicate of the same activity into a slot that already has it  
 - [ ] Drag disabled on ended day until re-open  
 - [ ] Same drag works in template editor for activities  

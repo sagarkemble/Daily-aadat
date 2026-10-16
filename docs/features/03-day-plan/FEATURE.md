@@ -69,9 +69,9 @@ Early morning · Morning · Afternoon · Evening · Night
 | Todo in slot | Done / undo · Skip / undo skip · Unassign (not delete) |
 
 - **+ Activity** in a slot → Activities picker (multi-select, tap order) → **choose tracking type** for each → placements added to that slot  
-- **+ Todo** (planned day only) → pick from the pile / other dates, or type a new title already attached to this slot (see Todos)  
+- **+ Todo** (planned day only, beside **+ Activity**) → Open pile / other slots and dates (confirm to move), or type a new title already attached to this slot (see Todos)  
 - No on-day “Todos” catch-all; undated todos live in the Todos list  
-- Drag-drop reorder within/across slots happens in **Edit day** (see below and Feature 6). Same-day todo slot change in v1: unassign, then + Todo into the other slot  
+- Drag-drop reorder within/across slots happens in **Edit day** (see below and Feature 6). Same-day todo slot change in v1: **+ Todo** picker + confirm (not drag)  
 
 ### Edit day
 Same screen, not a separate route. Live Done / Start / +1 stay on the default view.
