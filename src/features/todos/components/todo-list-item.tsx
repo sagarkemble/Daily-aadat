@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Trash2Icon } from "lucide-react"
+import { Link } from "@tanstack/react-router"
 import { DynamicIcon } from "@/components/dynamic-icon"
 import {
   AlertDialog,
@@ -13,6 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -24,6 +26,7 @@ import {
 } from "@/components/ui/item"
 import { Spinner } from "@/components/ui/spinner"
 import { cn } from "cn"
+import { formatTodoAssignment } from "../lib/format-todo-assignment"
 import type { Todo, TodoState } from "../types/todo"
 
 const DEFAULT_TODO_ICON = "list-todo"
@@ -70,6 +73,19 @@ export function TodoListItem({
         <ItemTitle className={cn((done || skipped) && "text-muted-foreground")}>
           {todo.name}
         </ItemTitle>
+        {todo.assignment ? (
+          <Badge
+            variant="secondary"
+            render={
+              <Link
+                to="/"
+                search={{ date: todo.assignment.plan_date }}
+              />
+            }
+          >
+            {formatTodoAssignment(todo.assignment)}
+          </Badge>
+        ) : null}
       </ItemContent>
       <ItemActions>
         {skipped ? (

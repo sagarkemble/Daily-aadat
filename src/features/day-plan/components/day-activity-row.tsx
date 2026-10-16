@@ -20,6 +20,7 @@ type DayActivityRowProps = {
   disabled?: boolean
   onCommand: (activity: DayPlanActivity, command: DayItemCommand) => void
   onDelete: (activityId: string) => void
+  onUnassign: (activityId: string) => void
 }
 
 function formatTarget(activity: DayPlanActivity) {
@@ -32,6 +33,7 @@ export function DayActivityRow({
   disabled,
   onCommand,
   onDelete,
+  onUnassign,
 }: DayActivityRowProps) {
   const target = formatTarget(activity)
   const skipped = activity.state === "skipped"
@@ -61,6 +63,15 @@ export function DayActivityRow({
           </Button>
         ) : (
           <>
+            {activity.kind === "todo" ? (
+              <Checkbox
+                checked={activity.state === "done"}
+                disabled={disabled}
+                onCheckedChange={() =>
+                  onCommand(activity, { type: "update_todo" })
+                }
+              />
+            ) : null}
             {activity.type === "check" ? (
               <Checkbox
                 checked={activity.state === "done"}
@@ -94,14 +105,25 @@ export function DayActivityRow({
             </Button>
           </>
         )}
-        <Button
-          variant="outline"
-          size="icon"
-          disabled={disabled}
-          onClick={() => onDelete(activity.id)}
-        >
-          <TrashIcon />
-        </Button>
+        {activity.kind === "todo" ? (
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={disabled}
+            onClick={() => onUnassign(activity.id)}
+          >
+            Unassign
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            size="icon"
+            disabled={disabled}
+            onClick={() => onDelete(activity.id)}
+          >
+            <TrashIcon />
+          </Button>
+        )}
       </ItemActions>
     </Item>
   )

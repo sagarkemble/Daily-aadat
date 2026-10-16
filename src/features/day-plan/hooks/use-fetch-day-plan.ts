@@ -1,12 +1,25 @@
 import { supabase } from "@/lib/supabase"
 import { SLOTS } from "@/features/templates/types/slots"
 import { useQuery } from "@tanstack/react-query"
+import type { TodoState } from "@/features/todos/types/todo"
 import type {
   DayPlanActivity,
   DayPlanWithActivities,
   FetchedDayPlan,
   SlotWithActivities,
 } from "../types/day-plan"
+
+type FetchedDayItem = DayPlanActivity & {
+  todos: { state: TodoState } | null
+}
+
+function toDayPlanActivity(row: FetchedDayItem): DayPlanActivity {
+  const { todos, ...item } = row
+  return {
+    ...item,
+    state: item.kind === "todo" && todos?.state ? todos.state : item.state,
+  }
+}
 
 function groupActivitiesBySlot(
   activities: DayPlanActivity[]
@@ -51,6 +64,7 @@ async function fetchDayPlan(
         day_plan_id,
         kind,
         activity_id,
+        todo_id,
         name_snapshot,
         icon_snapshot,
         type,
@@ -65,7 +79,10 @@ async function fetchDayPlan(
         count_value,
         created_at,
         updated_at,
-        note_snapshot
+        note_snapshot,
+        todos (
+          state
+        )
       )
     `
     )
@@ -80,11 +97,13 @@ async function fetchDayPlan(
     return null
   }
 
-  const row = data as unknown as FetchedDayPlan
+  const row = data as unknown as FetchedDayPlan & {
+    activities: FetchedDayItem[]
+  }
 
   return {
     ...row,
-    activities: groupActivitiesBySlot(row.activities),
+    activities: groupActivitiesBySlot(row.activities.map(toDayPlanActivity)),
   } as DayPlanWithActivities
 }
 

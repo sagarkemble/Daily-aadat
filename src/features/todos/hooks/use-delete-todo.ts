@@ -12,6 +12,7 @@ export function useDeleteTodo() {
     mutationFn: deleteTodo,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] })
+      queryClient.invalidateQueries({ queryKey: ["day-plan"] })
     },
   })
 }

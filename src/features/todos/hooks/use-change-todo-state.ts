@@ -23,6 +23,7 @@ export function useChangeTodoState() {
     mutationFn: changeTodoState,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] })
+      queryClient.invalidateQueries({ queryKey: ["day-plan"] })
     },
   })
 }

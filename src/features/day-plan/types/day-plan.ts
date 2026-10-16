@@ -19,9 +19,10 @@ export type DayPlanActivity = {
   day_plan_id: string
   kind: ActivityKind
   activity_id: string | null
+  todo_id: string | null
   name_snapshot: string
   icon_snapshot: string | null
-  type: ActivityType
+  type: ActivityType | null
   target: number | null
   unit: string | null
   slot: Slot
@@ -59,6 +60,20 @@ export type NewDayPlanActivity = {
   sort_order: number
   state: State
   note_snapshot: string | null
+}
+
+export type NewDayPlanTodo = {
+  day_plan_id: string
+  kind: "todo"
+  todo_id: string
+  activity_id: null
+  name_snapshot: string
+  icon_snapshot: string
+  type: null
+  note_snapshot: null
+  slot: Slot
+  sort_order: number
+  state: "pending"
 }
 
 export type ActivityKind = "activity" | "todo"

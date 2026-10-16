@@ -2,6 +2,7 @@ import type { DayPlanActivity, State } from "../types/day-plan"
 
 export type DayItemCommand =
   | { type: "toggle_check" }
+  | { type: "update_todo" }
   | { type: "start" }
   | { type: "stop" }
   | { type: "reset" }
@@ -22,6 +23,8 @@ export function applyDayItemCommand(
   switch (command.type) {
     case "toggle_check":
       return toggleCheck(item)
+    case "update_todo":
+      return toggleTodo(item)
     case "start":
       return startTimed(item, now)
     case "stop":
@@ -41,6 +44,14 @@ export function applyDayItemCommand(
 
 function toggleCheck(item: DayPlanActivity): DayPlanActivity {
   assertType(item, "check")
+  const next: State = item.state === "done" ? "pending" : "done"
+  return { ...item, state: next }
+}
+
+function toggleTodo(item: DayPlanActivity): DayPlanActivity {
+  if (item.kind !== "todo") {
+    throw new Error("update_todo command on a non-todo item")
+  }
   const next: State = item.state === "done" ? "pending" : "done"
   return { ...item, state: next }
 }
