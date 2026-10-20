@@ -8,17 +8,19 @@ import { ThemeToggle } from "@/components/theme-toggle"
 function AppFrame() {
   return (
     <div className="flex min-h-svh flex-col">
-      <header className="sticky top-0 z-50 hidden h-20 shrink-0 items-center gap-6 border-b bg-background px-6 md:flex">
-        <AppDateMenu />
-        <div className="flex flex-1 justify-center">
-          <AppNavTabs variant="desktop" />
-        </div>
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <NavUser />
+      <header className="sticky top-0 z-50 hidden border-b bg-background md:block">
+        <div className="mx-auto flex h-20 w-full max-w-6xl items-center gap-6 px-6 lg:px-8">
+          <AppDateMenu />
+          <div className="flex flex-1 justify-center">
+            <AppNavTabs variant="desktop" />
+          </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <NavUser />
+          </div>
         </div>
       </header>
-      <main className="flex flex-1 flex-col gap-4 p-4 pb-24 md:pb-4">
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-4 pb-24 md:px-6 md:pb-4 lg:px-8">
         <Outlet />
       </main>
       <nav
