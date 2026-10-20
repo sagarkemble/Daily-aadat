@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { SidebarTrigger } from "@/components/ui/sidebar"
+
 import { cn } from "@/lib/utils"
 
 type PageHeaderProps = {
@@ -10,8 +10,7 @@ type PageHeaderProps = {
   className?: string
 }
 
-/** Page chrome inside the outlet — replaces the old shell top bar. */
-export function PageHeader({
+function PageHeader({
   title,
   description,
   actions,
@@ -22,8 +21,6 @@ export function PageHeader({
     <div className={cn("flex flex-col gap-3", className)}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2">
-          {/* Mobile only — desktop uses brand hover-toggle in the sidebar */}
-          <SidebarTrigger className="-ml-1 md:hidden" />
           {children ??
             (title ? (
               <div className="min-w-0">
@@ -41,3 +38,5 @@ export function PageHeader({
     </div>
   )
 }
+
+export { PageHeader }

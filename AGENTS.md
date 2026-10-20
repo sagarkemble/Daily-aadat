@@ -7,6 +7,8 @@ Keep the main context lean.
 
 ## UI — ShadCNify Everything
 
+App frame (authenticated nav, date, user, phone tabs): `.cursor/app-frame/SPEC.md`.
+
 For every UI task, first use the relevant shadcn/ui skill.
 ShadCNify the UI: prefer shadcn/ui components and patterns over custom implementations.
 Before creating a custom UI element, check whether shadcn/ui already provides the appropriate component or primitive.
