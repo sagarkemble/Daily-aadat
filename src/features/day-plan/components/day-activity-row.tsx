@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -10,7 +9,15 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import { DynamicIcon } from "@/components/dynamic-icon"
-import { MinusIcon, PlusIcon, TrashIcon } from "lucide-react"
+import {
+  AlarmClockIcon,
+  MinusIcon,
+  PauseIcon,
+  PlayIcon,
+  PlusIcon,
+  RotateCcwIcon,
+  TrashIcon,
+} from "lucide-react"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
 import { useEffect, useState } from "react"
@@ -23,7 +30,15 @@ type DayActivityRowProps = {
   onUnassign: (activityId: string) => void
 }
 
-function formatTarget(activity: DayPlanActivity) {
+function formatCountProgress(activity: DayPlanActivity) {
+  if (activity.target == null) return null
+  const value = activity.count_value ?? 0
+  const ofTarget = `${value} of ${activity.target}`
+  if (!activity.unit) return ofTarget
+  return `${ofTarget} ${activity.unit}`
+}
+
+function formatTimedTarget(activity: DayPlanActivity) {
   if (activity.target == null) return null
   return [activity.target, activity.unit].filter(Boolean).join(" ")
 }
@@ -35,26 +50,32 @@ export function DayActivityRow({
   onDelete,
   onUnassign,
 }: DayActivityRowProps) {
-  const target = formatTarget(activity)
   const skipped = activity.state === "skipped"
+  const description =
+    activity.type === "count"
+      ? formatCountProgress(activity)
+      : formatTimedTarget(activity)
 
   return (
-    <Item variant="outline" size="sm">
-      <ItemMedia variant="icon">
-        <span className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
-          {activity.icon_snapshot ? (
-            <DynamicIcon name={activity.icon_snapshot} className="size-4" />
-          ) : null}
-        </span>
+    <Item variant="default" size="sm" className="rounded-none px-0">
+      <ItemMedia>
+        {activity.icon_snapshot ? (
+          <DynamicIcon
+            name={activity.icon_snapshot}
+            className="size-5 text-foreground"
+          />
+        ) : null}
       </ItemMedia>
       <ItemContent>
         <ItemTitle>{activity.name_snapshot}</ItemTitle>
-        {target ? <ItemDescription>{target}</ItemDescription> : null}
+        {description ? (
+          <ItemDescription>{description}</ItemDescription>
+        ) : null}
       </ItemContent>
       <ItemActions>
         {skipped ? (
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             disabled={disabled}
             onClick={() => onCommand(activity, { type: "unskip" })}
@@ -63,6 +84,20 @@ export function DayActivityRow({
           </Button>
         ) : (
           <>
+            {activity.type === "timed" ? (
+              <TimedControls
+                activity={activity}
+                disabled={disabled}
+                onCommand={onCommand}
+              />
+            ) : null}
+            {activity.type === "count" ? (
+              <CountControls
+                activity={activity}
+                disabled={disabled}
+                onCommand={onCommand}
+              />
+            ) : null}
             {activity.kind === "todo" ? (
               <Checkbox
                 checked={activity.state === "done"}
@@ -81,20 +116,6 @@ export function DayActivityRow({
                 }
               />
             ) : null}
-            {activity.type === "timed" ? (
-              <TimedControls
-                activity={activity}
-                disabled={disabled}
-                onCommand={onCommand}
-              />
-            ) : null}
-            {activity.type === "count" ? (
-              <CountControls
-                activity={activity}
-                disabled={disabled}
-                onCommand={onCommand}
-              />
-            ) : null}
             <Button
               variant="ghost"
               size="sm"
@@ -107,7 +128,7 @@ export function DayActivityRow({
         )}
         {activity.kind === "todo" ? (
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             disabled={disabled}
             onClick={() => onUnassign(activity.id)}
@@ -116,8 +137,8 @@ export function DayActivityRow({
           </Button>
         ) : (
           <Button
-            variant="outline"
-            size="icon"
+            variant="ghost"
+            size="icon-sm"
             disabled={disabled}
             onClick={() => onDelete(activity.id)}
           >
@@ -152,41 +173,38 @@ function TimedControls({
       : 0
   const displayedMs = banked + Math.max(0, session)
 
-  // 3. Turn ms into "m:ss" right here
   const totalSec = Math.max(0, Math.floor(displayedMs / 1000))
   const m = Math.floor(totalSec / 60)
   const s = totalSec % 60
-  const label = `${m}:${String(s).padStart(2, "0")}`
+  const label = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
 
   return (
-    <>
-      <Badge variant="outline">{label}</Badge>
-      {running ? (
-        <Button
-          size="sm"
-          disabled={disabled}
-          onClick={() => onCommand(activity, { type: "stop" })}
-        >
-          Stop
-        </Button>
-      ) : (
-        <Button
-          size="sm"
-          disabled={disabled}
-          onClick={() => onCommand(activity, { type: "start" })}
-        >
-          Start
-        </Button>
-      )}
+    <div className="flex items-center gap-2">
+      <span className="flex items-center gap-1 text-sm tabular-nums text-muted-foreground">
+        <AlarmClockIcon className="size-3.5" />
+        {label}
+      </span>
       <Button
-        variant="outline"
-        size="sm"
+        size="icon-sm"
+        className="rounded-full"
         disabled={disabled}
+        aria-label={running ? "Pause" : "Play"}
+        onClick={() =>
+          onCommand(activity, { type: running ? "stop" : "start" })
+        }
+      >
+        {running ? <PauseIcon /> : <PlayIcon />}
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        disabled={disabled}
+        aria-label="Reset"
         onClick={() => onCommand(activity, { type: "reset" })}
       >
-        Reset
+        <RotateCcwIcon />
       </Button>
-    </>
+    </div>
   )
 }
 
@@ -200,24 +218,28 @@ function CountControls({
   onCommand: (activity: DayPlanActivity, command: DayItemCommand) => void
 }) {
   return (
-    <>
+    <div className="flex items-center">
       <Button
-        variant="outline"
-        size="icon"
+        variant="ghost"
+        size="icon-sm"
         disabled={disabled}
+        aria-label="Decrease"
         onClick={() => onCommand(activity, { type: "decrement" })}
       >
         <MinusIcon />
       </Button>
-      <Badge variant="secondary">{activity.count_value ?? 0}</Badge>
+      <span className="min-w-6 text-center text-sm tabular-nums">
+        {activity.count_value ?? 0}
+      </span>
       <Button
-        variant="outline"
-        size="icon"
+        variant="ghost"
+        size="icon-sm"
         disabled={disabled}
+        aria-label="Increase"
         onClick={() => onCommand(activity, { type: "increment" })}
       >
         <PlusIcon />
       </Button>
-    </>
+    </div>
   )
 }

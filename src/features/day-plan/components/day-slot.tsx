@@ -29,7 +29,7 @@ type DaySlotProps = {
 }
 
 const VISIBLE_ROWS = 6
-const ROW_HEIGHT_PX = 52
+const ROW_HEIGHT_PX = 56
 
 function nextSortOrder(activities: DayPlanActivity[]) {
   if (activities.length === 0) return 0
@@ -127,7 +127,7 @@ const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
           </div>
         )}
         {isLoading ? (
-          <ItemGroup>
+          <ItemGroup className="gap-0 divide-y has-data-[size=sm]:gap-0">
             <DayActivityRowSkeleton />
             <DayActivityRowSkeleton />
           </ItemGroup>
@@ -146,12 +146,13 @@ const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
             className="min-h-0 overflow-y-auto"
             style={{ maxHeight: VISIBLE_ROWS * ROW_HEIGHT_PX }}
           >
-            <ItemGroup>
+            <ItemGroup className="gap-0 has-data-[size=sm]:gap-0">
               <ReorderList
                 items={activities}
                 getItemId={(activity) => activity.id}
                 onReorderFinish={handleReorderFinish}
-                className="rounded-lg"
+                className="gap-0 divide-y"
+                itemClassName="bg-transparent"
                 renderItem={(activity) => (
                   <DayActivityRow
                     activity={activity}
