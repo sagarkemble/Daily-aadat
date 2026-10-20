@@ -111,7 +111,7 @@ const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
 
   return (
     <Card className="flex-row items-stretch gap-0 overflow-hidden py-0">
-      <SlotArt slot={slot} count={count} />
+      <SlotArt slot={slot} />
       <div className="flex min-w-0 flex-1 flex-col gap-3 p-4">
         {empty ? null : (
           <div className="flex justify-end">
