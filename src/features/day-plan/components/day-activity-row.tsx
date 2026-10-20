@@ -25,6 +25,7 @@ import { useEffect, useState } from "react"
 type DayActivityRowProps = {
   activity: DayPlanActivity
   disabled?: boolean
+  editing?: boolean
   onCommand: (activity: DayPlanActivity, command: DayItemCommand) => void
   onDelete: (activityId: string) => void
   onUnassign: (activityId: string) => void
@@ -46,6 +47,7 @@ function formatTimedTarget(activity: DayPlanActivity) {
 export function DayActivityRow({
   activity,
   disabled,
+  editing = false,
   onCommand,
   onDelete,
   onUnassign,
@@ -57,7 +59,11 @@ export function DayActivityRow({
       : formatTimedTarget(activity)
 
   return (
-    <Item variant="default" size="sm" className="rounded-none px-0">
+    <Item
+      variant="default"
+      size="sm"
+      className="min-w-0 flex-nowrap rounded-none px-0"
+    >
       <ItemMedia>
         {activity.icon_snapshot ? (
           <DynamicIcon
@@ -66,22 +72,26 @@ export function DayActivityRow({
           />
         ) : null}
       </ItemMedia>
-      <ItemContent>
-        <ItemTitle>{activity.name_snapshot}</ItemTitle>
+      <ItemContent className="min-w-0">
+        <ItemTitle className="min-w-0 w-full">
+          {activity.name_snapshot}
+        </ItemTitle>
         {description ? (
           <ItemDescription>{description}</ItemDescription>
         ) : null}
       </ItemContent>
-      <ItemActions>
+      <ItemActions className="shrink-0">
         {skipped ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={disabled}
-            onClick={() => onCommand(activity, { type: "unskip" })}
-          >
-            Unskip
-          </Button>
+          editing ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={disabled}
+              onClick={() => onCommand(activity, { type: "unskip" })}
+            >
+              Unskip
+            </Button>
+          ) : null
         ) : (
           <>
             {activity.type === "timed" ? (
@@ -116,17 +126,19 @@ export function DayActivityRow({
                 }
               />
             ) : null}
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={disabled}
-              onClick={() => onCommand(activity, { type: "skip" })}
-            >
-              Skip
-            </Button>
+            {editing ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={disabled}
+                onClick={() => onCommand(activity, { type: "skip" })}
+              >
+                Skip
+              </Button>
+            ) : null}
           </>
         )}
-        {activity.kind === "todo" ? (
+        {editing && activity.kind === "todo" ? (
           <Button
             variant="ghost"
             size="sm"
@@ -135,7 +147,8 @@ export function DayActivityRow({
           >
             Unassign
           </Button>
-        ) : (
+        ) : null}
+        {editing && activity.kind !== "todo" ? (
           <Button
             variant="ghost"
             size="icon-sm"
@@ -144,7 +157,7 @@ export function DayActivityRow({
           >
             <TrashIcon />
           </Button>
-        )}
+        ) : null}
       </ItemActions>
     </Item>
   )

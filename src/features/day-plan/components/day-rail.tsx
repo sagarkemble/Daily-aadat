@@ -15,12 +15,21 @@ import {
   dateFromCalendarDay,
 } from "../lib/calendar-day"
 import { quoteForDate } from "../lib/quotes"
+import { DayPlanActions } from "./day-plan-actions"
 
 type DayRailProps = {
   date: string
+  isPlanned: boolean
+  editing: boolean
+  onEditingChange: (editing: boolean) => void
 }
 
-function DayRail({ date }: DayRailProps) {
+function DayRail({
+  date,
+  isPlanned,
+  editing,
+  onEditingChange,
+}: DayRailProps) {
   const navigate = useNavigate()
   const selected = dateFromCalendarDay(date)
 
@@ -36,6 +45,12 @@ function DayRail({ date }: DayRailProps) {
 
   return (
     <aside className="hidden w-80 shrink-0 flex-col gap-4 lg:flex">
+      <DayPlanActions
+        date={date}
+        isPlanned={isPlanned}
+        editing={editing}
+        onEditingChange={onEditingChange}
+      />
       <Card size="sm">
         <CardHeader>
           <CardTitle>{format(selected, "MMMM yyyy")}</CardTitle>

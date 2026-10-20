@@ -26,6 +26,7 @@ type DaySlotProps = {
   activities: DayPlanActivity[]
   dayPlanId: string
   isLoading: boolean
+  editing: boolean
 }
 
 const VISIBLE_ROWS = 6
@@ -43,7 +44,13 @@ function todoStateFromDayItem(state: DayPlanActivity["state"]): TodoState {
   return state
 }
 
-const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
+const DaySlot = ({
+  slot,
+  activities,
+  dayPlanId,
+  isLoading,
+  editing,
+}: DaySlotProps) => {
   const { mutateAsync: addActivities, isPending: isAdding } = useAddActivity()
   const { mutate: deleteActivity, isPending: isDeleting } = useDeleteActivity()
   const { mutate: applyCommand, isPending: isApplying } =
@@ -111,52 +118,41 @@ const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
 
   return (
     <Card className="flex-row items-stretch gap-0 overflow-hidden py-0">
-      <SlotArt slot={slot} />
+      <SlotArt slot={slot}>
+        {editing ? (
+          <SlotAddControl
+            slot={slot}
+            dayPlanId={dayPlanId}
+            nextSlotOrder={nextSortOrder(activities)}
+            disabled={busy || dayPlanId === ""}
+            isAddingActivity={isAdding}
+            onAddActivities={handleAddActivities}
+          />
+        ) : null}
+      </SlotArt>
       <div className="flex min-w-0 flex-1 flex-col gap-3 p-4">
-        {empty ? null : (
-          <div className="flex justify-end">
-            <SlotAddControl
-              slot={slot}
-              dayPlanId={dayPlanId}
-              nextSlotOrder={nextSortOrder(activities)}
-              empty={false}
-              disabled={busy || dayPlanId === ""}
-              isAddingActivity={isAdding}
-              onAddActivities={handleAddActivities}
-            />
-          </div>
-        )}
         {isLoading ? (
           <ItemGroup className="gap-0 divide-y has-data-[size=sm]:gap-0">
             <DayActivityRowSkeleton />
             <DayActivityRowSkeleton />
           </ItemGroup>
-        ) : empty ? (
-          <SlotAddControl
-            slot={slot}
-            dayPlanId={dayPlanId}
-            nextSlotOrder={nextSortOrder(activities)}
-            empty
-            disabled={dayPlanId === ""}
-            isAddingActivity={isAdding}
-            onAddActivities={handleAddActivities}
-          />
-        ) : (
+        ) : empty ? null : (
           <div
-            className="min-h-0 overflow-y-auto"
+            className="min-h-0 overflow-x-hidden overflow-y-auto"
             style={{ maxHeight: VISIBLE_ROWS * ROW_HEIGHT_PX }}
           >
-            <ItemGroup className="gap-0 has-data-[size=sm]:gap-0">
+            <ItemGroup className="min-w-0 gap-0 has-data-[size=sm]:gap-0">
               <ReorderList
                 items={activities}
                 getItemId={(activity) => activity.id}
                 onReorderFinish={handleReorderFinish}
-                className="gap-0 divide-y"
-                itemClassName="bg-transparent"
+                className="min-w-0 gap-0 divide-y"
+                itemClassName="min-w-0 bg-transparent"
                 renderItem={(activity) => (
                   <DayActivityRow
                     activity={activity}
                     disabled={busy}
+                    editing={editing}
                     onCommand={onCommand}
                     onDelete={deleteActivity}
                     onUnassign={unassignTodo}

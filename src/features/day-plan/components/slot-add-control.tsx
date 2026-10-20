@@ -1,14 +1,7 @@
 import { useState } from "react"
-import { ListIcon, ListTodoIcon, PlusIcon } from "lucide-react"
+import { ListIcon, ListTodoIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { ActivityPickerDialog } from "@/features/activity/components/activity-picker/activity-picker-dialog"
 import type { ActivityWithConfiguration } from "@/features/activity/types/activity"
 import type { Slot } from "@/features/templates/types/slots"
@@ -18,7 +11,6 @@ type SlotAddControlProps = {
   slot: Slot
   dayPlanId: string
   nextSlotOrder: number
-  empty: boolean
   disabled?: boolean
   isAddingActivity?: boolean
   onAddActivities: (activities: ActivityWithConfiguration[]) => void
@@ -28,63 +20,43 @@ function SlotAddControl({
   slot,
   dayPlanId,
   nextSlotOrder,
-  empty,
   disabled = false,
   isAddingActivity = false,
   onAddActivities,
 }: SlotAddControlProps) {
   const [activityOpen, setActivityOpen] = useState(false)
   const [todoOpen, setTodoOpen] = useState(false)
-  const canAddTodo = dayPlanId !== ""
+  const canAdd = dayPlanId !== "" && !disabled
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          disabled={disabled}
-          render={
-            empty ? (
-              <Button
-                variant="outline"
-                className="h-16 w-full border-dashed"
-                disabled={disabled}
-              />
-            ) : (
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Add to slot"
-                disabled={disabled}
-              />
-            )
-          }
+      <div className="flex flex-col gap-1">
+        <Button
+          size="sm"
+          variant="secondary"
+          disabled={!canAdd}
+          onClick={() => setActivityOpen(true)}
         >
-          <PlusIcon data-icon="inline-start" />
-          {empty ? "Add" : null}
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align={empty ? "center" : "end"}>
-          <DropdownMenuGroup>
-            <DropdownMenuItem onClick={() => setActivityOpen(true)}>
-              <ListIcon />
-              Activity
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              disabled={!canAddTodo}
-              onClick={() => setTodoOpen(true)}
-            >
-              <ListTodoIcon />
-              Todo
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          <ListIcon data-icon="inline-start" />
+          Activity
+        </Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          disabled={!canAdd}
+          onClick={() => setTodoOpen(true)}
+        >
+          <ListTodoIcon data-icon="inline-start" />
+          Todo
+        </Button>
+      </div>
       <ActivityPickerDialog
         open={activityOpen}
         onOpenChange={setActivityOpen}
         onAdd={onAddActivities}
         isPending={isAddingActivity}
       />
-      {canAddTodo ? (
+      {dayPlanId !== "" ? (
         <AddTodoDialog
           slot={slot}
           dayPlanId={dayPlanId}

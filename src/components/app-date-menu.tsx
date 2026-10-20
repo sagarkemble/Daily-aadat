@@ -11,19 +11,23 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-function AppDateMenu() {
+type AppDateMenuProps = {
+  date?: Date
+}
+
+function AppDateMenu({ date }: AppDateMenuProps) {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
-  const today = new Date()
+  const selected = date ?? new Date()
 
-  function handleDateChange(date: Date | undefined) {
-    if (!date) {
+  function handleDateChange(next: Date | undefined) {
+    if (!next) {
       return
     }
     setOpen(false)
     navigate({
       to: "/",
-      search: { date: format(date, "yyyy-MM-dd") },
+      search: { date: format(next, "yyyy-MM-dd") },
     })
   }
 
@@ -41,14 +45,14 @@ function AppDateMenu() {
           <CalendarIcon />
         </span>
         <span className="font-heading text-xl font-medium tracking-tight">
-          {format(today, "EEEE, MMMM d, yyyy")}
+          {format(selected, "EEEE, MMMM d, yyyy")}
         </span>
         <ChevronDownIcon data-icon="inline-end" />
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar
           mode="single"
-          selected={today}
+          selected={selected}
           onSelect={handleDateChange}
           captionLayout="dropdown"
           required

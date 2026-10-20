@@ -1,3 +1,5 @@
+import type { ReactNode } from "react"
+
 import { SLOT_LABELS, type Slot } from "@/features/templates/types/slots"
 import { SLOT_COPY } from "../lib/slot-copy"
 import earlyMorningArt from "../assets/early-morning.svg"
@@ -8,6 +10,7 @@ import nightArt from "../assets/night.svg"
 
 type SlotArtProps = {
   slot: Slot
+  children?: ReactNode
 }
 
 const SLOT_ART: Record<Slot, string> = {
@@ -18,7 +21,7 @@ const SLOT_ART: Record<Slot, string> = {
   night: nightArt,
 }
 
-function SlotArt({ slot }: SlotArtProps) {
+function SlotArt({ slot, children }: SlotArtProps) {
   const copy = SLOT_COPY[slot]
   const Icon = copy.icon
 
@@ -50,6 +53,7 @@ function SlotArt({ slot }: SlotArtProps) {
             <Icon className="size-5" />
           </span>
         </div>
+        {children ? <div className="mt-auto pt-3">{children}</div> : null}
       </div>
     </div>
   )
