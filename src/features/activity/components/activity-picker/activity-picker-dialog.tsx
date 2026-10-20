@@ -25,11 +25,15 @@ import ActivityPickerConfigureRow from "./activity-picker-configure-row"
 type ActivityPickerDialogProps = {
   onAdd: (activities: ActivityWithConfiguration[]) => void
   isPending?: boolean
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 const ActivityPickerDialog = ({
   onAdd,
   isPending = false,
+  open,
+  onOpenChange,
 }: ActivityPickerDialogProps) => {
   const searchId = useId()
   const { data, isLoading, error } = useFetchActivities()
@@ -37,7 +41,9 @@ const ActivityPickerDialog = ({
   const [configuredActivities, setConfiguredActivities] = useState<
     ActivityWithConfiguration[]
   >([])
-  const [isOpen, setIsOpen] = useState(false)
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false)
+  const isControlled = open !== undefined
+  const isOpen = isControlled ? open : uncontrolledOpen
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedActivities, setSelectedActivities] = useState<Activity[]>([])
   const [step, setStep] = useState<"select" | "configure">("select")
@@ -89,7 +95,7 @@ const ActivityPickerDialog = ({
   }
   function handleAddConfiguredActivities() {
     onAdd(configuredActivities)
-    setIsOpen(false)
+    handleOpenChange(false)
   }
   function reset() {
     setSelectedActivities([])
@@ -97,20 +103,25 @@ const ActivityPickerDialog = ({
     setSearchQuery("")
     setStep("select")
   }
-  function handleOpenChange(open: boolean) {
-    setIsOpen(open)
+  function handleOpenChange(nextOpen: boolean) {
+    if (!isControlled) {
+      setUncontrolledOpen(nextOpen)
+    }
+    onOpenChange?.(nextOpen)
   }
   return (
     <Dialog
       open={isOpen}
       onOpenChange={handleOpenChange}
-      onOpenChangeComplete={(open) => {
-        if (!open) reset()
+      onOpenChangeComplete={(nextOpen) => {
+        if (!nextOpen) reset()
       }}
     >
-      <DialogTrigger render={<Button variant="secondary" />}>
-        Add activity
-      </DialogTrigger>
+      {isControlled ? null : (
+        <DialogTrigger render={<Button variant="secondary" />}>
+          Add activity
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-md">
         {step === "select" ? (
           <>

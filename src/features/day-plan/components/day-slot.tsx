@@ -1,17 +1,6 @@
-import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { ItemGroup } from "@/components/ui/item"
 import type { Slot } from "@/features/templates/types/slots"
-import { SLOT_LABELS } from "@/features/templates/types/slots"
 import type { DayPlanActivity, NewDayPlanActivity } from "../types/day-plan"
-import { ActivityPickerDialog } from "@/features/activity/components/activity-picker/activity-picker-dialog"
 import type { ActivityWithConfiguration } from "@/features/activity/types/activity"
 import { useAddActivity } from "../hooks/use-add-activity"
 import { useDeleteActivity } from "../hooks/use-delete-activity"
@@ -28,7 +17,9 @@ import DayActivityRowSkeleton from "./day-activity-row-skeleton"
 import { ReorderList } from "@/components/ui/reorder-list"
 import { useReorderDayPlanActivities } from "../hooks/use-reorder-day-plan-activities"
 import { toast } from "@/components/ui/toast"
-import { AddTodoDialog } from "./add-todo-dialog/add-todo-dialog"
+import { SlotArt } from "./slot-art"
+import { SlotAddControl } from "./slot-add-control"
+import { Card } from "@/components/ui/card"
 
 type DaySlotProps = {
   slot: Slot
@@ -36,6 +27,9 @@ type DaySlotProps = {
   dayPlanId: string
   isLoading: boolean
 }
+
+const VISIBLE_ROWS = 6
+const ROW_HEIGHT_PX = 52
 
 function nextSortOrder(activities: DayPlanActivity[]) {
   if (activities.length === 0) return 0
@@ -113,57 +107,65 @@ const DaySlot = ({ slot, activities, dayPlanId, isLoading }: DaySlotProps) => {
 
   const count = activities.length
   const busy = isDeleting || isApplying || isChangingTodo || isUnassigning
+  const empty = !isLoading && count === 0
 
   return (
-    <Card>
-      <CardHeader className="border-b">
-        <CardTitle>{SLOT_LABELS[slot]}</CardTitle>
-        {count === 0 && !isLoading ? (
-          <CardDescription>No activities</CardDescription>
-        ) : null}
-        <CardAction>
-          <ActivityPickerDialog
-            onAdd={handleAddActivities}
-            isPending={isAdding}
-          />
-          {dayPlanId ? (
-            <AddTodoDialog
+    <Card className="flex-row items-stretch gap-0 overflow-hidden py-0">
+      <SlotArt slot={slot} count={count} />
+      <div className="flex min-w-0 flex-1 flex-col gap-3 p-4">
+        {empty ? null : (
+          <div className="flex justify-end">
+            <SlotAddControl
               slot={slot}
               dayPlanId={dayPlanId}
               nextSlotOrder={nextSortOrder(activities)}
+              empty={false}
+              disabled={busy || dayPlanId === ""}
+              isAddingActivity={isAdding}
+              onAddActivities={handleAddActivities}
             />
-          ) : null}
-          <Badge variant="secondary">{count}</Badge>
-        </CardAction>
-      </CardHeader>
-      {isLoading ? (
-        <CardContent>
+          </div>
+        )}
+        {isLoading ? (
           <ItemGroup>
             <DayActivityRowSkeleton />
             <DayActivityRowSkeleton />
           </ItemGroup>
-        </CardContent>
-      ) : count > 0 ? (
-        <CardContent>
-          <ItemGroup>
-            <ReorderList
-              items={activities}
-              getItemId={(activity) => activity.id}
-              onReorderFinish={handleReorderFinish}
-              className="rounded-lg"
-              renderItem={(activity) => (
-                <DayActivityRow
-                  activity={activity}
-                  disabled={busy}
-                  onCommand={onCommand}
-                  onDelete={deleteActivity}
-                  onUnassign={unassignTodo}
-                />
-              )}
-            />
-          </ItemGroup>
-        </CardContent>
-      ) : null}
+        ) : empty ? (
+          <SlotAddControl
+            slot={slot}
+            dayPlanId={dayPlanId}
+            nextSlotOrder={nextSortOrder(activities)}
+            empty
+            disabled={dayPlanId === ""}
+            isAddingActivity={isAdding}
+            onAddActivities={handleAddActivities}
+          />
+        ) : (
+          <div
+            className="min-h-0 overflow-y-auto"
+            style={{ maxHeight: VISIBLE_ROWS * ROW_HEIGHT_PX }}
+          >
+            <ItemGroup>
+              <ReorderList
+                items={activities}
+                getItemId={(activity) => activity.id}
+                onReorderFinish={handleReorderFinish}
+                className="rounded-lg"
+                renderItem={(activity) => (
+                  <DayActivityRow
+                    activity={activity}
+                    disabled={busy}
+                    onCommand={onCommand}
+                    onDelete={deleteActivity}
+                    onUnassign={unassignTodo}
+                  />
+                )}
+              />
+            </ItemGroup>
+          </div>
+        )}
+      </div>
     </Card>
   )
 }

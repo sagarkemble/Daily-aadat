@@ -35,6 +35,8 @@ type AddTodoDialogProps = {
   slot: Slot
   dayPlanId: string
   nextSlotOrder: number
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 function isOnThisSlot(todo: Todo, dayPlanId: string, slot: Slot) {
@@ -47,10 +49,14 @@ export function AddTodoDialog({
   slot,
   dayPlanId,
   nextSlotOrder,
+  open,
+  onOpenChange,
 }: AddTodoDialogProps) {
   const searchId = useId()
   const { data, isLoading } = useFetchTodos()
-  const [open, setOpen] = useState(false)
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false)
+  const isControlled = open !== undefined
+  const isOpen = isControlled ? open : uncontrolledOpen
   const [searchQuery, setSearchQuery] = useState("")
   const [todoToMove, setTodoToMove] = useState<Todo | null>(null)
   const debouncedQuery = useDebounce(searchQuery, 300)
@@ -77,7 +83,10 @@ export function AddTodoDialog({
   const assignedTodos = filteredTodos.filter((todo) => todo.assignment)
 
   function handleOpenChange(nextOpen: boolean) {
-    setOpen(nextOpen)
+    if (!isControlled) {
+      setUncontrolledOpen(nextOpen)
+    }
+    onOpenChange?.(nextOpen)
     if (!nextOpen) {
       setSearchQuery("")
       setTodoToMove(null)
@@ -99,7 +108,7 @@ export function AddTodoDialog({
         }
       )
       .then(() => {
-        setOpen(false)
+        handleOpenChange(false)
       })
   }
 
@@ -111,7 +120,7 @@ export function AddTodoDialog({
         error: { title: "Failed to assign todo" },
       })
       .then(() => {
-        setOpen(false)
+        handleOpenChange(false)
       })
   }
 
@@ -138,7 +147,7 @@ export function AddTodoDialog({
       )
       .then(() => {
         setTodoToMove(null)
-        setOpen(false)
+        handleOpenChange(false)
       })
   }
 
@@ -148,10 +157,12 @@ export function AddTodoDialog({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogTrigger render={<Button variant="secondary" />}>
-          Add todo
-        </DialogTrigger>
+      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+        {isControlled ? null : (
+          <DialogTrigger render={<Button variant="secondary" />}>
+            Add todo
+          </DialogTrigger>
+        )}
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Add todo · {SLOT_LABELS[slot]}</DialogTitle>

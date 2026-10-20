@@ -31,13 +31,16 @@ function AppDateMenu() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         render={
-          <Button variant="ghost" className="h-12 gap-3 rounded-full px-1 pr-3" />
+          <Button
+            variant="ghost"
+            className="h-12 gap-2 rounded-full px-1 pr-3"
+          />
         }
       >
         <span className="flex size-10 items-center justify-center rounded-full border bg-card">
           <CalendarIcon />
         </span>
-        <span className="font-heading text-xl font-semibold tracking-tight">
+        <span className="font-heading text-xl font-medium tracking-tight">
           {format(today, "EEEE, MMMM d, yyyy")}
         </span>
         <ChevronDownIcon data-icon="inline-end" />
