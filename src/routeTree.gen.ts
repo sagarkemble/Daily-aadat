@@ -16,6 +16,7 @@ import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedActivitesRouteImport } from './routes/_authenticated/activites'
+import { Route as AuthenticatedDesignSystemRouteImport } from './routes/_authenticated/design-system'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedTemplatesRouteImport } from './routes/_authenticated/templates'
 import { Route as AuthenticatedTodosRouteImport } from './routes/_authenticated/todos'
@@ -56,6 +57,12 @@ const AuthenticatedActivitesRoute = AuthenticatedActivitesRouteImport.update({
   path: '/activites',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedDesignSystemRoute =
+  AuthenticatedDesignSystemRouteImport.update({
+    id: '/design-system',
+    path: '/design-system',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -91,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/activites': typeof AuthenticatedActivitesRoute
+  '/design-system': typeof AuthenticatedDesignSystemRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/templates': typeof AuthenticatedTemplatesRouteWithChildren
   '/todos': typeof AuthenticatedTodosRoute
@@ -103,6 +111,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/activites': typeof AuthenticatedActivitesRoute
+  '/design-system': typeof AuthenticatedDesignSystemRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/todos': typeof AuthenticatedTodosRoute
   '/': typeof AuthenticatedIndexRoute
@@ -117,6 +126,7 @@ export interface FileRoutesById {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/_authenticated/activites': typeof AuthenticatedActivitesRoute
+  '/_authenticated/design-system': typeof AuthenticatedDesignSystemRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/templates': typeof AuthenticatedTemplatesRouteWithChildren
   '/_authenticated/todos': typeof AuthenticatedTodosRoute
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/activites'
+    | '/design-system'
     | '/settings'
     | '/templates'
     | '/todos'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/activites'
+    | '/design-system'
     | '/settings'
     | '/todos'
     | '/'
@@ -158,6 +170,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/_authenticated/activites'
+    | '/_authenticated/design-system'
     | '/_authenticated/settings'
     | '/_authenticated/templates'
     | '/_authenticated/todos'
@@ -225,6 +238,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedActivitesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/design-system': {
+      id: '/_authenticated/design-system'
+      path: '/design-system'
+      fullPath: '/design-system'
+      preLoaderRoute: typeof AuthenticatedDesignSystemRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
       path: '/settings'
@@ -282,6 +302,7 @@ const AuthenticatedTemplatesRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedActivitesRoute: typeof AuthenticatedActivitesRoute
+  AuthenticatedDesignSystemRoute: typeof AuthenticatedDesignSystemRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTemplatesRoute: typeof AuthenticatedTemplatesRouteWithChildren
   AuthenticatedTodosRoute: typeof AuthenticatedTodosRoute
@@ -290,6 +311,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedActivitesRoute: AuthenticatedActivitesRoute,
+  AuthenticatedDesignSystemRoute: AuthenticatedDesignSystemRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTemplatesRoute: AuthenticatedTemplatesRouteWithChildren,
   AuthenticatedTodosRoute: AuthenticatedTodosRoute,

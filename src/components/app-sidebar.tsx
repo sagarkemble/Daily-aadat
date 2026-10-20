@@ -18,6 +18,7 @@ import {
   ListIcon,
   CalendarIcon,
   ListTodoIcon,
+  SwatchBookIcon,
 } from "lucide-react"
 
 const data = {
@@ -38,14 +39,19 @@ const data = {
       icon: <LayoutTemplateIcon />,
     },
     {
+      title: "Todos",
+      url: "/todos",
+      icon: <ListTodoIcon />,
+    },
+    {
       title: "Settings",
       url: "/settings",
       icon: <Settings2Icon />,
     },
     {
-      title: "Todos",
-      url: "/todos",
-      icon: <ListTodoIcon />,
+      title: "Design system",
+      url: "/design-system",
+      icon: <SwatchBookIcon />,
     },
   ],
   user: {
