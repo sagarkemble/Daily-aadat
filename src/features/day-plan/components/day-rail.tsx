@@ -10,10 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  calendarDayFromDate,
-  dateFromCalendarDay,
-} from "../lib/calendar-day"
+import { calendarDayFromDate, dateFromCalendarDay } from "../lib/calendar-day"
 import { quoteForDate } from "../lib/quotes"
 import { DayPlanActions } from "./day-plan-actions"
 
@@ -24,25 +21,7 @@ type DayRailProps = {
   onEditingChange: (editing: boolean) => void
 }
 
-function DayRail({
-  date,
-  isPlanned,
-  editing,
-  onEditingChange,
-}: DayRailProps) {
-  const navigate = useNavigate()
-  const selected = dateFromCalendarDay(date)
-
-  function handleDateChange(next: Date | undefined) {
-    if (!next) {
-      return
-    }
-    navigate({
-      to: "/",
-      search: { date: calendarDayFromDate(next) },
-    })
-  }
-
+function DayRail({ date, isPlanned, editing, onEditingChange }: DayRailProps) {
   return (
     <aside className="hidden w-80 shrink-0 flex-col gap-4 lg:flex">
       <DayPlanActions
@@ -51,20 +30,6 @@ function DayRail({
         editing={editing}
         onEditingChange={onEditingChange}
       />
-      <Card size="sm">
-        <CardHeader>
-          <CardTitle>{format(selected, "MMMM yyyy")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Calendar
-            mode="single"
-            selected={selected}
-            onSelect={handleDateChange}
-            required
-            className="w-full bg-transparent p-0"
-          />
-        </CardContent>
-      </Card>
       <Card size="sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
