@@ -54,9 +54,7 @@ async function fetchDayPlan(
       `
       id,
       plan_date,
-      status,
       template_id,
-      ended_at,
       created_at,
       updated_at,
       activities:day_items(

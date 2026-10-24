@@ -1,5 +1,4 @@
 import type { ActivityType } from "@/features/activity/types/activity"
-import type { DayPlanStatus } from "./day-plan-status"
 import type { Slot } from "@/features/templates/types/slots"
 
 export type State = "pending" | "done" | "skipped" | "running"
@@ -7,9 +6,7 @@ export type State = "pending" | "done" | "skipped" | "running"
 type DayPlan = {
   id: string
   plan_date: string
-  status: DayPlanStatus
   template_id: string
-  ended_at: string | null
   created_at: string
   updated_at: string
 }

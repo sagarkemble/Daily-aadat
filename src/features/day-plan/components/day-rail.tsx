@@ -1,8 +1,5 @@
-import { useNavigate } from "@tanstack/react-router"
-import { format } from "date-fns"
 import { QuoteIcon, TargetIcon } from "lucide-react"
 
-import { Calendar } from "@/components/ui/calendar"
 import {
   Card,
   CardContent,
@@ -10,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { calendarDayFromDate, dateFromCalendarDay } from "../lib/calendar-day"
 import { quoteForDate } from "../lib/quotes"
 import { DayPlanActions } from "./day-plan-actions"
 
