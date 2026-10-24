@@ -1,5 +1,6 @@
 import {
   BookOpenIcon,
+  CalendarDaysIcon,
   LaptopIcon,
   LeafIcon,
   MoonIcon,
@@ -16,6 +17,11 @@ type SlotCopy = {
 }
 
 const SLOT_COPY: Record<Slot, SlotCopy> = {
+  day_wide: {
+    description: "Belongs to the date, not a band.",
+    icon: CalendarDaysIcon,
+    sky: "#6EC8C4",
+  },
   early_morning: {
     description: "Start fresh, your way.",
     icon: SunIcon,

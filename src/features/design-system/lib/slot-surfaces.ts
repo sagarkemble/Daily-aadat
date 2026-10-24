@@ -2,6 +2,7 @@ import type { Slot } from "@/features/templates/types/slots"
 import { SLOT_LABELS, SLOTS } from "@/features/templates/types/slots"
 
 export const SLOT_SURFACE: Record<Slot, string> = {
+  day_wide: "bg-slot-day-wide text-ink",
   early_morning: "bg-slot-early-morning text-ink",
   morning: "bg-slot-morning text-ink",
   afternoon: "bg-slot-afternoon text-ink",
@@ -10,6 +11,7 @@ export const SLOT_SURFACE: Record<Slot, string> = {
 }
 
 export const SLOT_CARD_COPY: Record<Slot, string> = {
+  day_wide: "For the date. Water, steps, anything unbanded.",
   early_morning: "Quiet start. Water, stretch, no clock.",
   morning: "The loud part of the day.",
   afternoon: "Work block. Keep it one thing.",

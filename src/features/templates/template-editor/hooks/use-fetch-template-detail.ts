@@ -2,10 +2,11 @@ import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
 import type {
   TemplateActivitiesBySlot,
+  TemplateActivity,
   TemplateDetail,
   fetchedTemplateDetail,
 } from "../../types/template"
-import { SLOTS } from "../../types/slots"
+import { emptySlotBuckets, SLOTS } from "../../types/slots"
 
 export async function fetchTemplateDetail(id: string): Promise<TemplateDetail> {
   const { data, error } = await supabase
@@ -51,16 +52,11 @@ export async function fetchTemplateDetail(id: string): Promise<TemplateDetail> {
   const row = data as unknown as fetchedTemplateDetail
   console.log("data", data)
 
-  const activitiesBySlot: TemplateActivitiesBySlot = {
-    early_morning: [],
-    morning: [],
-    afternoon: [],
-    evening: [],
-    night: [],
-  }
+  const activitiesBySlot: TemplateActivitiesBySlot =
+    emptySlotBuckets<TemplateActivity>()
 
   row.activities.forEach((activity) => {
-    activitiesBySlot[activity.slot].push(activity)
+    activitiesBySlot[activity.slot]?.push(activity)
   })
 
   for (const slot of SLOTS) {

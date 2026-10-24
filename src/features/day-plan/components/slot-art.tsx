@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 
 import { SLOT_LABELS, type Slot } from "@/features/templates/types/slots"
 import { SLOT_COPY } from "../lib/slot-copy"
+import dayWideArt from "../assets/day-wide.svg"
 import earlyMorningArt from "../assets/early-morning.svg"
 import morningArt from "../assets/morning.svg"
 import afternoonArt from "../assets/afternoon.svg"
@@ -14,6 +15,7 @@ type SlotArtProps = {
 }
 
 const SLOT_ART: Record<Slot, string> = {
+  day_wide: dayWideArt,
   early_morning: earlyMorningArt,
   morning: morningArt,
   afternoon: afternoonArt,

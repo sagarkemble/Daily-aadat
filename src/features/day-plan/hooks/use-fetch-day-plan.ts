@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase"
-import { SLOTS } from "@/features/templates/types/slots"
+import { emptySlotBuckets, SLOTS } from "@/features/templates/types/slots"
 import { useQuery } from "@tanstack/react-query"
 import type { TodoState } from "@/features/todos/types/todo"
 import type {
@@ -24,16 +24,11 @@ function toDayPlanActivity(row: FetchedDayItem): DayPlanActivity {
 function groupActivitiesBySlot(
   activities: DayPlanActivity[]
 ): SlotWithActivities {
-  const activitiesBySlot: SlotWithActivities = {
-    early_morning: [],
-    morning: [],
-    afternoon: [],
-    evening: [],
-    night: [],
-  }
+  const activitiesBySlot: SlotWithActivities =
+    emptySlotBuckets<DayPlanActivity>()
 
   for (const activity of activities) {
-    activitiesBySlot[activity.slot].push({
+    activitiesBySlot[activity.slot]?.push({
       ...activity,
     })
   }
