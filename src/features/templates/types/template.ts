@@ -45,7 +45,6 @@ export type NewTemplateActivity = {
   sort_order: number
 }
 
-
 //example of the data being recived from database
 // the template_items field is an array of TemplateItem objects
 // each TemplateItem object has an activities field that is a TemplateItemActivity object

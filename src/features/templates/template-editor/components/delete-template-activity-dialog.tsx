@@ -37,12 +37,22 @@ export function DeleteTemplateActivityDialog({
   }
 
   function handleDelete() {
-    deleteActivity(activityId)
+    deleteActivity(activityId, {
+      onSuccess: () => setOpen(false),
+    })
   }
 
   return (
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
-      <AlertDialogTrigger render={<Button variant="outline" size="icon" />}>
+      <AlertDialogTrigger
+        render={
+          <Button
+            variant="outline"
+            size="icon"
+            onPointerDown={(event) => event.stopPropagation()}
+          />
+        }
+      >
         <Trash2Icon />
       </AlertDialogTrigger>
       <AlertDialogContent>

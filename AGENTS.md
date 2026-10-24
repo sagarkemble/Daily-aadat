@@ -15,3 +15,7 @@ Before creating a custom UI element, check whether shadcn/ui already provides th
 
 Compose existing shadcn primitives instead of inventing custom UI components.
 Follow the project's existing shadcn theme, variants, spacing, typography, responsiveness, and accessibility patterns.
+
+## Before implementing
+
+Before implementing any feature or writing any code ask the user first should i implement or code this thing

@@ -1,114 +1,56 @@
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { CollisionPriority } from "@dnd-kit/abstract"
+import { useDroppable } from "@dnd-kit/react"
+
 import { ItemGroup } from "@/components/ui/item"
-import type { Slot } from "../../types/slots"
-import { SLOT_LABELS } from "../../types/slots"
-import type {
-  NewTemplateActivity,
-  TemplateActivity,
-} from "../../types/template"
+import { cn } from "@/lib/utils"
+import type { TemplateActivity } from "../../types/template"
 import { TemplateActivityRow } from "./template-activity-row"
-import { ActivityPickerDialog } from "@/features/activity/components/activity-picker/activity-picker-dialog"
-import type { ActivityWithConfiguration } from "@/features/activity/types/activity"
 import TemplateActivityRowSkeleton from "./template-activity-row-skeleton"
-import { useAddTemplateActivities } from "../hooks/use-add-template-activities"
-import { ReorderList } from "@/components/ui/reorder-list"
-import { useReorderTemplateActivities } from "../hooks/use-reorder-template-activites"
-import { toast } from "@/components/ui/toast"
 
 type SlotProps = {
-  templateId: string
-  slot: Slot
-  activities: TemplateActivity[]
+  id: string
+  title: string
+  items: TemplateActivity[]
   isLoading?: boolean
 }
 
-const TemplateSlot = ({
-  templateId,
-  slot,
-  activities,
-  isLoading,
-}: SlotProps) => {
-  const { mutateAsync: reorderActivities } = useReorderTemplateActivities()
-  const { mutateAsync: addActivities, isPending: isAdding } =
-    useAddTemplateActivities()
-  const count = activities.length
-
-  function handleAddActivities(configured: ActivityWithConfiguration[]) {
-    const items: NewTemplateActivity[] = configured.map((activity, index) => ({
-      template_id: templateId,
-      activity_id: activity.id,
-      type: activity.type,
-      target: activity.type === "count" ? activity.target : null,
-      unit: activity.type === "count" ? activity.unit : null,
-      slot,
-      sort_order: count + index,
-    }))
-    toast.promise(addActivities(items), {
-      loading: { title: "Adding activities…" },
-      success: { title: "Activities added" },
-      error: { title: "Failed to add activities" },
-    })
-  }
-
-  function handleReorderFinish(newOrder: TemplateActivity[]) {
-    const newActivities = newOrder.map((activity, index) => ({
-      ...activity,
-      sort_order: index,
-    }))
-
-    toast.promise(reorderActivities(newActivities), {
-      loading: { title: "Reordering activities…" },
-      success: { title: "Activities reordered" },
-      error: { title: "Failed to reorder activities" },
-    })
-  }
+const TemplateSlot = ({ id, title, items, isLoading = false }: SlotProps) => {
+  const { ref, isDropTarget } = useDroppable({
+    id,
+    accept: "activity",
+    collisionPriority: CollisionPriority.Low,
+  })
 
   return (
-    <Card>
-      <CardHeader className="border-b">
-        <CardTitle>{SLOT_LABELS[slot]}</CardTitle>
-        {count === 0 && !isLoading ? (
-          <CardDescription>No activities</CardDescription>
-        ) : null}
-        <CardAction>
-          <ActivityPickerDialog
-            onAdd={handleAddActivities}
-            isPending={isAdding}
-          />
-          <Badge variant="secondary">{count}</Badge>
-        </CardAction>
-      </CardHeader>
-      {isLoading ? (
-        <CardContent>
+    <section className="flex flex-col gap-2">
+      <h2 className="text-sm font-medium">{title}</h2>
+      <div
+        ref={ref}
+        className={cn(
+          "flex min-h-16 flex-col gap-1 rounded-md p-2",
+          isDropTarget && "bg-muted"
+        )}
+      >
+        {isLoading ? (
           <ItemGroup>
             <TemplateActivityRowSkeleton />
             <TemplateActivityRowSkeleton />
           </ItemGroup>
-        </CardContent>
-      ) : count > 0 ? (
-        <CardContent>
+        ) : (
           <ItemGroup>
-            <ReorderList
-              items={activities}
-              getItemId={(activity) => activity.id}
-              onReorderFinish={handleReorderFinish}
-              className="rounded-lg"
-              renderItem={(activity) => (
-                <TemplateActivityRow activity={activity} />
-              )}
-            />
+            {items.map((item, index) => (
+              <TemplateActivityRow
+                key={item.id}
+                id={item.id}
+                index={index}
+                group={id}
+                activity={item}
+              />
+            ))}
           </ItemGroup>
-        </CardContent>
-      ) : null}
-    </Card>
+        )}
+      </div>
+    </section>
   )
 }
 
