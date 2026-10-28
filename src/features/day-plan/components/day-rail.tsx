@@ -1,67 +1,23 @@
-import { QuoteIcon, TargetIcon } from "lucide-react"
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { dayCompletion } from "../lib/day-completion"
 import { quoteForDate } from "../lib/quotes"
-import { DayPlanActions } from "./day-plan-actions"
+import type { DayBoard } from "../types/day-plan"
+import { DayProgressRing } from "./day-progress-ring"
+import { DayQuoteCard } from "./day-quote-card"
 
 type DayRailProps = {
   date: string
-  isPlanned: boolean
-  editing: boolean
-  onEditingChange: (editing: boolean) => void
-  onAddActivity?: () => void
-  isAddingActivity?: boolean
+  board?: DayBoard
+  isLoading?: boolean
 }
 
-function DayRail({
-  date,
-  isPlanned,
-  editing,
-  onEditingChange,
-  onAddActivity,
-  isAddingActivity,
-}: DayRailProps) {
+function DayRail({ date, board, isLoading }: DayRailProps) {
   return (
-    <aside className="hidden w-80 shrink-0 flex-col gap-4 lg:flex">
-      <DayPlanActions
-        date={date}
-        isPlanned={isPlanned}
-        editing={editing}
-        onEditingChange={onEditingChange}
-        onAddActivity={onAddActivity}
-        isAddingActivity={isAddingActivity}
+    <aside className="hidden w-48 shrink-0 flex-col gap-3 lg:flex">
+      <DayProgressRing
+        completion={dayCompletion(board)}
+        isLoading={isLoading}
       />
-      <Card size="sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TargetIcon className="size-4" />
-            Today&apos;s focus
-          </CardTitle>
-          <CardDescription>Stay consistent</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Pick the next slot. Finish it. Then the next.
-          </p>
-        </CardContent>
-      </Card>
-      <Card size="sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <QuoteIcon className="size-4" />
-            Quote
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">{quoteForDate(date)}</p>
-        </CardContent>
-      </Card>
+      <DayQuoteCard quote={quoteForDate(date)} />
     </aside>
   )
 }

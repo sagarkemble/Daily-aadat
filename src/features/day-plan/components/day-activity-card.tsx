@@ -2,12 +2,15 @@ import { useState } from "react"
 import { Feedback } from "@dnd-kit/dom"
 import { useSortable } from "@dnd-kit/react/sortable"
 
-import { Badge } from "@/components/ui/badge"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DynamicIcon } from "@/components/dynamic-icon"
 import { cn } from "@/lib/utils"
-import { activityTypeLabels } from "@/features/activity/types/activity"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
 import { DayActivityDetailDialog } from "./day-activity-detail-dialog"
@@ -21,12 +24,6 @@ type DayActivityCardProps = {
   editing?: boolean
   onCommand: (activity: DayPlanActivity, command: DayItemCommand) => void
   onUnassign: (activityId: string) => void
-}
-
-function kindLabel(activity: DayPlanActivity) {
-  if (activity.kind === "todo") return "Todo"
-  if (activity.type) return activityTypeLabels[activity.type]
-  return "Activity"
 }
 
 function DayActivityCard({
@@ -54,11 +51,11 @@ function DayActivityCard({
   const note = activity.note_snapshot?.trim()
 
   return (
-    <div ref={ref} className={cn("h-full", isDragging && "opacity-50")}>
+    <div ref={ref} className={cn("aspect-square", isDragging && "opacity-50")}>
       <Card
         ref={sourceRef}
         size="sm"
-        className="h-full min-h-44 cursor-pointer border border-border ring-0"
+        className="size-full cursor-pointer border border-border ring-0"
         onClick={() => {
           if (!isDragging) setDetailOpen(true)
         }}
@@ -99,7 +96,6 @@ function DayActivityCard({
                 }
               />
             ) : null}
-            <Badge variant="outline">{kindLabel(activity)}</Badge>
           </div>
         </CardHeader>
       </Card>

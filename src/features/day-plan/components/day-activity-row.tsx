@@ -10,7 +10,6 @@ import {
   RotateCcwIcon,
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -23,7 +22,6 @@ import {
 } from "@/components/ui/item"
 import { DynamicIcon } from "@/components/dynamic-icon"
 import { cn } from "@/lib/utils"
-import { activityTypeLabels } from "@/features/activity/types/activity"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
 import { DayActivityDetailDialog } from "./day-activity-detail-dialog"
@@ -50,12 +48,6 @@ function formatCountProgress(activity: DayPlanActivity) {
 function formatTimedTarget(activity: DayPlanActivity) {
   if (activity.target == null) return null
   return [activity.target, activity.unit].filter(Boolean).join(" ")
-}
-
-function kindLabel(activity: DayPlanActivity) {
-  if (activity.kind === "todo") return "Todo"
-  if (activity.type) return activityTypeLabels[activity.type]
-  return "Activity"
 }
 
 export function DayActivityRow({
@@ -109,7 +101,7 @@ export function DayActivityRow({
             ) : null}
           </ItemMedia>
           <ItemContent className="min-w-0">
-            <ItemTitle className="min-w-0 w-full">
+            <ItemTitle className="w-full min-w-0">
               {activity.name_snapshot}
             </ItemTitle>
             {target ? <ItemDescription>{target}</ItemDescription> : null}
@@ -176,7 +168,6 @@ export function DayActivityRow({
                 ) : null}
               </>
             )}
-            <Badge variant="outline">{kindLabel(activity)}</Badge>
           </ItemActions>
         </Item>
       </div>
@@ -221,7 +212,7 @@ function TimedControls({
 
   return (
     <div className="flex items-center gap-2">
-      <span className="flex items-center gap-1 text-sm tabular-nums text-muted-foreground">
+      <span className="flex items-center gap-1 text-sm text-muted-foreground tabular-nums">
         <AlarmClockIcon className="size-3.5" />
         {label}
       </span>

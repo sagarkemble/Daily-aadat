@@ -1,12 +1,12 @@
 const DAY_QUOTES = [
-  "Small steps today create big changes tomorrow.",
-  "A little progress each day adds up to big results.",
-  "Show up. The rest follows.",
-  "Protect the hours that protect you.",
-  "Done is kinder than perfect.",
-  "One slot at a time is still a day lived.",
-  "Rest is part of the work.",
-  "Keep the aadat. Skip the guilt.",
+  "Show up today.\nThe rest follows.",
+  "Done is kinder\nthan perfect.",
+  "Small steps today.\nBig change tomorrow.",
+  "Protect the hours\nthat protect you.",
+  "Rest is part\nof the work.",
+  "Keep the aadat.\nSkip the guilt.",
+  "One slot at a time\nis still a day lived.",
+  "A little each day\nadds up.",
 ] as const
 
 function quoteForDate(date: string) {

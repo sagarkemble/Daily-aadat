@@ -1,4 +1,4 @@
-import { useId, useMemo, useState } from "react"
+import { useEffect, useId, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
@@ -17,8 +17,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Field, FieldLegend, FieldSet } from "@/components/ui/field"
 import { toast } from "@/components/ui/toast"
-import { SLOT_LABELS, type Slot } from "@/features/templates/types/slots"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { SLOT_LABELS, SLOTS, type Slot } from "@/features/templates/types/slots"
 import { useFetchTodos } from "@/features/todos/hooks/use-fetch-todos"
 import { useCreateTodo } from "@/features/todos/hooks/use-create-todo"
 import { formatTodoAssignment } from "@/features/todos/lib/format-todo-assignment"
@@ -32,9 +34,9 @@ import { AddTodoTabs } from "./add-todo-tabs"
 import { AddTodoToolbar } from "./add-todo-toolbar"
 
 type AddTodoDialogProps = {
-  slot: Slot
+  slot?: Slot
   dayPlanId: string
-  nextSlotOrder: number
+  nextSlotOrder: number | ((slot: Slot) => number)
   open?: boolean
   onOpenChange?: (open: boolean) => void
 }
@@ -57,6 +59,8 @@ export function AddTodoDialog({
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false)
   const isControlled = open !== undefined
   const isOpen = isControlled ? open : uncontrolledOpen
+  const [pickedSlot, setPickedSlot] = useState<Slot | undefined>(slot)
+  const targetSlot = slot ?? pickedSlot
   const [searchQuery, setSearchQuery] = useState("")
   const [todoToMove, setTodoToMove] = useState<Todo | null>(null)
   const debouncedQuery = useDebounce(searchQuery, 300)
@@ -73,11 +77,11 @@ export function AddTodoDialog({
     const todos = data ?? []
     return todos.filter((todo) => {
       if (todo.state !== "pending") return false
-      if (isOnThisSlot(todo, dayPlanId, slot)) return false
+      if (targetSlot && isOnThisSlot(todo, dayPlanId, targetSlot)) return false
       if (query === "") return true
       return todo.name.toLowerCase().includes(query)
     })
-  }, [data, query, dayPlanId, slot])
+  }, [data, query, dayPlanId, targetSlot])
 
   const unassignedTodos = filteredTodos.filter((todo) => !todo.assignment)
   const assignedTodos = filteredTodos.filter((todo) => todo.assignment)
@@ -90,11 +94,30 @@ export function AddTodoDialog({
     if (!nextOpen) {
       setSearchQuery("")
       setTodoToMove(null)
+      setPickedSlot(slot)
     }
   }
 
+  useEffect(() => {
+    if (isOpen) setPickedSlot(slot)
+  }, [isOpen, slot])
+
+  function resolveOrder(nextSlot: Slot) {
+    return typeof nextSlotOrder === "function"
+      ? nextSlotOrder(nextSlot)
+      : nextSlotOrder
+  }
+
   function assignHere(todo: Todo) {
-    return assignTodo({ todo, dayPlanId, slot, slotOrder: nextSlotOrder })
+    if (!targetSlot) {
+      throw new Error("Slot is required")
+    }
+    return assignTodo({
+      todo,
+      dayPlanId,
+      slot: targetSlot,
+      slotOrder: resolveOrder(targetSlot),
+    })
   }
 
   function handleCreate(input: CreateTodoInput) {
@@ -113,6 +136,7 @@ export function AddTodoDialog({
   }
 
   function handleSelectUnassigned(todo: Todo) {
+    if (!targetSlot) return
     toast
       .promise(assignHere(todo), {
         loading: { title: "Assigning todo…" },
@@ -125,19 +149,20 @@ export function AddTodoDialog({
   }
 
   function handleSelectAssigned(todo: Todo) {
+    if (!targetSlot) return
     setTodoToMove(todo)
   }
 
   function handleConfirmMove() {
-    if (!todoToMove) return
+    if (!todoToMove || !targetSlot) return
     const todo = todoToMove
     toast
       .promise(
         reassignTodo({
           todo,
           dayPlanId,
-          slot,
-          slotOrder: nextSlotOrder,
+          slot: targetSlot,
+          slotOrder: resolveOrder(targetSlot),
         }),
         {
           loading: { title: "Moving todo…" },
@@ -165,9 +190,40 @@ export function AddTodoDialog({
         )}
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add todo · {SLOT_LABELS[slot]}</DialogTitle>
+            <DialogTitle>
+              {targetSlot
+                ? `Add todo · ${SLOT_LABELS[targetSlot]}`
+                : "Add todo"}
+            </DialogTitle>
           </DialogHeader>
-          <AddTodoCreateForm isPending={isMutating} onCreate={handleCreate} />
+          {slot == null ? (
+            <FieldSet>
+              <FieldLegend variant="label">Slot</FieldLegend>
+              <Field>
+                <ToggleGroup
+                  value={pickedSlot ? [pickedSlot] : []}
+                  onValueChange={(value) => {
+                    const next = value[0]
+                    setPickedSlot(
+                      SLOTS.includes(next as Slot) ? (next as Slot) : undefined
+                    )
+                  }}
+                  className="flex-wrap"
+                  size="sm"
+                >
+                  {SLOTS.map((name) => (
+                    <ToggleGroupItem key={name} value={name}>
+                      {SLOT_LABELS[name]}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              </Field>
+            </FieldSet>
+          ) : null}
+          <AddTodoCreateForm
+            isPending={isMutating || !targetSlot}
+            onCreate={handleCreate}
+          />
           <AddTodoToolbar
             searchId={searchId}
             searchQuery={searchQuery}

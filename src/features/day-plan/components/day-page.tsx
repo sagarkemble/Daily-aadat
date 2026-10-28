@@ -19,7 +19,12 @@ import {
   applyDayItemCommand,
   type DayItemCommand,
 } from "../lib/day-item-command"
-import type { DayBoard, DayPlanActivity, NewDayPlanActivity } from "../types/day-plan"
+import type {
+  DayBoard,
+  DayPlanActivity,
+  NewDayPlanActivity,
+} from "../types/day-plan"
+import { AddTodoDialog } from "./add-todo-dialog/add-todo-dialog"
 import { DayPlanActions } from "./day-plan-actions"
 import { DayRail } from "./day-rail"
 import DaySlot from "./day-slot"
@@ -46,6 +51,7 @@ const DayPage = ({ date }: DayPageProps) => {
   const [editing, setEditing] = useState(false)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [pickerSlot, setPickerSlot] = useState<Slot | undefined>()
+  const [todoOpen, setTodoOpen] = useState(false)
   const { mutateAsync: addActivities, isPending: isAdding } = useAddActivity()
   const { mutate: applyCommand, isPending: isApplying } =
     useApplyActivityCommand()
@@ -125,19 +131,24 @@ const DayPage = ({ date }: DayPageProps) => {
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
       <div className="flex min-w-0 flex-1 flex-col gap-8">
-        <div className="lg:hidden">
-          <DayPlanActions
-            date={date}
-            isPlanned={isPlanned}
-            editing={editing}
-            onEditingChange={setEditing}
-            onAddActivity={() => {
-              setPickerSlot(undefined)
-              setPickerOpen(true)
-            }}
-            isAddingActivity={isAdding}
-          />
-        </div>
+        <DayPlanActions
+          date={date}
+          isPlanned={isPlanned}
+          editing={editing}
+          onEditingChange={setEditing}
+          onAddActivity={() => {
+            setPickerSlot(undefined)
+            setPickerOpen(true)
+          }}
+          isAddingActivity={isAdding}
+          onAddTodo={
+            isPlanned
+              ? () => {
+                  setTodoOpen(true)
+                }
+              : undefined
+          }
+        />
         <DragDropProvider
           onDragStart={() => {
             isDragging.current = true
@@ -232,17 +243,21 @@ const DayPage = ({ date }: DayPageProps) => {
           ))}
         </DragDropProvider>
       </div>
-      <DayRail
-        date={date}
-        isPlanned={isPlanned}
-        editing={editing}
-        onEditingChange={setEditing}
-        onAddActivity={() => {
-          setPickerSlot(undefined)
-          setPickerOpen(true)
-        }}
-        isAddingActivity={isAdding}
-      />
+      <DayRail date={date} board={board} isLoading={isLoading} />
+      {isPlanned && data ? (
+        <AddTodoDialog
+          dayPlanId={data.id}
+          nextSlotOrder={(slot) =>
+            nextSortOrder(
+              (board?.[slot]?.activities ?? []).map(
+                (activity) => activity.slot_order
+              )
+            )
+          }
+          open={todoOpen}
+          onOpenChange={setTodoOpen}
+        />
+      ) : null}
       {isPlanned ? (
         <ActivityPickerDialog
           requireSlot

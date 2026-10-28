@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ListIcon, PencilIcon, Undo2Icon } from "lucide-react"
+import { ListIcon, ListTodoIcon, PencilIcon, Undo2Icon } from "lucide-react"
 
 import {
   AlertDialog,
@@ -27,6 +27,7 @@ type DayPlanActionsProps = {
   onEditingChange: (editing: boolean) => void
   onAddActivity?: () => void
   isAddingActivity?: boolean
+  onAddTodo?: () => void
 }
 
 function DayPlanActions({
@@ -36,6 +37,7 @@ function DayPlanActions({
   onEditingChange,
   onAddActivity,
   isAddingActivity = false,
+  onAddTodo,
 }: DayPlanActionsProps) {
   const { mutateAsync: unplanDay, isPending } = useUnplanDay()
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -107,6 +109,12 @@ function DayPlanActions({
         >
           <ListIcon data-icon="inline-start" />
           Add activity
+        </Button>
+      ) : null}
+      {isPlanned && onAddTodo ? (
+        <Button variant="secondary" onClick={onAddTodo}>
+          <ListTodoIcon data-icon="inline-start" />
+          Add todo
         </Button>
       ) : null}
       {isPlanned ? (
