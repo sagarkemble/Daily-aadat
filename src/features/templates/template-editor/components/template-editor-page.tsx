@@ -7,8 +7,9 @@ import { isSortable } from "@dnd-kit/react/sortable"
 import { ActivityPickerDialog } from "@/features/activity/components/activity-picker/activity-picker-dialog"
 import type { ActivityWithConfiguration } from "@/features/activity/types/activity"
 import { toast } from "@/components/ui/toast"
-import { SLOT_LABELS, SLOTS, type Slot } from "../../types/slots"
+import { SLOT_LABELS, SLOTS, TIMED_SLOTS, type Slot } from "../../types/slots"
 import type { NewTemplateActivity, TemplateBoard } from "../../types/template"
+import { TemplateDayWide } from "./template-day-wide"
 import TemplateEditorHeader from "./template-editor-header"
 import { TemplateSlot } from "./template-slot"
 import { useAddTemplateActivities } from "../hooks/use-add-template-activities"
@@ -25,6 +26,7 @@ const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
   const { mutateAsync: addActivities, isPending: isAdding } =
     useAddTemplateActivities()
   const [pickerOpen, setPickerOpen] = useState(false)
+  const [pickerSlot, setPickerSlot] = useState<Slot | undefined>()
   const [board, setBoard] = useState<TemplateBoard | undefined>(
     data?.activities
   )
@@ -32,8 +34,6 @@ const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
   boardRef.current = board
   const isDragging = useRef(false)
   const snapshot = useRef(board)
-
-  console.log("board", data)
 
   useEffect(() => {
     if (data && !isDragging.current) {
@@ -66,20 +66,27 @@ const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-8">
       <TemplateEditorHeader
         templateId={templateId}
         name={data?.name ?? ""}
         description={data?.description ?? ""}
         icon={data?.icon ?? ""}
         isLoading={isLoading}
-        onAddActivity={() => setPickerOpen(true)}
+        onAddActivity={() => {
+          setPickerSlot(undefined)
+          setPickerOpen(true)
+        }}
         isAddingActivity={isAdding}
       />
       <ActivityPickerDialog
         requireSlot
+        initialSlot={pickerSlot}
         open={pickerOpen}
-        onOpenChange={setPickerOpen}
+        onOpenChange={(open) => {
+          setPickerOpen(open)
+          if (!open) setPickerSlot(undefined)
+        }}
         onAdd={handleAddActivities}
         isPending={isAdding}
       />
@@ -135,18 +142,33 @@ const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
           })
         }}
       >
-        {SLOTS.map((slot) => (
-          <TemplateSlot
-            key={slot}
-            id={slot}
-            templateId={templateId}
-            title={SLOT_LABELS[slot]}
-            items={board?.[slot]?.activities ?? []}
-            startTime={board?.[slot]?.start_time ?? null}
-            endTime={board?.[slot]?.end_time ?? null}
+        <div className="flex flex-col gap-8">
+          <TemplateDayWide
+            items={board?.day_wide?.activities ?? []}
             isLoading={isLoading}
+            onAddActivity={() => {
+              setPickerSlot("day_wide")
+              setPickerOpen(true)
+            }}
           />
-        ))}
+          {TIMED_SLOTS.map((slot, index) => (
+            <TemplateSlot
+              key={slot}
+              id={slot}
+              templateId={templateId}
+              title={SLOT_LABELS[slot]}
+              items={board?.[slot]?.activities ?? []}
+              startTime={board?.[slot]?.start_time ?? null}
+              endTime={board?.[slot]?.end_time ?? null}
+              isLoading={isLoading}
+              showConnector={index < TIMED_SLOTS.length - 1}
+              onAddActivity={() => {
+                setPickerSlot(slot)
+                setPickerOpen(true)
+              }}
+            />
+          ))}
+        </div>
       </DragDropProvider>
     </div>
   )

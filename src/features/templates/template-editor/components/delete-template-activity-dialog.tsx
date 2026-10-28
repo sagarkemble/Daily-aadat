@@ -19,11 +19,13 @@ import { useDeleteTemplateActivity } from "../hooks/use-delete-template-activity
 type DeleteTemplateActivityDialogProps = {
   activityId: string
   name?: string
+  onDeleted?: () => void
 }
 
 export function DeleteTemplateActivityDialog({
   activityId,
   name,
+  onDeleted,
 }: DeleteTemplateActivityDialogProps) {
   const [open, setOpen] = useState(false)
   const { mutate: deleteActivity, isPending } =
@@ -38,22 +40,19 @@ export function DeleteTemplateActivityDialog({
 
   function handleDelete() {
     deleteActivity(activityId, {
-      onSuccess: () => setOpen(false),
+      onSuccess: () => {
+        setOpen(false)
+        onDeleted?.()
+      },
     })
   }
 
   return (
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
       <AlertDialogTrigger
-        render={
-          <Button
-            variant="outline"
-            size="icon"
-            onPointerDown={(event) => event.stopPropagation()}
-          />
-        }
+        render={<Button variant="destructive" disabled={isPending} />}
       >
-        <Trash2Icon />
+        Delete
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

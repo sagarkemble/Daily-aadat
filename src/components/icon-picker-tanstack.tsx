@@ -33,7 +33,7 @@ const IconItem = React.memo(
         aria-label={`Select ${iconName} icon`}
         aria-pressed={selectedIcon === iconName}
       >
-        <DynamicIcon name={iconName} size={16} />
+        <DynamicIcon name={iconName} size="sm" />
       </button>
     )
   }

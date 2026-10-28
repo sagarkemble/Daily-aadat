@@ -8,9 +8,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 const TemplateActivityRowSkeleton = () => {
   return (
-    <Item variant="outline" size="sm">
+    <Item variant="default" size="sm" className="rounded-none px-3">
       <ItemMedia variant="icon">
-        <Skeleton className="size-8 rounded-md" />
+        <Skeleton className="size-10 rounded-full" />
       </ItemMedia>
       <ItemContent>
         <Skeleton className="h-4 w-2/3" />

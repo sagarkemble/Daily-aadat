@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { useFetchActivities } from "@/features/activity/hooks/use-fetch-activities"
 import { useDebounce } from "@/hooks/use-debounce"
-import { useId, useMemo, useState } from "react"
+import { useEffect, useId, useMemo, useState } from "react"
 import type {
   Activity,
   ActivityWithConfiguration,
@@ -30,6 +30,7 @@ type ActivityPickerDialogProps = {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   requireSlot?: boolean
+  initialSlot?: Slot
 }
 
 const ActivityPickerDialog = ({
@@ -38,6 +39,7 @@ const ActivityPickerDialog = ({
   open,
   onOpenChange,
   requireSlot = false,
+  initialSlot,
 }: ActivityPickerDialogProps) => {
   const searchId = useId()
   const { data, isLoading, error } = useFetchActivities()
@@ -51,7 +53,7 @@ const ActivityPickerDialog = ({
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedActivities, setSelectedActivities] = useState<Activity[]>([])
   const [step, setStep] = useState<"select" | "configure">("select")
-  const [slot, setSlot] = useState<Slot | undefined>(undefined)
+  const [slot, setSlot] = useState<Slot | undefined>(initialSlot)
   const selectedOrder = useMemo(() => {
     const order = new Map<string, number>()
     selectedActivities.forEach((activity, index) => {
@@ -103,6 +105,10 @@ const ActivityPickerDialog = ({
     onAdd(configuredActivities, slot)
     handleOpenChange(false)
   }
+  useEffect(() => {
+    if (isOpen) setSlot(initialSlot)
+  }, [isOpen, initialSlot])
+
   function reset() {
     setSelectedActivities([])
     setConfiguredActivities([])
@@ -183,7 +189,7 @@ const ActivityPickerDialog = ({
             <DialogHeader>
               <DialogTitle>Configure activities</DialogTitle>
             </DialogHeader>
-            {requireSlot ? (
+            {requireSlot && !initialSlot ? (
               <FieldSet>
                 <FieldLegend variant="label">Slot</FieldLegend>
                 <Field>

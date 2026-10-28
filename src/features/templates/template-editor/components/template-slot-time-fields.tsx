@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react"
-import { ClockIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
+import { TimePicker } from "@/components/ui/time-picker"
 import { toast } from "@/components/ui/toast"
 import type { TimedSlot } from "../../types/slots"
 import { useUpsertTemplateSlotTime } from "../hooks/use-upsert-template-slot-time"
@@ -12,48 +20,60 @@ import { useUpsertTemplateSlotTime } from "../hooks/use-upsert-template-slot-tim
 type TemplateSlotTimeFieldsProps = {
   templateId: string
   slot: TimedSlot
+  title: string
   startTime: string | null
   endTime: string | null
   disabled?: boolean
 }
 
-function toClockInput(value: string | null): string {
-  if (!value) return ""
+function toClock(value: string | null): string | null {
+  if (!value) return null
   return value.slice(0, 5)
 }
 
 function TemplateSlotTimeFields({
   templateId,
   slot,
+  title,
   startTime,
   endTime,
   disabled = false,
 }: TemplateSlotTimeFieldsProps) {
-  const savedStart = toClockInput(startTime)
-  const savedEnd = toClockInput(endTime)
-  const [start, setStart] = useState(savedStart)
-  const [end, setEnd] = useState(savedEnd)
+  const savedStart = toClock(startTime)
+  const savedEnd = toClock(endTime)
+  const [open, setOpen] = useState(false)
+  const [start, setStart] = useState<string | null>(savedStart)
+  const [end, setEnd] = useState<string | null>(savedEnd)
   const { mutateAsync: upsertSlotTime, isPending } = useUpsertTemplateSlotTime()
 
   useEffect(() => {
-    setStart(savedStart)
-    setEnd(savedEnd)
-  }, [savedStart, savedEnd])
+    if (open) {
+      setStart(savedStart)
+      setEnd(savedEnd)
+    }
+  }, [open, savedStart, savedEnd])
 
-  const bothEmpty = start === "" && end === ""
-  const bothSet = start !== "" && end !== ""
+  const bothEmpty = start === null && end === null
+  const bothSet = start !== null && end !== null
   const incomplete = !bothEmpty && !bothSet
-  const dirty = start !== savedStart || end !== savedEnd
+  const label =
+    savedStart && savedEnd ? `${savedStart} – ${savedEnd}` : "Set time"
 
   function handleSave() {
-    if (incomplete || !dirty) return
+    if (incomplete) {
+      toast.add({
+        title: "Set start and end, or clear both",
+        type: "error",
+      })
+      return
+    }
     toast.promise(
       upsertSlotTime({
         template_id: templateId,
         slot,
         start_time: bothEmpty ? null : start,
         end_time: bothEmpty ? null : end,
-      }),
+      }).then(() => setOpen(false)),
       {
         loading: { title: "Saving slot time…" },
         success: { title: "Slot time saved" },
@@ -63,55 +83,59 @@ function TemplateSlotTimeFields({
   }
 
   return (
-    <FieldGroup>
-      <div className="flex flex-wrap items-end gap-2">
-        <Field
-          orientation="horizontal"
-          className="w-auto"
-          data-invalid={incomplete || undefined}
-          data-disabled={disabled || undefined}
-        >
-          <FieldLabel htmlFor={`${slot}-start`}>
-            <ClockIcon />
-            Start
-          </FieldLabel>
-          <Input
-            id={`${slot}-start`}
-            type="time"
-            value={start}
-            disabled={disabled || isPending}
-            aria-invalid={incomplete || undefined}
-            onChange={(event) => setStart(event.target.value)}
-          />
-        </Field>
-        <Field
-          orientation="horizontal"
-          className="w-auto"
-          data-invalid={incomplete || undefined}
-          data-disabled={disabled || undefined}
-        >
-          <FieldLabel htmlFor={`${slot}-end`}>End</FieldLabel>
-          <Input
-            id={`${slot}-end`}
-            type="time"
-            value={end}
-            disabled={disabled || isPending}
-            aria-invalid={incomplete || undefined}
-            onChange={(event) => setEnd(event.target.value)}
-          />
-        </Field>
-        {dirty ? (
-          <Button
-            size="sm"
-            disabled={incomplete || isPending || disabled}
-            onClick={handleSave}
-          >
-            {isPending ? <Spinner data-icon="inline-start" /> : null}
-            Save
-          </Button>
-        ) : null}
-      </div>
-    </FieldGroup>
+    <>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="h-auto w-fit self-start px-0 text-muted-foreground"
+        disabled={disabled}
+        onClick={() => setOpen(true)}
+      >
+        {label}
+      </Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{title} time</DialogTitle>
+            <DialogDescription>
+              Set start and end, or clear both.
+            </DialogDescription>
+          </DialogHeader>
+          <FieldGroup>
+            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+              <Field data-disabled={isPending || undefined}>
+                <FieldLabel>Start</FieldLabel>
+                <TimePicker
+                  value={start}
+                  onChange={setStart}
+                  disabled={isPending}
+                />
+              </Field>
+              <Field data-disabled={isPending || undefined}>
+                <FieldLabel>End</FieldLabel>
+                <TimePicker value={end} onChange={setEnd} disabled={isPending} />
+              </Field>
+            </div>
+          </FieldGroup>
+          <DialogFooter>
+            <DialogClose render={<Button variant="outline" disabled={isPending} />}>
+              Cancel
+            </DialogClose>
+            <Button disabled={isPending || incomplete} onClick={handleSave}>
+              {isPending ? (
+                <>
+                  <Spinner data-icon="inline-start" />
+                  Saving…
+                </>
+              ) : (
+                "Save"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 

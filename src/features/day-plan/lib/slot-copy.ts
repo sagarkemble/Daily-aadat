@@ -38,7 +38,7 @@ const SLOT_COPY: Record<Slot, SlotCopy> = {
     sky: "#B2A0F6",
   },
   evening: {
-    description: "Wind down and reflect.",
+    description: "Wind down.",
     icon: LeafIcon,
     sky: "#F59A6B",
   },
