@@ -1,12 +1,13 @@
 import { supabase } from "@/lib/supabase"
-import { emptySlotBuckets, SLOTS } from "@/features/templates/types/slots"
+import { SLOTS } from "@/features/templates/types/slots"
 import { useQuery } from "@tanstack/react-query"
 import type { TodoState } from "@/features/todos/types/todo"
 import type {
+  DayBoard,
   DayPlanActivity,
   DayPlanWithActivities,
+  DaySlotTime,
   FetchedDayPlan,
-  SlotWithActivities,
 } from "../types/day-plan"
 
 type FetchedDayItem = DayPlanActivity & {
@@ -21,23 +22,42 @@ function toDayPlanActivity(row: FetchedDayItem): DayPlanActivity {
   }
 }
 
+function emptyDayBoard(): DayBoard {
+  return Object.fromEntries(
+    SLOTS.map((slot) => [
+      slot,
+      {
+        start_time: null,
+        end_time: null,
+        activities: [] as DayPlanActivity[],
+      },
+    ])
+  ) as DayBoard
+}
+
 function groupActivitiesBySlot(
-  activities: DayPlanActivity[]
-): SlotWithActivities {
-  const activitiesBySlot: SlotWithActivities =
-    emptySlotBuckets<DayPlanActivity>()
+  activities: DayPlanActivity[],
+  slotTimes: DaySlotTime[] | null | undefined
+): DayBoard {
+  const board = emptyDayBoard()
 
   for (const activity of activities) {
-    activitiesBySlot[activity.slot]?.push({
+    board[activity.slot]?.activities.push({
       ...activity,
     })
   }
 
   for (const slot of SLOTS) {
-    activitiesBySlot[slot].sort((a, b) => a.slot_order - b.slot_order)
+    board[slot].activities.sort((a, b) => a.slot_order - b.slot_order)
   }
 
-  return activitiesBySlot
+  for (const time of slotTimes ?? []) {
+    if (time.slot === "day_wide") continue
+    board[time.slot].start_time = time.start_time
+    board[time.slot].end_time = time.end_time
+  }
+
+  return board
 }
 
 async function fetchDayPlan(
@@ -76,6 +96,11 @@ async function fetchDayPlan(
         todos (
           state
         )
+      ),
+      slot_times:day_plan_slot_times(
+        slot,
+        start_time,
+        end_time
       )
     `
     )
@@ -96,8 +121,11 @@ async function fetchDayPlan(
 
   return {
     ...row,
-    activities: groupActivitiesBySlot(row.activities.map(toDayPlanActivity)),
-  } as DayPlanWithActivities
+    activities: groupActivitiesBySlot(
+      row.activities.map(toDayPlanActivity),
+      row.slot_times
+    ),
+  }
 }
 
 function useFetchDayPlan(date: string) {

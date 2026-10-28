@@ -21,6 +21,7 @@ import {
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
 import { useEffect, useState } from "react"
+import { DayActivityNote } from "./day-activity-note"
 
 type DayActivityRowProps = {
   activity: DayPlanActivity
@@ -78,6 +79,12 @@ export function DayActivityRow({
         </ItemTitle>
         {description ? (
           <ItemDescription>{description}</ItemDescription>
+        ) : null}
+        {activity.kind === "activity" ? (
+          <DayActivityNote
+            itemId={activity.id}
+            note={activity.note_snapshot}
+          />
         ) : null}
       </ItemContent>
       <ItemActions className="shrink-0">

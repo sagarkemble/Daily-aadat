@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { PencilIcon, Undo2Icon } from "lucide-react"
+import { ListIcon, PencilIcon, Undo2Icon } from "lucide-react"
 
 import {
   AlertDialog,
@@ -25,6 +25,8 @@ type DayPlanActionsProps = {
   isPlanned: boolean
   editing: boolean
   onEditingChange: (editing: boolean) => void
+  onAddActivity?: () => void
+  isAddingActivity?: boolean
 }
 
 function DayPlanActions({
@@ -32,6 +34,8 @@ function DayPlanActions({
   isPlanned,
   editing,
   onEditingChange,
+  onAddActivity,
+  isAddingActivity = false,
 }: DayPlanActionsProps) {
   const { mutateAsync: unplanDay, isPending } = useUnplanDay()
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -95,6 +99,16 @@ function DayPlanActions({
       ) : (
         <SelectTemplateDialog date={date} />
       )}
+      {isPlanned && onAddActivity ? (
+        <Button
+          variant="secondary"
+          disabled={isAddingActivity}
+          onClick={onAddActivity}
+        >
+          <ListIcon data-icon="inline-start" />
+          Add activity
+        </Button>
+      ) : null}
       {isPlanned ? (
         <Toggle
           variant="outline"

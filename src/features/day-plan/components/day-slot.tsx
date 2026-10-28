@@ -1,8 +1,6 @@
 import { ItemGroup } from "@/components/ui/item"
-import type { Slot } from "@/features/templates/types/slots"
-import type { DayPlanActivity, NewDayPlanActivity } from "../types/day-plan"
-import type { ActivityWithConfiguration } from "@/features/activity/types/activity"
-import { useAddActivity } from "../hooks/use-add-activity"
+import { isTimedSlot, type Slot } from "@/features/templates/types/slots"
+import type { DayPlanActivity } from "../types/day-plan"
 import { useDeleteActivity } from "../hooks/use-delete-activity"
 import { useApplyActivityCommand } from "../hooks/use-apply-activity-command"
 import { useUnassignTodo } from "../hooks/use-unassign-todo"
@@ -19,14 +17,22 @@ import { useReorderDayPlanActivities } from "../hooks/use-reorder-day-plan-activ
 import { toast } from "@/components/ui/toast"
 import { SlotArt } from "./slot-art"
 import { SlotAddControl } from "./slot-add-control"
+import { DaySlotTimeFields } from "./day-slot-time-fields"
 import { Card } from "@/components/ui/card"
 
 type DaySlotProps = {
   slot: Slot
   activities: DayPlanActivity[]
   dayPlanId: string
+  startTime?: string | null
+  endTime?: string | null
   isLoading: boolean
   editing: boolean
+}
+
+function clockHeading(startTime: string | null, endTime: string | null) {
+  if (!startTime || !endTime) return undefined
+  return `${startTime.slice(0, 5)}–${endTime.slice(0, 5)}`
 }
 
 const VISIBLE_ROWS = 6
@@ -48,10 +54,11 @@ const DaySlot = ({
   slot,
   activities,
   dayPlanId,
+  startTime = null,
+  endTime = null,
   isLoading,
   editing,
 }: DaySlotProps) => {
-  const { mutateAsync: addActivities, isPending: isAdding } = useAddActivity()
   const { mutate: deleteActivity, isPending: isDeleting } = useDeleteActivity()
   const { mutate: applyCommand, isPending: isApplying } =
     useApplyActivityCommand()
@@ -59,30 +66,6 @@ const DaySlot = ({
     useChangeTodoState()
   const { mutate: unassignTodo, isPending: isUnassigning } = useUnassignTodo()
   const { mutateAsync: reorderActivities } = useReorderDayPlanActivities()
-  function handleAddActivities(configured: ActivityWithConfiguration[]) {
-    const sortOrderStart = nextSortOrder(activities)
-    const dayItems: NewDayPlanActivity[] = configured.map(
-      (activity, index) => ({
-        day_plan_id: dayPlanId,
-        kind: "activity",
-        activity_id: activity.id,
-        name_snapshot: activity.name,
-        icon_snapshot: activity.icon,
-        type: activity.type,
-        target: activity.type === "count" ? activity.target : null,
-        unit: activity.type === "count" ? activity.unit : null,
-        slot,
-        sort_order: sortOrderStart + index,
-        state: "pending",
-        note_snapshot: null,
-      })
-    )
-    toast.promise(addActivities(dayItems), {
-      loading: { title: "Adding activities…" },
-      success: { title: "Activities added" },
-      error: { title: "Failed to add activities" },
-    })
-  }
 
   function onCommand(activity: DayPlanActivity, command: DayItemCommand) {
     const next = applyDayItemCommand(activity, command)
@@ -118,19 +101,26 @@ const DaySlot = ({
 
   return (
     <Card className="flex-row items-stretch gap-0 overflow-hidden py-0">
-      <SlotArt slot={slot}>
+      <SlotArt slot={slot} clockLabel={clockHeading(startTime, endTime)}>
         {editing ? (
           <SlotAddControl
             slot={slot}
             dayPlanId={dayPlanId}
             nextSlotOrder={nextSortOrder(activities)}
             disabled={busy || dayPlanId === ""}
-            isAddingActivity={isAdding}
-            onAddActivities={handleAddActivities}
           />
         ) : null}
       </SlotArt>
       <div className="flex min-w-0 flex-1 flex-col gap-3 p-4">
+        {isTimedSlot(slot) && dayPlanId !== "" ? (
+          <DaySlotTimeFields
+            dayPlanId={dayPlanId}
+            slot={slot}
+            startTime={startTime}
+            endTime={endTime}
+            disabled={isLoading}
+          />
+        ) : null}
         {isLoading ? (
           <ItemGroup className="gap-0 divide-y has-data-[size=sm]:gap-0">
             <DayActivityRowSkeleton />

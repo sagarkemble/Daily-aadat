@@ -15,9 +15,18 @@ type DayRailProps = {
   isPlanned: boolean
   editing: boolean
   onEditingChange: (editing: boolean) => void
+  onAddActivity?: () => void
+  isAddingActivity?: boolean
 }
 
-function DayRail({ date, isPlanned, editing, onEditingChange }: DayRailProps) {
+function DayRail({
+  date,
+  isPlanned,
+  editing,
+  onEditingChange,
+  onAddActivity,
+  isAddingActivity,
+}: DayRailProps) {
   return (
     <aside className="hidden w-80 shrink-0 flex-col gap-4 lg:flex">
       <DayPlanActions
@@ -25,6 +34,8 @@ function DayRail({ date, isPlanned, editing, onEditingChange }: DayRailProps) {
         isPlanned={isPlanned}
         editing={editing}
         onEditingChange={onEditingChange}
+        onAddActivity={onAddActivity}
+        isAddingActivity={isAddingActivity}
       />
       <Card size="sm">
         <CardHeader>

@@ -1,5 +1,6 @@
 import { useAuthStore } from "@/features/auth/stores/auth-store"
 import { fetchTemplateDetail } from "@/features/templates/template-editor/hooks/use-fetch-template-detail"
+import { TIMED_SLOTS } from "@/features/templates/types/slots"
 import type { TemplateDetail } from "@/features/templates/types/template"
 import { supabase } from "@/lib/supabase"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -52,15 +53,36 @@ async function applyTemplate({
       slot: item.slot,
       sort_order: item.sort_order,
       state: "pending",
-      note_snapshot: null,
+      note_snapshot: item.note,
     }
   })
 
-  const { error: insertError } = await supabase
-    .from("day_items")
-    .insert(dayItems)
+  if (dayItems.length > 0) {
+    const { error: insertError } = await supabase
+      .from("day_items")
+      .insert(dayItems)
+    if (insertError) throw insertError
+  }
 
-  if (insertError) throw insertError
+  const slotTimes = TIMED_SLOTS.flatMap((slot) => {
+    const group = template.activities[slot]
+    if (!group.start_time || !group.end_time) return []
+    return [
+      {
+        day_plan_id: data.id,
+        slot,
+        start_time: group.start_time,
+        end_time: group.end_time,
+      },
+    ]
+  })
+
+  if (slotTimes.length > 0) {
+    const { error: timesError } = await supabase
+      .from("day_plan_slot_times")
+      .insert(slotTimes)
+    if (timesError) throw timesError
+  }
 }
 
 export function useApplyTemplate() {

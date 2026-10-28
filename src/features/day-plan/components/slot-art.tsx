@@ -11,6 +11,7 @@ import nightArt from "../assets/night.svg"
 
 type SlotArtProps = {
   slot: Slot
+  clockLabel?: string
   children?: ReactNode
 }
 
@@ -23,7 +24,7 @@ const SLOT_ART: Record<Slot, string> = {
   night: nightArt,
 }
 
-function SlotArt({ slot, children }: SlotArtProps) {
+function SlotArt({ slot, clockLabel, children }: SlotArtProps) {
   const copy = SLOT_COPY[slot]
   const Icon = copy.icon
 
@@ -42,7 +43,9 @@ function SlotArt({ slot, children }: SlotArtProps) {
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 flex-col gap-1">
             <p className="font-heading text-xl font-semibold leading-tight">
-              {SLOT_LABELS[slot]}
+              {clockLabel
+                ? `${SLOT_LABELS[slot]} · ${clockLabel}`
+                : SLOT_LABELS[slot]}
             </p>
             <p className="text-sm text-primary-foreground/80">
               {copy.description}

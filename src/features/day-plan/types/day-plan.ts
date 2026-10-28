@@ -34,14 +34,27 @@ export type DayPlanActivity = {
   note_snapshot: string | null
 }
 
-export type SlotWithActivities = Record<Slot, DayPlanActivity[]>
+export type DaySlotGroup = {
+  start_time: string | null
+  end_time: string | null
+  activities: DayPlanActivity[]
+}
+
+export type DayBoard = Record<Slot, DaySlotGroup>
 
 export type DayPlanWithActivities = DayPlan & {
-  activities: SlotWithActivities
+  activities: DayBoard
+}
+
+export type DaySlotTime = {
+  slot: Slot
+  start_time: string | null
+  end_time: string | null
 }
 
 export type FetchedDayPlan = DayPlan & {
   activities: DayPlanActivity[]
+  slot_times: DaySlotTime[] | null
 }
 
 export type NewDayPlanActivity = {
