@@ -13,7 +13,10 @@ async function reorderDayPlanActivities(
     activities.map((activity) =>
       supabase
         .from("day_items")
-        .update({ sort_order: activity.sort_order })
+        .update({
+          sort_order: activity.sort_order,
+          slot: activity.slot,
+        })
         .eq("id", activity.id)
     )
   )

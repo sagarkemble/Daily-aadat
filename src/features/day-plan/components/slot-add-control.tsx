@@ -2,7 +2,7 @@ import { useState } from "react"
 import { ListTodoIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { isTimedSlot, type Slot } from "@/features/templates/types/slots"
+import type { Slot } from "@/features/templates/types/slots"
 import { AddTodoDialog } from "./add-todo-dialog/add-todo-dialog"
 
 type SlotAddControlProps = {
@@ -20,8 +20,6 @@ function SlotAddControl({
 }: SlotAddControlProps) {
   const [todoOpen, setTodoOpen] = useState(false)
   const canAdd = dayPlanId !== "" && !disabled
-
-  if (!isTimedSlot(slot)) return null
 
   return (
     <>

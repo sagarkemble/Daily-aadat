@@ -1,3 +1,16 @@
+import { useEffect, useState } from "react"
+import { Feedback } from "@dnd-kit/dom"
+import { useSortable } from "@dnd-kit/react/sortable"
+import {
+  AlarmClockIcon,
+  MinusIcon,
+  PauseIcon,
+  PlayIcon,
+  PlusIcon,
+  RotateCcwIcon,
+} from "lucide-react"
+
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -9,27 +22,20 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import { DynamicIcon } from "@/components/dynamic-icon"
-import {
-  AlarmClockIcon,
-  MinusIcon,
-  PauseIcon,
-  PlayIcon,
-  PlusIcon,
-  RotateCcwIcon,
-  TrashIcon,
-} from "lucide-react"
+import { cn } from "@/lib/utils"
+import { activityTypeLabels } from "@/features/activity/types/activity"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
-import { useEffect, useState } from "react"
-import { TodoNote } from "@/features/todos/components/todo-note"
-import { DayActivityNote } from "./day-activity-note"
+import { DayActivityDetailDialog } from "./day-activity-detail-dialog"
 
 type DayActivityRowProps = {
+  id: string
+  index: number
+  group: string
   activity: DayPlanActivity
   disabled?: boolean
   editing?: boolean
   onCommand: (activity: DayPlanActivity, command: DayItemCommand) => void
-  onDelete: (activityId: string) => void
   onUnassign: (activityId: string) => void
 }
 
@@ -46,130 +52,142 @@ function formatTimedTarget(activity: DayPlanActivity) {
   return [activity.target, activity.unit].filter(Boolean).join(" ")
 }
 
+function kindLabel(activity: DayPlanActivity) {
+  if (activity.kind === "todo") return "Todo"
+  if (activity.type) return activityTypeLabels[activity.type]
+  return "Activity"
+}
+
 export function DayActivityRow({
+  id,
+  index,
+  group,
   activity,
   disabled,
   editing = false,
   onCommand,
-  onDelete,
   onUnassign,
 }: DayActivityRowProps) {
+  const { ref, sourceRef, isDragging } = useSortable({
+    id,
+    index,
+    group,
+    type: "activity",
+    accept: "activity",
+    plugins: (defaults) => [
+      ...defaults,
+      Feedback.configure({ feedback: "clone" }),
+    ],
+  })
   const skipped = activity.state === "skipped"
-  const description =
+  const target =
     activity.type === "count"
       ? formatCountProgress(activity)
       : formatTimedTarget(activity)
+  const note = activity.note_snapshot?.trim()
+  const [detailOpen, setDetailOpen] = useState(false)
 
   return (
-    <Item
-      variant="default"
-      size="sm"
-      className="min-w-0 flex-nowrap rounded-none px-0"
-    >
-      <ItemMedia>
-        {activity.icon_snapshot ? (
-          <DynamicIcon
-            name={activity.icon_snapshot}
-            className="size-5 text-foreground"
-          />
-        ) : null}
-      </ItemMedia>
-      <ItemContent className="min-w-0">
-        <ItemTitle className="min-w-0 w-full">
-          {activity.name_snapshot}
-        </ItemTitle>
-        {description ? (
-          <ItemDescription>{description}</ItemDescription>
-        ) : null}
-        {activity.kind === "activity" ? (
-          <DayActivityNote
-            itemId={activity.id}
-            note={activity.note_snapshot}
-          />
-        ) : activity.todo_id ? (
-          <TodoNote todoId={activity.todo_id} note={activity.note_snapshot} />
-        ) : null}
-      </ItemContent>
-      <ItemActions className="shrink-0">
-        {skipped ? (
-          editing ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={disabled}
-              onClick={() => onCommand(activity, { type: "unskip" })}
-            >
-              Unskip
-            </Button>
-          ) : null
-        ) : (
-          <>
-            {activity.type === "timed" ? (
-              <TimedControls
-                activity={activity}
-                disabled={disabled}
-                onCommand={onCommand}
+    <div className="min-w-0">
+      <div ref={ref} className={cn("min-w-0", isDragging && "opacity-50")}>
+        <Item
+          ref={sourceRef}
+          variant="default"
+          size="sm"
+          className="min-w-0 cursor-pointer rounded-none px-3"
+          onClick={() => {
+            if (!isDragging) setDetailOpen(true)
+          }}
+        >
+          <ItemMedia variant="icon">
+            {activity.icon_snapshot ? (
+              <DynamicIcon
+                name={activity.icon_snapshot}
+                size="md"
+                variant="muted"
               />
             ) : null}
-            {activity.type === "count" ? (
-              <CountControls
-                activity={activity}
-                disabled={disabled}
-                onCommand={onCommand}
-              />
-            ) : null}
-            {activity.kind === "todo" ? (
-              <Checkbox
-                checked={activity.state === "done"}
-                disabled={disabled}
-                onCheckedChange={() =>
-                  onCommand(activity, { type: "update_todo" })
-                }
-              />
-            ) : null}
-            {activity.type === "check" ? (
-              <Checkbox
-                checked={activity.state === "done"}
-                disabled={disabled}
-                onCheckedChange={() =>
-                  onCommand(activity, { type: "toggle_check" })
-                }
-              />
-            ) : null}
-            {editing ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                disabled={disabled}
-                onClick={() => onCommand(activity, { type: "skip" })}
-              >
-                Skip
-              </Button>
-            ) : null}
-          </>
-        )}
-        {editing && activity.kind === "todo" ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={disabled}
-            onClick={() => onUnassign(activity.id)}
+          </ItemMedia>
+          <ItemContent className="min-w-0">
+            <ItemTitle className="min-w-0 w-full">
+              {activity.name_snapshot}
+            </ItemTitle>
+            {target ? <ItemDescription>{target}</ItemDescription> : null}
+            {note ? <ItemDescription>{note}</ItemDescription> : null}
+          </ItemContent>
+          <ItemActions
+            className="shrink-0"
+            onClick={(event) => event.stopPropagation()}
           >
-            Unassign
-          </Button>
-        ) : null}
-        {editing && activity.kind !== "todo" ? (
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            disabled={disabled}
-            onClick={() => onDelete(activity.id)}
-          >
-            <TrashIcon />
-          </Button>
-        ) : null}
-      </ItemActions>
-    </Item>
+            {skipped ? (
+              editing ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={disabled}
+                  onClick={() => onCommand(activity, { type: "unskip" })}
+                >
+                  Unskip
+                </Button>
+              ) : null
+            ) : (
+              <>
+                {activity.type === "timed" ? (
+                  <TimedControls
+                    activity={activity}
+                    disabled={disabled}
+                    onCommand={onCommand}
+                  />
+                ) : null}
+                {activity.type === "count" ? (
+                  <CountControls
+                    activity={activity}
+                    disabled={disabled}
+                    onCommand={onCommand}
+                  />
+                ) : null}
+                {activity.kind === "todo" ? (
+                  <Checkbox
+                    checked={activity.state === "done"}
+                    disabled={disabled}
+                    onCheckedChange={() =>
+                      onCommand(activity, { type: "update_todo" })
+                    }
+                  />
+                ) : null}
+                {activity.type === "check" ? (
+                  <Checkbox
+                    checked={activity.state === "done"}
+                    disabled={disabled}
+                    onCheckedChange={() =>
+                      onCommand(activity, { type: "toggle_check" })
+                    }
+                  />
+                ) : null}
+                {editing ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={disabled}
+                    onClick={() => onCommand(activity, { type: "skip" })}
+                  >
+                    Skip
+                  </Button>
+                ) : null}
+              </>
+            )}
+            <Badge variant="outline">{kindLabel(activity)}</Badge>
+          </ItemActions>
+        </Item>
+      </div>
+      <DayActivityDetailDialog
+        activity={activity}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        editing={editing}
+        onUnassign={onUnassign}
+      />
+    </div>
   )
 }
 
