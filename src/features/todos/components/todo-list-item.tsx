@@ -21,6 +21,7 @@ import {
   Item,
   ItemActions,
   ItemContent,
+  ItemDescription,
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item"
@@ -28,7 +29,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { cn } from "cn"
 import { formatTodoAssignment } from "../lib/format-todo-assignment"
 import type { Todo, TodoState } from "../types/todo"
-import { TodoNote } from "./todo-note"
+import { TodoDetailDialog } from "./todo-detail-dialog"
 
 const DEFAULT_TODO_ICON = "list-todo"
 
@@ -48,8 +49,10 @@ export function TodoListItem({
   onDeleteTodo,
 }: TodoListItemProps) {
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [detailOpen, setDetailOpen] = useState(false)
   const skipped = todo.state === "skipped"
   const done = todo.state === "done"
+  const note = todo.note?.trim()
 
   function handleConfirmOpenChange(nextOpen: boolean) {
     if (isDeleting) return
@@ -61,108 +64,124 @@ export function TodoListItem({
   }
 
   return (
-    <Item variant="outline" size="sm">
-      <ItemMedia variant="icon">
-        <span className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
+    <>
+      <Item
+        variant="outline"
+        size="sm"
+        className="cursor-pointer"
+        onClick={() => setDetailOpen(true)}
+      >
+        <ItemMedia variant="icon">
           <DynamicIcon
             name={todo.icon || DEFAULT_TODO_ICON}
-            className="size-4"
+            size="md"
+            variant="muted"
           />
-        </span>
-      </ItemMedia>
-      <ItemContent>
-        <ItemTitle className={cn((done || skipped) && "text-muted-foreground")}>
-          {todo.name}
-        </ItemTitle>
-        <TodoNote todoId={todo.id} note={todo.note} />
-        {todo.assignment ? (
+        </ItemMedia>
+        <ItemContent className="min-w-0">
+          <ItemTitle
+            className={cn((done || skipped) && "text-muted-foreground")}
+          >
+            {todo.name}
+          </ItemTitle>
+          {note ? <ItemDescription>{note}</ItemDescription> : null}
+          {todo.assignment ? (
           <Badge
             variant="secondary"
+            onClick={(event) => event.stopPropagation()}
             render={
-              <Link
-                to="/"
-                search={{ date: todo.assignment.plan_date }}
-              />
+              <Link to="/" search={{ date: todo.assignment.plan_date }} />
             }
           >
-            {formatTodoAssignment(todo.assignment)}
-          </Badge>
-        ) : null}
-      </ItemContent>
-      <ItemActions>
-        {skipped ? (
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={disabled}
-            onClick={() => onUpdateTodoState(todo, "pending")}
-          >
-            Unskip
-          </Button>
-        ) : (
-          <>
-            <Checkbox
-              checked={done}
-              disabled={disabled}
-              onCheckedChange={handleCheckedChange}
-              aria-label={done ? "Mark as open" : "Mark as done"}
-            />
-            {done ? null : (
-              <Button
-                variant="ghost"
-                size="sm"
-                disabled={disabled}
-                onClick={() => onUpdateTodoState(todo, "skipped")}
-              >
-                Skip
-              </Button>
-            )}
-          </>
-        )}
-        <AlertDialog
-          open={confirmOpen}
-          onOpenChange={handleConfirmOpenChange}
+              {formatTodoAssignment(todo.assignment)}
+            </Badge>
+          ) : null}
+        </ItemContent>
+        <ItemActions
+          className="shrink-0"
+          onClick={(event) => event.stopPropagation()}
         >
-          <AlertDialogTrigger
-            render={<Button variant="outline" size="icon" />}
-            disabled={disabled}
+          {skipped ? (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={disabled}
+              onClick={() => onUpdateTodoState(todo, "pending")}
+            >
+              Unskip
+            </Button>
+          ) : (
+            <>
+              <Checkbox
+                checked={done}
+                disabled={disabled}
+                onCheckedChange={handleCheckedChange}
+                aria-label={done ? "Mark as open" : "Mark as done"}
+              />
+              {done ? null : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={disabled}
+                  onClick={() => onUpdateTodoState(todo, "skipped")}
+                >
+                  Skip
+                </Button>
+              )}
+            </>
+          )}
+          <AlertDialog
+            open={confirmOpen}
+            onOpenChange={handleConfirmOpenChange}
           >
-            <Trash2Icon />
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogMedia>
-                <Trash2Icon />
-              </AlertDialogMedia>
-              <AlertDialogTitle>Delete {todo.name}?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This removes the todo from your pile. If it is on a day, that
-                placement is removed too. This cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                variant="destructive"
-                disabled={isDeleting}
-                onClick={(event) => {
-                  event.preventDefault()
-                  onDeleteTodo(todo)
-                }}
-              >
-                {isDeleting ? (
-                  <>
-                    <Spinner data-icon="inline-start" />
-                    Deleting…
-                  </>
-                ) : (
-                  "Delete"
-                )}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </ItemActions>
-    </Item>
+            <AlertDialogTrigger
+              render={<Button variant="outline" size="icon" />}
+              disabled={disabled}
+            >
+              <Trash2Icon />
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogMedia>
+                  <Trash2Icon />
+                </AlertDialogMedia>
+                <AlertDialogTitle>Delete {todo.name}?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This removes the todo from your pile. If it is on a day, that
+                  placement is removed too. This cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isDeleting}>
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  variant="destructive"
+                  disabled={isDeleting}
+                  onClick={(event) => {
+                    event.preventDefault()
+                    onDeleteTodo(todo)
+                  }}
+                >
+                  {isDeleting ? (
+                    <>
+                      <Spinner data-icon="inline-start" />
+                      Deleting…
+                    </>
+                  ) : (
+                    "Delete"
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </ItemActions>
+      </Item>
+      <TodoDetailDialog
+        todo={todo}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+      />
+    </>
   )
 }
