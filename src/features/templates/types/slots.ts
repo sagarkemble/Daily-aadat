@@ -24,6 +24,20 @@ export const SLOT_LABELS: Record<Slot, string> = {
   night: "Night",
 }
 
+export const TIMED_SLOTS = [
+  "early_morning",
+  "morning",
+  "afternoon",
+  "evening",
+  "night",
+] as const
+
+export type TimedSlot = (typeof TIMED_SLOTS)[number]
+
+export function isTimedSlot(slot: Slot): slot is TimedSlot {
+  return slot !== "day_wide"
+}
+
 export function emptySlotBuckets<T>(): Record<Slot, T[]> {
   return Object.fromEntries(SLOTS.map((slot) => [slot, [] as T[]])) as unknown as Record<
     Slot,

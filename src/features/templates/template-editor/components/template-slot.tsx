@@ -3,18 +3,40 @@ import { useDroppable } from "@dnd-kit/react"
 
 import { ItemGroup } from "@/components/ui/item"
 import { cn } from "@/lib/utils"
+import { isTimedSlot, type Slot } from "../../types/slots"
 import type { TemplateActivity } from "../../types/template"
 import { TemplateActivityRow } from "./template-activity-row"
 import TemplateActivityRowSkeleton from "./template-activity-row-skeleton"
+import { TemplateSlotTimeFields } from "./template-slot-time-fields"
 
 type SlotProps = {
-  id: string
+  id: Slot
+  templateId: string
   title: string
   items: TemplateActivity[]
+  startTime?: string | null
+  endTime?: string | null
   isLoading?: boolean
 }
 
-const TemplateSlot = ({ id, title, items, isLoading = false }: SlotProps) => {
+function clockHeading(
+  title: string,
+  startTime: string | null,
+  endTime: string | null
+) {
+  if (!startTime || !endTime) return title
+  return `${title} · ${startTime.slice(0, 5)}–${endTime.slice(0, 5)}`
+}
+
+const TemplateSlot = ({
+  id,
+  templateId,
+  title,
+  items,
+  startTime = null,
+  endTime = null,
+  isLoading = false,
+}: SlotProps) => {
   const { ref, isDropTarget } = useDroppable({
     id,
     accept: "activity",
@@ -23,7 +45,20 @@ const TemplateSlot = ({ id, title, items, isLoading = false }: SlotProps) => {
 
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-sm font-medium">{title}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-sm font-medium">
+          {clockHeading(title, startTime, endTime)}
+        </h2>
+        {isTimedSlot(id) ? (
+          <TemplateSlotTimeFields
+            templateId={templateId}
+            slot={id}
+            startTime={startTime}
+            endTime={endTime}
+            disabled={isLoading}
+          />
+        ) : null}
+      </div>
       <div
         ref={ref}
         className={cn(

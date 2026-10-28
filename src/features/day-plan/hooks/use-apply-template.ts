@@ -31,7 +31,9 @@ async function applyTemplate({
     throw error
   }
 
-  const templateItems = Object.values(template.activities).flat()
+  const templateItems = Object.values(template.activities).flatMap(
+    (group) => group.activities
+  )
 
   const dayItems = templateItems.map((item) => {
     if (!item.activity) {

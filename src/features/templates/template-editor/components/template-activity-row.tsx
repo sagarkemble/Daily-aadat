@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils"
 import { activityTypeLabels } from "@/features/activity/types/activity"
 import type { TemplateActivity } from "../../types/template"
 import { DeleteTemplateActivityDialog } from "./delete-template-activity-dialog"
+import { TemplateActivityNote } from "./template-activity-note"
 
 type TemplateActivityRowProps = {
   id: string
@@ -54,6 +55,7 @@ const TemplateActivityRow = ({
         <ItemContent>
           <ItemTitle>{activity.activity?.name}</ItemTitle>
           {target ? <ItemDescription>{target}</ItemDescription> : null}
+          <TemplateActivityNote itemId={activity.id} note={activity.note} />
         </ItemContent>
         <ItemActions>
           <Badge variant="outline">{activityTypeLabels[activity.type]}</Badge>

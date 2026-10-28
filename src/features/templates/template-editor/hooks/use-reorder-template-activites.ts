@@ -13,6 +13,7 @@ async function reorderTemplateActivities(activities: TemplateActivity[]) {
       unit: activity.unit,
       slot: activity.slot,
       sort_order: activity.sort_order,
+      note: activity.note,
     })),
     { onConflict: "id" }
   )

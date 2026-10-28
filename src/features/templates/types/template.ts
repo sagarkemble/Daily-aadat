@@ -20,19 +20,10 @@ export type TemplateActivity = {
   unit: string | null
   slot: Slot
   sort_order: number
+  note: string | null
   created_at: string
   updated_at: string
   activity: Activity | null
-}
-
-export type TemplateActivitiesBySlot = Record<Slot, TemplateActivity[]>
-
-export type TemplateDetail = Template & {
-  activities: TemplateActivitiesBySlot
-}
-
-export type fetchedTemplateDetail = TemplateDetail & {
-  activities: TemplateActivity[]
 }
 
 export type NewTemplateActivity = {
@@ -43,6 +34,29 @@ export type NewTemplateActivity = {
   unit: string | null
   slot: Slot
   sort_order: number
+}
+
+export type TemplateSlotGroup = {
+  start_time: string | null
+  end_time: string | null
+  activities: TemplateActivity[]
+}
+
+export type TemplateBoard = Record<Slot, TemplateSlotGroup>
+
+export type TemplateDetail = Template & {
+  activities: TemplateBoard
+}
+
+export type TemplateSlotTime = {
+  slot: Slot
+  start_time: string | null
+  end_time: string | null
+}
+
+export type fetchedTemplateDetail = TemplateDetail & {
+  activities: TemplateActivity[]
+  slot_times: TemplateSlotTime[]
 }
 
 //example of the data being recived from database

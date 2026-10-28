@@ -6,7 +6,7 @@ import { isSortable } from "@dnd-kit/react/sortable"
 
 import { toast } from "@/components/ui/toast"
 import { SLOT_LABELS, SLOTS } from "../../types/slots"
-import type { TemplateActivitiesBySlot } from "../../types/template"
+import type { TemplateBoard } from "../../types/template"
 import TemplateEditorHeader from "./template-editor-header"
 import { TemplateSlot } from "./template-slot"
 import { useFetchTemplateDetail } from "../hooks/use-fetch-template-detail"
@@ -19,13 +19,15 @@ type TemplateEditorProps = {
 const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
   const { data, isLoading, error } = useFetchTemplateDetail(templateId)
   const { mutateAsync: reorderActivities } = useReorderTemplateActivities()
-  const [board, setBoard] = useState<TemplateActivitiesBySlot | undefined>(
+  const [board, setBoard] = useState<TemplateBoard | undefined>(
     data?.activities
   )
   const boardRef = useRef(board)
   boardRef.current = board
   const isDragging = useRef(false)
   const snapshot = useRef(board)
+
+  console.log("board", data)
 
   useEffect(() => {
     if (data && !isDragging.current) {
@@ -51,7 +53,22 @@ const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
           snapshot.current = boardRef.current
         }}
         onDragOver={(event) => {
-          setBoard((current) => (current ? move(current, event) : current))
+          setBoard((current) => {
+            if (!current) return current
+            const lists = Object.fromEntries(
+              SLOTS.map((slot) => [slot, current[slot].activities])
+            )
+            const nextLists = move(lists, event)
+            return Object.fromEntries(
+              SLOTS.map((slot) => [
+                slot,
+                {
+                  ...current[slot],
+                  activities: nextLists[slot] ?? current[slot].activities,
+                },
+              ])
+            ) as TemplateBoard
+          })
         }}
         onDragEnd={(event) => {
           isDragging.current = false
@@ -67,7 +84,7 @@ const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
           if (!next) return
 
           const payload = SLOTS.flatMap((slot) =>
-            (next[slot] ?? []).map((item, index) => ({
+            (next[slot]?.activities ?? []).map((item, index) => ({
               ...item,
               slot,
               sort_order: index,
@@ -85,8 +102,11 @@ const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
           <TemplateSlot
             key={slot}
             id={slot}
+            templateId={templateId}
             title={SLOT_LABELS[slot]}
-            items={board?.[slot] ?? []}
+            items={board?.[slot]?.activities ?? []}
+            startTime={board?.[slot]?.start_time ?? null}
+            endTime={board?.[slot]?.end_time ?? null}
             isLoading={isLoading}
           />
         ))}
