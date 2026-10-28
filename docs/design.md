@@ -24,7 +24,7 @@ Semantic classes only: `bg-primary`, `text-ink`, `bg-slot-morning`. No raw `bg-[
 | Text on slot fills | `text-ink` |
 | Slot tiles | `bg-slot-early-morning` … `bg-slot-night` |
 
-Slot mapping lives in `src/features/design-system/lib/slot-surfaces.ts` (`SLOT_SURFACE`). Not applied to live Day cards yet.
+Slot fills are not on live Day cards yet.
 
 ## Tokens (`src/index.css`)
 

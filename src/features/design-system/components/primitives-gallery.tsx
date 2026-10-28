@@ -3,6 +3,14 @@ import { CalendarIcon, InfoIcon, ListTodoIcon } from "lucide-react"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
@@ -14,6 +22,20 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   Dialog,
   DialogContent,
@@ -68,7 +90,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -123,6 +154,8 @@ export function PrimitivesGallery() {
             <Spinner data-icon="inline-start" />
             Saving
           </Button>
+          <Button size="sm">Small</Button>
+          <Button size="lg">Large</Button>
         </div>
       </Block>
 
@@ -288,6 +321,66 @@ export function PrimitivesGallery() {
           <TabsContent value="open">Open todos</TabsContent>
           <TabsContent value="done">Done todos</TabsContent>
         </Tabs>
+      </Block>
+
+      <Block title="Menu, sheet, scroll">
+        <div className="flex flex-wrap items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button variant="outline" />}>
+              Menu
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Account</DropdownMenuLabel>
+                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Log out</DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Sheet>
+            <SheetTrigger render={<Button variant="outline" />}>
+              Sheet
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>You</SheetTitle>
+                <SheetDescription>Phone settings stub.</SheetDescription>
+              </SheetHeader>
+            </SheetContent>
+          </Sheet>
+          <Collapsible>
+            <CollapsibleTrigger render={<Button variant="outline" />}>
+              Collapsible
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <p className="pt-2 text-sm text-muted-foreground">
+                Hidden until opened.
+              </p>
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Day</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Design system</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <ScrollArea className="h-24 rounded-lg border">
+          <div className="flex flex-col gap-2 p-3">
+            <p className="text-sm">Early morning</p>
+            <p className="text-sm">Morning</p>
+            <p className="text-sm">Afternoon</p>
+            <p className="text-sm">Evening</p>
+            <p className="text-sm">Night</p>
+            <p className="text-sm">Day-wide</p>
+          </div>
+        </ScrollArea>
       </Block>
     </div>
   )
