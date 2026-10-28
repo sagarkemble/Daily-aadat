@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { FaceSlightlySmiling, Trash2Icon } from "lucide-react"
+import { FaceSlightlySmiling, ListIcon, Trash2Icon } from "lucide-react"
 import { DynamicIcon } from "@/components/dynamic-icon"
 import {
   AlertDialog,
@@ -25,6 +25,8 @@ type TemplateEditorHeaderProps = {
   description: string
   icon: string
   isLoading?: boolean
+  onAddActivity?: () => void
+  isAddingActivity?: boolean
 }
 
 function TemplateEditorHeaderSkeleton() {
@@ -48,6 +50,8 @@ const TemplateEditorHeader = ({
   description,
   icon,
   isLoading = false,
+  onAddActivity,
+  isAddingActivity = false,
 }: TemplateEditorHeaderProps) => {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const { mutate: deleteTemplate, isPending } = useDeleteTemplate()
@@ -92,6 +96,18 @@ const TemplateEditorHeader = ({
         </div>
       </div>
 
+      <div className="flex shrink-0 items-center gap-2">
+        {onAddActivity ? (
+          <Button
+            size="sm"
+            variant="secondary"
+            disabled={isAddingActivity}
+            onClick={onAddActivity}
+          >
+            <ListIcon data-icon="inline-start" />
+            Add activity
+          </Button>
+        ) : null}
       <AlertDialog open={confirmOpen} onOpenChange={handleConfirmOpenChange}>
         <AlertDialogTrigger
           render={<Button variant="destructive" size="sm" />}
@@ -132,6 +148,7 @@ const TemplateEditorHeader = ({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      </div>
     </div>
   )
 }

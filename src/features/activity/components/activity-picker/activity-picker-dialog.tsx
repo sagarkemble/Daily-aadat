@@ -7,26 +7,29 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { ItemGroup } from "@/components/ui/item"
-import { ActivityPickerRow } from "./activity-picker-row"
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Field, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { ItemGroup } from "@/components/ui/item"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useFetchActivities } from "@/features/activity/hooks/use-fetch-activities"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useId, useMemo, useState } from "react"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { useFetchActivities } from "@/features/activity/hooks/use-fetch-activities"
 import { useDebounce } from "@/hooks/use-debounce"
+import { useId, useMemo, useState } from "react"
 import type {
   Activity,
   ActivityWithConfiguration,
 } from "@/features/activity/types/activity"
+import { SLOT_LABELS, SLOTS, type Slot } from "@/features/templates/types/slots"
 import ActivityPickerConfigureRow from "./activity-picker-configure-row"
+import { ActivityPickerRow } from "./activity-picker-row"
 
 type ActivityPickerDialogProps = {
-  onAdd: (activities: ActivityWithConfiguration[]) => void
+  onAdd: (activities: ActivityWithConfiguration[], slot?: Slot) => void
   isPending?: boolean
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  requireSlot?: boolean
 }
 
 const ActivityPickerDialog = ({
@@ -34,6 +37,7 @@ const ActivityPickerDialog = ({
   isPending = false,
   open,
   onOpenChange,
+  requireSlot = false,
 }: ActivityPickerDialogProps) => {
   const searchId = useId()
   const { data, isLoading, error } = useFetchActivities()
@@ -47,6 +51,7 @@ const ActivityPickerDialog = ({
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedActivities, setSelectedActivities] = useState<Activity[]>([])
   const [step, setStep] = useState<"select" | "configure">("select")
+  const [slot, setSlot] = useState<Slot | undefined>(undefined)
   const selectedOrder = useMemo(() => {
     const order = new Map<string, number>()
     selectedActivities.forEach((activity, index) => {
@@ -94,7 +99,8 @@ const ActivityPickerDialog = ({
     }))
   }
   function handleAddConfiguredActivities() {
-    onAdd(configuredActivities)
+    if (requireSlot && !slot) return
+    onAdd(configuredActivities, slot)
     handleOpenChange(false)
   }
   function reset() {
@@ -102,6 +108,7 @@ const ActivityPickerDialog = ({
     setConfiguredActivities([])
     setSearchQuery("")
     setStep("select")
+    setSlot(undefined)
   }
   function handleOpenChange(nextOpen: boolean) {
     if (!isControlled) {
@@ -176,6 +183,30 @@ const ActivityPickerDialog = ({
             <DialogHeader>
               <DialogTitle>Configure activities</DialogTitle>
             </DialogHeader>
+            {requireSlot ? (
+              <FieldSet>
+                <FieldLegend variant="label">Slot</FieldLegend>
+                <Field>
+                  <ToggleGroup
+                    value={slot ? [slot] : []}
+                    onValueChange={(value) => {
+                      const next = value[0]
+                      setSlot(
+                        SLOTS.includes(next as Slot) ? (next as Slot) : undefined
+                      )
+                    }}
+                    className="flex-wrap"
+                    size="sm"
+                  >
+                    {SLOTS.map((name) => (
+                      <ToggleGroupItem key={name} value={name}>
+                        {SLOT_LABELS[name]}
+                      </ToggleGroupItem>
+                    ))}
+                  </ToggleGroup>
+                </Field>
+              </FieldSet>
+            ) : null}
             <ScrollArea className="h-72">
               <ItemGroup>
                 {configuredActivities.map((activity) => (
@@ -189,7 +220,7 @@ const ActivityPickerDialog = ({
             </ScrollArea>
             <DialogFooter>
               <Button
-                disabled={isPending}
+                disabled={isPending || (requireSlot && !slot)}
                 onClick={handleAddConfiguredActivities}
               >
                 {isPending ? "Adding..." : "Done"}

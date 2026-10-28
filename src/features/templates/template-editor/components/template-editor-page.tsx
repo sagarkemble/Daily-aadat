@@ -4,11 +4,14 @@ import { move } from "@dnd-kit/helpers"
 import { DragDropProvider } from "@dnd-kit/react"
 import { isSortable } from "@dnd-kit/react/sortable"
 
+import { ActivityPickerDialog } from "@/features/activity/components/activity-picker/activity-picker-dialog"
+import type { ActivityWithConfiguration } from "@/features/activity/types/activity"
 import { toast } from "@/components/ui/toast"
-import { SLOT_LABELS, SLOTS } from "../../types/slots"
-import type { TemplateBoard } from "../../types/template"
+import { SLOT_LABELS, SLOTS, type Slot } from "../../types/slots"
+import type { NewTemplateActivity, TemplateBoard } from "../../types/template"
 import TemplateEditorHeader from "./template-editor-header"
 import { TemplateSlot } from "./template-slot"
+import { useAddTemplateActivities } from "../hooks/use-add-template-activities"
 import { useFetchTemplateDetail } from "../hooks/use-fetch-template-detail"
 import { useReorderTemplateActivities } from "../hooks/use-reorder-template-activites"
 
@@ -19,6 +22,9 @@ type TemplateEditorProps = {
 const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
   const { data, isLoading, error } = useFetchTemplateDetail(templateId)
   const { mutateAsync: reorderActivities } = useReorderTemplateActivities()
+  const { mutateAsync: addActivities, isPending: isAdding } =
+    useAddTemplateActivities()
+  const [pickerOpen, setPickerOpen] = useState(false)
   const [board, setBoard] = useState<TemplateBoard | undefined>(
     data?.activities
   )
@@ -37,6 +43,28 @@ const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
 
   if (error) return <div>{error.message}</div>
 
+  function handleAddActivities(
+    configured: ActivityWithConfiguration[],
+    slot?: Slot
+  ) {
+    if (!slot) return
+    const sortOrderStart = board?.[slot]?.activities.length ?? 0
+    const items: NewTemplateActivity[] = configured.map((activity, index) => ({
+      template_id: templateId,
+      activity_id: activity.id,
+      type: activity.type,
+      target: activity.type === "count" ? activity.target : null,
+      unit: activity.type === "count" ? activity.unit : null,
+      slot,
+      sort_order: sortOrderStart + index,
+    }))
+    toast.promise(addActivities(items), {
+      loading: { title: "Adding activities…" },
+      success: { title: "Activities added" },
+      error: { title: "Failed to add activities" },
+    })
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <TemplateEditorHeader
@@ -45,6 +73,15 @@ const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
         description={data?.description ?? ""}
         icon={data?.icon ?? ""}
         isLoading={isLoading}
+        onAddActivity={() => setPickerOpen(true)}
+        isAddingActivity={isAdding}
+      />
+      <ActivityPickerDialog
+        requireSlot
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        onAdd={handleAddActivities}
+        isPending={isAdding}
       />
 
       <DragDropProvider
