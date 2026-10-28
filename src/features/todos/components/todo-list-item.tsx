@@ -28,6 +28,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { cn } from "cn"
 import { formatTodoAssignment } from "../lib/format-todo-assignment"
 import type { Todo, TodoState } from "../types/todo"
+import { TodoNote } from "./todo-note"
 
 const DEFAULT_TODO_ICON = "list-todo"
 
@@ -73,6 +74,7 @@ export function TodoListItem({
         <ItemTitle className={cn((done || skipped) && "text-muted-foreground")}>
           {todo.name}
         </ItemTitle>
+        <TodoNote todoId={todo.id} note={todo.note} />
         {todo.assignment ? (
           <Badge
             variant="secondary"

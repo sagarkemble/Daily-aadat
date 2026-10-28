@@ -13,10 +13,11 @@ async function createTodo(input: CreateTodoInput) {
     .insert({
       name: input.name,
       icon: input.icon,
+      note: input.note,
       state: "pending",
       user_id: user.id,
     })
-    .select("id, name, icon, state, created_at, updated_at")
+    .select("id, name, icon, note, state, created_at, updated_at")
     .single()
 
   if (error) throw error

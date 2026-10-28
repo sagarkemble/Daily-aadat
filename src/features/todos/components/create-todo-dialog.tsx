@@ -32,9 +32,10 @@ import {
 
 const DEFAULT_TODO_ICON = "list-todo"
 
-const emptyValues: CreateTodoInput = {
+const emptyValues = {
   name: "",
   icon: DEFAULT_TODO_ICON,
+  note: "",
 }
 
 export function CreateTodoDialog() {
@@ -116,6 +117,15 @@ export function CreateTodoDialog() {
                 disabled={isPending}
               />
               <FieldError errors={[errors.icon]} />
+            </Field>
+            <Field data-disabled={isPending || undefined}>
+              <FieldLabel htmlFor="todo-note">Note</FieldLabel>
+              <Input
+                id="todo-note"
+                placeholder="Add note"
+                {...register("note")}
+                disabled={isPending}
+              />
             </Field>
           </FieldGroup>
 

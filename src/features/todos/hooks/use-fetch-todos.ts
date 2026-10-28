@@ -13,6 +13,7 @@ type FetchedTodo = {
   id: string
   name: string
   icon: string
+  note: string | null
   state: TodoState
   created_at: string
   updated_at: string
@@ -43,6 +44,7 @@ function toTodo(row: FetchedTodo): Todo {
     id: row.id,
     name: row.name,
     icon: row.icon,
+    note: row.note,
     state: row.state,
     created_at: row.created_at,
     updated_at: row.updated_at,
@@ -58,6 +60,7 @@ async function fetchTodos() {
       id,
       name,
       icon,
+      note,
       state,
       created_at,
       updated_at,

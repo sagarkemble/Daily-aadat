@@ -21,6 +21,7 @@ import {
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
 import { useEffect, useState } from "react"
+import { TodoNote } from "@/features/todos/components/todo-note"
 import { DayActivityNote } from "./day-activity-note"
 
 type DayActivityRowProps = {
@@ -85,6 +86,8 @@ export function DayActivityRow({
             itemId={activity.id}
             note={activity.note_snapshot}
           />
+        ) : activity.todo_id ? (
+          <TodoNote todoId={activity.todo_id} note={activity.note_snapshot} />
         ) : null}
       </ItemContent>
       <ItemActions className="shrink-0">

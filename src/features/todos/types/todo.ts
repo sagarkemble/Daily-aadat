@@ -12,6 +12,7 @@ type Todo = {
   id: string
   name: string
   icon: string
+  note: string | null
   state: TodoState
   created_at: string
   updated_at: string

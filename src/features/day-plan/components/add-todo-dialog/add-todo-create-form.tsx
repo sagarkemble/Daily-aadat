@@ -19,9 +19,10 @@ import {
 
 const DEFAULT_TODO_ICON = "list-todo"
 
-const emptyValues: CreateTodoInput = {
+const emptyValues = {
   name: "",
   icon: DEFAULT_TODO_ICON,
+  note: "",
 }
 
 type AddTodoCreateFormProps = {
@@ -34,6 +35,7 @@ export function AddTodoCreateForm({
   onCreate,
 }: AddTodoCreateFormProps) {
   const nameId = useId()
+  const noteId = useId()
   const [selectedIcon, setSelectedIcon] = useState(DEFAULT_TODO_ICON)
   const {
     register,
@@ -90,6 +92,15 @@ export function AddTodoCreateForm({
             </Button>
           </div>
           <FieldError errors={[errors.name, errors.icon]} />
+        </Field>
+        <Field data-disabled={isPending || undefined}>
+          <FieldLabel htmlFor={noteId}>Note</FieldLabel>
+          <Input
+            id={noteId}
+            placeholder="Add note"
+            disabled={isPending}
+            {...register("note")}
+          />
         </Field>
       </FieldGroup>
     </form>

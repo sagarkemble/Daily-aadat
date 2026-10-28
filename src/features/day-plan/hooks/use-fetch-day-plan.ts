@@ -11,7 +11,7 @@ import type {
 } from "../types/day-plan"
 
 type FetchedDayItem = DayPlanActivity & {
-  todos: { state: TodoState } | null
+  todos: { state: TodoState; note: string | null } | null
 }
 
 function toDayPlanActivity(row: FetchedDayItem): DayPlanActivity {
@@ -19,6 +19,8 @@ function toDayPlanActivity(row: FetchedDayItem): DayPlanActivity {
   return {
     ...item,
     state: item.kind === "todo" && todos?.state ? todos.state : item.state,
+    note_snapshot:
+      item.kind === "todo" ? (todos?.note ?? null) : item.note_snapshot,
   }
 }
 
@@ -94,7 +96,8 @@ async function fetchDayPlan(
         updated_at,
         note_snapshot,
         todos (
-          state
+          state,
+          note
         )
       ),
       slot_times:day_plan_slot_times(
