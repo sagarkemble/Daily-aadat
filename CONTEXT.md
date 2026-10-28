@@ -5,7 +5,7 @@ A personal day planner for repeating daily structure. No streaks.
 ## Language
 
 **Activity**:
-A reusable catalog item with a name, icon, and optional note. It is not a row on a Tuesday.
+A reusable catalog item with a name and icon. It is not a row on a Tuesday.
 _Avoid_: habit, task
 
 **Day**:
@@ -29,11 +29,11 @@ One instance of an activity or a placed todo on a day. An activity placement sna
 _Avoid_: activity (when you mean the Tuesday row), day item (in speech; fine in code later)
 
 **Note**:
-Longer text than the name. Explains which Zoom, which meeting, which todo. For activities: default on the Activity, may be set on a template placement, copied onto the day placement. For todos: one note on the Todo, same as state — one life, not a per-day copy.
+Longer text than the name. Explains which Zoom, which meeting, which todo. For activities: set on a template placement, copied onto the day placement. For todos: one note on the Todo, same as state — one life, not a per-day copy.
 _Avoid_: description (fine in UI copy; template already has its own playlist blurb), comment, journal
 
 **Todo**:
-An undated pile item. Name, icon, note, and state live here. It is not part of a template. Placing it on a day makes a sticker in a slot, not day-wide.
+An undated pile item. Name, icon, note, and state live here. It is not part of a template. Placing it on a day makes a sticker in any of the six slots, including Day-wide.
 _Avoid_: task, unslotted
 
 **Template**:
