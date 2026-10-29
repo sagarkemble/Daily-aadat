@@ -8,11 +8,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
 import { DynamicIcon } from "@/components/dynamic-icon"
 import { cn } from "@/lib/utils"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
+import {
+  CheckControl,
+  CountControls,
+  TimedControls,
+} from "./day-activity-controls"
 import { DayActivityDetailDialog } from "./day-activity-detail-dialog"
 
 type DayActivityCardProps = {
@@ -49,53 +53,72 @@ function DayActivityCard({
   })
   const [detailOpen, setDetailOpen] = useState(false)
   const note = activity.note_snapshot?.trim()
+  const skipped = activity.state === "skipped"
+  const controls = skipped
+    ? null
+    : activity.type === "timed"
+      ? (
+          <TimedControls
+            activity={activity}
+            disabled={disabled}
+            onCommand={onCommand}
+          />
+        )
+      : activity.type === "count"
+        ? (
+            <CountControls
+              activity={activity}
+              disabled={disabled}
+              onCommand={onCommand}
+              showTarget
+              round
+            />
+          )
+        : activity.kind === "todo" || activity.type === "check"
+          ? (
+              <CheckControl
+                activity={activity}
+                disabled={disabled}
+                onCommand={onCommand}
+              />
+            )
+          : null
 
   return (
     <div ref={ref} className={cn("aspect-square", isDragging && "opacity-50")}>
       <Card
         ref={sourceRef}
         size="sm"
-        className="size-full cursor-pointer border border-border ring-0"
+        className="size-full cursor-pointer border border-border ring-0 [--card-spacing:--spacing(5)]"
         onClick={() => {
           if (!isDragging) setDetailOpen(true)
         }}
       >
-        <CardHeader className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
-          {activity.icon_snapshot ? (
-            <DynamicIcon
-              name={activity.icon_snapshot}
-              size="md"
-              variant="muted"
-            />
-          ) : null}
-          <CardTitle className="max-w-full truncate">
-            {activity.name_snapshot}
-          </CardTitle>
-          {note ? (
-            <CardDescription className="line-clamp-2">{note}</CardDescription>
-          ) : null}
+        <CardHeader className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+          <div className="flex w-full flex-col items-center gap-2">
+            {activity.icon_snapshot ? (
+              <DynamicIcon
+                name={activity.icon_snapshot}
+                size="md"
+                variant="muted"
+              />
+            ) : null}
+            <div className="flex w-full flex-col items-center gap-0.5">
+              <CardTitle className="w-full min-w-0 truncate">
+                {activity.name_snapshot}
+              </CardTitle>
+              {note ? (
+                <CardDescription className="w-full truncate">
+                  {note}
+                </CardDescription>
+              ) : null}
+            </div>
+          </div>
           <div
-            className="flex items-center gap-2"
+            className="flex justify-center"
             onClick={(event) => event.stopPropagation()}
           >
-            {activity.kind === "todo" ? (
-              <Checkbox
-                checked={activity.state === "done"}
-                disabled={disabled}
-                onCheckedChange={() =>
-                  onCommand(activity, { type: "update_todo" })
-                }
-              />
-            ) : null}
-            {activity.type === "check" ? (
-              <Checkbox
-                checked={activity.state === "done"}
-                disabled={disabled}
-                onCheckedChange={() =>
-                  onCommand(activity, { type: "toggle_check" })
-                }
-              />
-            ) : null}
+            {controls}
           </div>
         </CardHeader>
       </Card>
