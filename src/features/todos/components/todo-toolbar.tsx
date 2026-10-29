@@ -1,6 +1,6 @@
 import { useEffect, useId, useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
-import { ChevronDownIcon, SearchIcon } from "lucide-react"
+import { ArrowUpDownIcon, ChevronDownIcon, SearchIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -15,6 +15,14 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useDebounce } from "@/hooks/use-debounce"
 import {
   ALL_TODO_GROUPS,
@@ -26,8 +34,19 @@ import {
   type TodoGroup,
 } from "../lib/todo-groups"
 import { TODO_PRIORITY_LABELS } from "../lib/todo-priority"
+import {
+  DEFAULT_TODO_LIST_SORT,
+  TODO_LIST_SORT_LABELS,
+  TODO_LIST_SORTS,
+  type TodoListSort,
+} from "../lib/sort-todos"
 import type { TodoPriority } from "../types/todo"
 import { CreateTodoDialog } from "./create-todo-dialog"
+
+const sortSelectItems = TODO_LIST_SORTS.map((value) => ({
+  value,
+  label: TODO_LIST_SORT_LABELS[value],
+}))
 
 type TodoToolbarProps = {
   filters: TodoListFilters
@@ -100,6 +119,18 @@ function TodoToolbar({ filters }: TodoToolbarProps) {
     })
   }
 
+  const sort = filters.sort ?? DEFAULT_TODO_LIST_SORT
+
+  function updateSort(nextSort: TodoListSort) {
+    void navigate({
+      to: "/todos",
+      search: {
+        ...filters,
+        sort: nextSort === DEFAULT_TODO_LIST_SORT ? undefined : nextSort,
+      },
+    })
+  }
+
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
       <h1 className="text-lg font-medium">Todos</h1>
@@ -166,6 +197,32 @@ function TodoToolbar({ filters }: TodoToolbarProps) {
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
+        <Select
+          items={sortSelectItems}
+          value={sort}
+          onValueChange={(value) => {
+            if (value == null) return
+            updateSort(value as TodoListSort)
+          }}
+        >
+          <SelectTrigger className="w-40" aria-label="Sort todos">
+            <ArrowUpDownIcon />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent
+            side="bottom"
+            align="start"
+            alignItemWithTrigger={false}
+          >
+            <SelectGroup>
+              {sortSelectItems.map((item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         <CreateTodoDialog />
       </div>
     </div>

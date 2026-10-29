@@ -1,4 +1,5 @@
 import type { Todo, TodoPriority } from "../types/todo"
+import type { TodoListSort } from "./sort-todos"
 import { todoGroup, type TodoGroup } from "./todo-groups"
 
 const ALL_TODO_GROUPS: TodoGroup[] = [
@@ -14,6 +15,7 @@ type TodoListFilters = {
   q?: string
   status?: TodoGroup[]
   priority?: TodoPriority[]
+  sort?: TodoListSort
 }
 
 function filterTodos(todos: Todo[], filters: TodoListFilters): Todo[] {
@@ -39,7 +41,8 @@ function filtersAreDefault(filters: TodoListFilters): boolean {
   const hasQuery = Boolean(filters.q?.trim())
   const hasStatus = Boolean(filters.status?.length)
   const hasPriority = Boolean(filters.priority?.length)
-  return !hasQuery && !hasStatus && !hasPriority
+  const hasSort = Boolean(filters.sort)
+  return !hasQuery && !hasStatus && !hasPriority && !hasSort
 }
 
 export {

@@ -9,6 +9,9 @@ const todoSearchSchema = z.object({
     .array(z.enum(["unassigned", "assigned", "done", "skipped"]))
     .optional(),
   priority: z.array(z.enum(["high", "medium", "low"])).optional(),
+  sort: z
+    .enum(["newest", "oldest", "name_asc", "name_desc", "priority"])
+    .optional(),
 })
 
 export type TodoRouteSearch = z.infer<typeof todoSearchSchema>

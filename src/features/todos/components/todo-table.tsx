@@ -7,16 +7,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { sortFilteredTodos } from "../lib/sort-todos"
+import { sortTodos, type TodoListSort } from "../lib/sort-todos"
 import type { Todo } from "../types/todo"
 import { TodoTableRow } from "./todo-table-row"
 
 type TodoTableProps = {
   todos: Todo[]
+  sort?: TodoListSort
 }
 
-function TodoTable({ todos }: TodoTableProps) {
-  const sorted = useMemo(() => sortFilteredTodos(todos), [todos])
+function TodoTable({ todos, sort }: TodoTableProps) {
+  const sorted = useMemo(() => sortTodos(todos, sort), [todos, sort])
 
   return (
     <Table className="table-fixed">

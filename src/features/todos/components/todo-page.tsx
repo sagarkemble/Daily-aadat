@@ -78,9 +78,9 @@ const TodoPage = ({ filters }: TodoPageProps) => {
           </EmptyContent>
         </Empty>
       ) : isMobile ? (
-        <TodoMobileList todos={filteredTodos} />
+        <TodoMobileList todos={filteredTodos} sort={filters.sort} />
       ) : (
-        <TodoTable todos={filteredTodos} />
+        <TodoTable todos={filteredTodos} sort={filters.sort} />
       )}
     </div>
   )

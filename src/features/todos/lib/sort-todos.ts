@@ -64,4 +64,60 @@ function sortFilteredTodos(todos: Todo[]): Todo[] {
   return TODO_GROUPS.flatMap((group) => sortTodosInGroup(group, buckets[group]))
 }
 
-export { sortFilteredTodos, sortTodosForList, sortTodosInGroup }
+const TODO_LIST_SORTS = [
+  "newest",
+  "oldest",
+  "name_asc",
+  "name_desc",
+  "priority",
+] as const
+
+type TodoListSort = (typeof TODO_LIST_SORTS)[number]
+
+const DEFAULT_TODO_LIST_SORT: TodoListSort = "newest"
+
+const TODO_LIST_SORT_LABELS: Record<TodoListSort, string> = {
+  newest: "Newest",
+  oldest: "Oldest",
+  name_asc: "A to Z",
+  name_desc: "Z to A",
+  priority: "Priority",
+}
+
+function sortTodos(
+  todos: Todo[],
+  sort: TodoListSort = DEFAULT_TODO_LIST_SORT
+): Todo[] {
+  const copy = [...todos]
+
+  switch (sort) {
+    case "newest":
+      return copy.sort((a, b) => b.created_at.localeCompare(a.created_at))
+    case "oldest":
+      return copy.sort((a, b) => a.created_at.localeCompare(b.created_at))
+    case "name_asc":
+      return copy.sort((a, b) => a.name.localeCompare(b.name))
+    case "name_desc":
+      return copy.sort((a, b) => b.name.localeCompare(a.name))
+    case "priority":
+      return copy.sort((a, b) => {
+        const priorityDiff =
+          TODO_PRIORITY_ORDER[a.priority] - TODO_PRIORITY_ORDER[b.priority]
+        if (priorityDiff !== 0) return priorityDiff
+        return a.name.localeCompare(b.name)
+      })
+    default:
+      return copy.sort((a, b) => b.created_at.localeCompare(a.created_at))
+  }
+}
+
+export {
+  DEFAULT_TODO_LIST_SORT,
+  TODO_LIST_SORT_LABELS,
+  TODO_LIST_SORTS,
+  sortFilteredTodos,
+  sortTodos,
+  sortTodosForList,
+  sortTodosInGroup,
+  type TodoListSort,
+}

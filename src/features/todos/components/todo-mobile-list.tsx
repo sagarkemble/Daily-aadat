@@ -10,7 +10,7 @@ import {
 import { toast } from "@/components/ui/toast"
 import { cn } from "@/lib/utils"
 import { useChangeTodoState } from "../hooks/use-change-todo-state"
-import { sortFilteredTodos } from "../lib/sort-todos"
+import { sortTodos, type TodoListSort } from "../lib/sort-todos"
 import type { Todo } from "../types/todo"
 import { TodoAssignPopover } from "./todo-assign-popover"
 import { TodoDetailDialog } from "./todo-detail-dialog"
@@ -18,6 +18,7 @@ import { TodoMeta } from "./todo-meta"
 
 type TodoMobileListProps = {
   todos: Todo[]
+  sort?: TodoListSort
 }
 
 function TodoMobileRow({ todo }: { todo: Todo }) {
@@ -91,8 +92,8 @@ function TodoMobileRow({ todo }: { todo: Todo }) {
   )
 }
 
-function TodoMobileList({ todos }: TodoMobileListProps) {
-  const sorted = useMemo(() => sortFilteredTodos(todos), [todos])
+function TodoMobileList({ todos, sort }: TodoMobileListProps) {
+  const sorted = useMemo(() => sortTodos(todos, sort), [todos, sort])
 
   return (
     <ItemGroup>
