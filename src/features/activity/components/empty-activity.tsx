@@ -1,5 +1,6 @@
 import {
   Empty,
+  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
@@ -9,7 +10,7 @@ import {
 type EmptyActivityProps = {
   title: string
   description: string
-  children: React.ReactNode
+  children?: React.ReactNode
   icon: React.ReactNode
 }
 
@@ -25,8 +26,8 @@ export function EmptyActivity({
         <EmptyMedia variant="icon">{icon}</EmptyMedia>
         <EmptyTitle>{title}</EmptyTitle>
         <EmptyDescription>{description}</EmptyDescription>
-        {children}
       </EmptyHeader>
+      {children ? <EmptyContent>{children}</EmptyContent> : null}
     </Empty>
   )
 }
