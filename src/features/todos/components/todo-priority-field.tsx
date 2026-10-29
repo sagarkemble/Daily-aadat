@@ -5,7 +5,11 @@ import {
   FieldSet,
 } from "@/components/ui/field"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { TODO_PRIORITY_LABELS } from "../lib/todo-priority"
+import { cn } from "@/lib/utils"
+import {
+  TODO_PRIORITY_DOT_CLASS,
+  TODO_PRIORITY_LABELS,
+} from "../lib/todo-priority"
 import type { TodoPriority } from "../types/todo"
 
 const PRIORITIES: TodoPriority[] = ["high", "medium", "low"]
@@ -56,6 +60,13 @@ function TodoPriorityField({
         >
           {PRIORITIES.map((priority) => (
             <ToggleGroupItem key={priority} value={priority}>
+              <span
+                className={cn(
+                  "size-1.5 shrink-0 rounded-full",
+                  TODO_PRIORITY_DOT_CLASS[priority]
+                )}
+                aria-hidden
+              />
               {TODO_PRIORITY_LABELS[priority]}
             </ToggleGroupItem>
           ))}

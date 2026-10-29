@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
+import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/toast"
 import { useCreateTodo } from "../hooks/use-create-todo"
 import {
@@ -84,29 +85,44 @@ export function CreateTodoDialog() {
         <PlusIcon data-icon="inline-start" />
         Create
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <form className="contents" onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>New todo</DialogTitle>
             <DialogDescription>
-              Add something to your list. You can put it on a day later.
+              Add it now or schedule it for later.
             </DialogDescription>
           </DialogHeader>
 
-          <FieldGroup>
+          <FieldGroup className="gap-6">
             <Field
               data-invalid={!!errors.name || undefined}
               data-disabled={isPending || undefined}
             >
-              <FieldLabel htmlFor="todo-name">Name</FieldLabel>
+              <FieldLabel htmlFor="todo-name" className="sr-only">
+                What needs to be done?
+              </FieldLabel>
               <Input
                 id="todo-name"
-                placeholder="Call electrician"
+                placeholder="What needs to be done?"
                 aria-invalid={!!errors.name}
+                autoFocus
                 {...register("name")}
                 disabled={isPending}
               />
               <FieldError errors={[errors.name]} />
+            </Field>
+            <Field data-disabled={isPending || undefined}>
+              <FieldLabel htmlFor="todo-note" className="sr-only">
+                Note
+              </FieldLabel>
+              <Textarea
+                id="todo-note"
+                placeholder="Add a note..."
+                rows={3}
+                disabled={isPending}
+                {...register("note")}
+              />
             </Field>
             <Controller
               name="priority"
@@ -126,27 +142,19 @@ export function CreateTodoDialog() {
               render={({ field }) => (
                 <TodoDueDateField
                   id="todo-due-date"
+                  mode="presets"
                   value={field.value ?? null}
                   onChange={field.onChange}
                   disabled={isPending}
                 />
               )}
             />
-            <Field data-disabled={isPending || undefined}>
-              <FieldLabel htmlFor="todo-note">Note</FieldLabel>
-              <Input
-                id="todo-note"
-                placeholder="Add note"
-                {...register("note")}
-                disabled={isPending}
-              />
-            </Field>
           </FieldGroup>
 
           <DialogFooter>
             <DialogClose
               render={
-                <Button type="button" variant="outline" disabled={isPending} />
+                <Button type="button" variant="ghost" disabled={isPending} />
               }
             >
               Cancel
