@@ -2,6 +2,7 @@ import type { Slot } from "@/features/templates/types/slots"
 import type { Todo } from "@/features/todos/types/todo"
 import { supabase } from "@/lib/supabase"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { TODO_ICON } from "@/features/todos/lib/todo-icon"
 import type { NewDayPlanTodo } from "../types/day-plan"
 import { ensureDayPlan } from "./ensure-day-plan"
 import { nextSlotSortOrder } from "./next-slot-sort-order"
@@ -26,7 +27,7 @@ async function assignTodo({
     todo_id: todo.id,
     activity_id: null,
     name_snapshot: todo.name,
-    icon_snapshot: todo.icon,
+    icon_snapshot: TODO_ICON,
     type: null,
     note_snapshot: null,
     slot,

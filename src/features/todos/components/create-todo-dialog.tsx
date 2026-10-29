@@ -23,8 +23,6 @@ import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "@/components/ui/toast"
 import { useCreateTodo } from "../hooks/use-create-todo"
-
-import IconPickerPopover from "@/components/icon-picker-popover"
 import {
   createTodoInputSchema,
   type CreateTodoInput,
@@ -33,11 +31,8 @@ import {
 import { TodoDueDateField } from "./todo-due-date-field"
 import { TodoPriorityField } from "./todo-priority-field"
 
-const DEFAULT_TODO_ICON = "list-todo"
-
 const emptyValues: CreateTodoFormInput = {
   name: "",
-  icon: DEFAULT_TODO_ICON,
   note: "",
   priority: "medium",
   due_date: null,
@@ -45,12 +40,10 @@ const emptyValues: CreateTodoFormInput = {
 
 export function CreateTodoDialog() {
   const [open, setOpen] = useState(false)
-  const [selectedIcon, setSelectedIcon] = useState(DEFAULT_TODO_ICON)
   const {
     register,
     handleSubmit,
     reset,
-    setValue,
     control,
     formState: { errors },
   } = useForm<CreateTodoFormInput, unknown, CreateTodoInput>({
@@ -63,7 +56,6 @@ export function CreateTodoDialog() {
     setOpen(nextOpen)
     if (!nextOpen) {
       reset(emptyValues)
-      setSelectedIcon(DEFAULT_TODO_ICON)
     }
   }
 
@@ -115,21 +107,6 @@ export function CreateTodoDialog() {
                 disabled={isPending}
               />
               <FieldError errors={[errors.name]} />
-            </Field>
-            <Field
-              data-invalid={!!errors.icon || undefined}
-              data-disabled={isPending || undefined}
-            >
-              <FieldLabel htmlFor="todo-icon">Icon</FieldLabel>
-              <IconPickerPopover
-                selectedIcon={selectedIcon}
-                setSelectedIcon={(icon) => {
-                  setSelectedIcon(icon)
-                  setValue("icon", icon, { shouldValidate: true })
-                }}
-                disabled={isPending}
-              />
-              <FieldError errors={[errors.icon]} />
             </Field>
             <Controller
               name="priority"

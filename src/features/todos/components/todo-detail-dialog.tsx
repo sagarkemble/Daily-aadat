@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { Trash2Icon } from "lucide-react"
 
-import { DynamicIcon } from "@/components/dynamic-icon"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,8 +34,6 @@ import { useUpdateTodo } from "../hooks/use-update-todo"
 import type { Todo, TodoPriority } from "../types/todo"
 import { TodoDueDateField } from "./todo-due-date-field"
 import { TodoPriorityField } from "./todo-priority-field"
-
-const DEFAULT_TODO_ICON = "list-todo"
 
 type TodoDetailDialogProps = {
   todo: Todo
@@ -132,21 +129,12 @@ function TodoDetailDialog({ todo, open, onOpenChange }: TodoDetailDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <div className="flex items-center gap-3">
-            <DynamicIcon
-              name={todo.icon || DEFAULT_TODO_ICON}
-              size="md"
-              variant="muted"
-            />
-            <div className="flex min-w-0 flex-col gap-1">
-              <DialogTitle>{todo.name}</DialogTitle>
-              <DialogDescription>
-                {todo.assignment
-                  ? formatTodoAssignment(todo.assignment)
-                  : "Todo"}
-              </DialogDescription>
-            </div>
-          </div>
+          <DialogTitle>{todo.name}</DialogTitle>
+          <DialogDescription>
+            {todo.assignment
+              ? formatTodoAssignment(todo.assignment)
+              : "Todo"}
+          </DialogDescription>
         </DialogHeader>
         <FieldGroup>
           <TodoPriorityField

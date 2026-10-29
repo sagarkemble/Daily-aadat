@@ -15,6 +15,7 @@ import type { TodoState } from "@/features/todos/types/todo"
 import { todoStateFromDayActivity } from "@/features/todos/lib/todo-state-from-day-activity"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
+import { placementIconName } from "../lib/placement-icon"
 import {
   CheckControl,
   CountControls,
@@ -53,6 +54,7 @@ function DayActivityCard({
   const [detailOpen, setDetailOpen] = useState(false)
   const note = activity.note_snapshot?.trim()
   const skipped = activity.state === "skipped"
+  const iconName = placementIconName(activity)
   const todoState = (): TodoState => todoStateFromDayActivity(activity.state)
   const controls = skipped ? null : activity.type === "timed" ? (
     <TimedControls
@@ -88,9 +90,9 @@ function DayActivityCard({
       >
         <CardHeader className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
           <div className="flex w-full flex-col items-center gap-2">
-            {activity.icon_snapshot ? (
+            {iconName ? (
               <DynamicIcon
-                name={activity.icon_snapshot}
+                name={iconName}
                 size="md"
                 variant="muted"
               />

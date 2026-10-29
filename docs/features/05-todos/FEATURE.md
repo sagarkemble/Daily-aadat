@@ -33,8 +33,7 @@ Same seam as activities: identity in one table, slot/order on the day in another
 |-------|--------|
 | `id` | Stable id — the todo the list talks about |
 | `user_id` | Owner; RLS is `user_id = auth.uid()` |
-| `name` | Title. Edit name / icon only from the Todos list |
-| `icon` | Required. Same **preset icon set** as activities (no photo). Default e.g. `list-todo` on quick add |
+| `name` | Title. Edit name only from the Todos list |
 | `state` | `pending` \| `done` — one state for list and day. Check-style only (Done), never timed/count |
 | `priority` | `high` \| `medium` \| `low` — required; default `medium` |
 | `due_date` | Optional calendar **deadline** (`date`, no time). Not the day the todo is placed on |
@@ -53,7 +52,7 @@ Assignment is a placement on `day_items`, not a column on `todos`. **Due date** 
 | `day_plan_id` | NOT NULL — this row is on a day |
 | `slot` | One of the five slots (not `unslotted`; the pile is the `todos` table) |
 | `sort_order` | Order **among activities and todos in that slot** |
-| `name_snapshot` / `icon_snapshot` | Copy of `todos.name` / `todos.icon` so the day row looks like an activity row. Update both when the list edits name/icon |
+| `name_snapshot` / `icon_snapshot` | Copy of `todos.name` for the day row; `icon_snapshot` is always `list-todo` for todo placements (not stored on `todos`) |
 | `state` | Unused for todos (leave `pending`). Live state is `todos.state`. Not `running` |
 | `type` | null (not `check`/`timed`/`count`). Actions are Done only like a **check** row. No `activity_id` |
 
@@ -63,7 +62,7 @@ Assignment is a placement on `day_items`, not a column on `todos`. **Due date** 
 - Unplan = delete the plan → CASCADE placements; **todos remain**  
 - Thursday → Friday = move the placement; do not insert a second one  
 - Same-day Morning → Evening = **move** the placement (`slot` update), not a second row  
-- Day UI: icon + name like an activity; **Done** from `todos.state`; join `todos` for live **state**, **note**, **priority**, and **due_date** (not snapshotted on `day_items`)  
+- Day UI: fixed **list-todo** icon + name; **Done** from `todos.state`; join `todos` for live **state**, **note**, **priority**, and **due_date** (not snapshotted on `day_items`)  
 
 ### Final schema (locked — migration not applied until we say so)
 
@@ -74,7 +73,6 @@ Assignment is a placement on `day_items`, not a column on `todos`. **Due date** 
 | `id` | uuid | PK, default `gen_random_uuid()` |
 | `user_id` | uuid | not null → `users(id)` on delete cascade |
 | `name` | text | not null, `length(trim(name)) > 0` |
-| `icon` | text | not null (Lucide kebab-case, same as activities; no DB enum) |
 | `state` | text | not null default `'pending'`, check `pending \| done` |
 | `priority` | text | not null default `'medium'`, check `high \| medium \| low` |
 | `due_date` | date | null — deadline only |
@@ -115,15 +113,15 @@ Unchanged: `day_plan_id` not null + on delete cascade; no `user_id` on `day_item
 ### Day — planned slot
 
 - **+ Todo** sits beside **+ Activity** on that slot (any date; first placement ensures the day row). Ended day: no extra todo lock  
-- One popup: **create** (name + icon) at the top, then the pile. Simple **name search**. Pick **one** todo at a time (not multi-add like activities)  
-- New title (+ icon) → insert `todos` (`pending`) **and** a placement on this plan + slot (snapshots copied)  
+- One popup: **create** (name + optional note/priority/due) at the top, then the pile. Simple **name search**. Pick **one** todo at a time (not multi-add like activities)  
+- New title → insert `todos` (`pending`) **and** a placement on this plan + slot (`name_snapshot` copied; `icon_snapshot` = `list-todo`)  
 - Picker tabs (default **Unassigned**):  
   - **Unassigned** — Open (`pending`) todos with **no** placement. Tap = add here (no confirm)  
   - **Assigned** — Open todos that already have a placement **except this slot**. Row shows **Wed · Afternoon**. Tap = confirm, then **move** here  
 - Hide only the todo **already in this slot**. Show other slots on **this** date (Thursday Morning when adding to Thursday Evening) and other dates  
 - **Confirm before every move** (other day or other slot on this day), e.g. “Walk the dog is on Wednesday Afternoon. Move it here?” Stay on the day you are planning. Cancel = no change  
 - Picker is **Open only**. Done todos do not appear in **+ Todo** (keeps the list small). They stay on the Todos page and on the day if already placed. To place one later: undo Done so it is open, then pick it  
-- Row: **same look as an activity** (icon + name), **Done / undo** from `todos.state`. No Start/Stop, no +1, no rename on the day  
+- Row: **list-todo** icon + name, **Done / undo** from `todos.state`. No Start/Stop, no +1, no rename on the day  
 - Day never deletes the `todos` row  
 - Same-day slot change is **move via + Todo** (confirm), not unassign-then-readd. Cross-slot **drag** for todos is not this feature (see Drag-drop; v1 drag is within a slot only)
 

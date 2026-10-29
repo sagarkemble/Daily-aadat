@@ -1,8 +1,7 @@
-import { useId, useState } from "react"
+import { useId } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { PlusIcon } from "lucide-react"
-import IconPickerPopover from "@/components/icon-picker-popover"
 import { Button } from "@/components/ui/button"
 import {
   Field,
@@ -20,11 +19,8 @@ import {
 import { TodoDueDateField } from "@/features/todos/components/todo-due-date-field"
 import { TodoPriorityField } from "@/features/todos/components/todo-priority-field"
 
-const DEFAULT_TODO_ICON = "list-todo"
-
 const emptyValues: CreateTodoFormInput = {
   name: "",
-  icon: DEFAULT_TODO_ICON,
   note: "",
   priority: "medium",
   due_date: null,
@@ -43,12 +39,10 @@ export function AddTodoCreateForm({
   const noteId = useId()
   const priorityId = useId()
   const dueId = useId()
-  const [selectedIcon, setSelectedIcon] = useState(DEFAULT_TODO_ICON)
   const {
     register,
     handleSubmit,
     reset,
-    setValue,
     control,
     formState: { errors },
   } = useForm<CreateTodoFormInput, unknown, CreateTodoInput>({
@@ -63,7 +57,6 @@ export function AddTodoCreateForm({
       due_date: data.due_date ?? null,
     }).then(() => {
       reset(emptyValues)
-      setSelectedIcon(DEFAULT_TODO_ICON)
     })
   }
 
@@ -84,15 +77,8 @@ export function AddTodoCreateForm({
               placeholder="Name"
               aria-invalid={!!errors.name}
               disabled={isPending}
+              className="min-w-0 flex-1"
               {...register("name")}
-            />
-            <IconPickerPopover
-              selectedIcon={selectedIcon}
-              setSelectedIcon={(icon) => {
-                setSelectedIcon(icon)
-                setValue("icon", icon, { shouldValidate: true })
-              }}
-              disabled={isPending}
             />
             <Button type="submit" size="sm" disabled={isPending}>
               {isPending ? (
@@ -103,7 +89,7 @@ export function AddTodoCreateForm({
               Create
             </Button>
           </div>
-          <FieldError errors={[errors.name, errors.icon]} />
+          <FieldError errors={[errors.name]} />
         </Field>
         <Controller
           name="priority"

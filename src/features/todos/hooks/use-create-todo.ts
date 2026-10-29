@@ -12,7 +12,6 @@ async function createTodo(input: CreateTodoInput) {
     .from("todos")
     .insert({
       name: input.name,
-      icon: input.icon,
       note: input.note,
       state: "pending",
       user_id: user.id,
@@ -20,7 +19,7 @@ async function createTodo(input: CreateTodoInput) {
       ...(input.due_date !== undefined ? { due_date: input.due_date } : {}),
     })
     .select(
-      "id, name, icon, note, state, priority, due_date, created_at, updated_at"
+      "id, name, note, state, priority, due_date, created_at, updated_at"
     )
     .single()
 

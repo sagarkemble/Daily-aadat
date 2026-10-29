@@ -18,6 +18,7 @@ import type { TodoState } from "@/features/todos/types/todo"
 import { todoStateFromDayActivity } from "@/features/todos/lib/todo-state-from-day-activity"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
+import { placementIconName } from "../lib/placement-icon"
 import { CountControls, TimedControls } from "./day-activity-controls"
 import { DayActivityDetailDialog } from "./day-activity-detail-dialog"
 
@@ -67,6 +68,7 @@ export function DayActivityRow({
     ],
   })
   const skipped = activity.state === "skipped"
+  const iconName = placementIconName(activity)
   const target =
     activity.type === "count"
       ? formatCountProgress(activity)
@@ -87,9 +89,9 @@ export function DayActivityRow({
           }}
         >
           <ItemMedia variant="icon">
-            {activity.icon_snapshot ? (
+            {iconName ? (
               <DynamicIcon
-                name={activity.icon_snapshot}
+                name={iconName}
                 size="md"
                 variant="muted"
               />

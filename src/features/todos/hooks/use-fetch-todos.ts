@@ -12,7 +12,6 @@ type FetchedPlacement = {
 type FetchedTodo = {
   id: string
   name: string
-  icon: string
   note: string | null
   state: TodoState
   priority: Todo["priority"]
@@ -45,7 +44,6 @@ function toTodo(row: FetchedTodo): Todo {
   return {
     id: row.id,
     name: row.name,
-    icon: row.icon,
     note: row.note,
     state: row.state,
     priority: row.priority,
@@ -63,7 +61,6 @@ async function fetchTodos() {
       `
       id,
       name,
-      icon,
       note,
       state,
       priority,

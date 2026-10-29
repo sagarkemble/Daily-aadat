@@ -1,5 +1,6 @@
 import type { Slot } from "@/features/templates/types/slots"
 import type { Todo } from "@/features/todos/types/todo"
+import { TODO_ICON } from "@/features/todos/lib/todo-icon"
 import { supabase } from "@/lib/supabase"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ensureDayPlan } from "./ensure-day-plan"
@@ -26,7 +27,7 @@ async function reassignTodo({
       slot,
       sort_order: sortOrder,
       name_snapshot: todo.name,
-      icon_snapshot: todo.icon,
+      icon_snapshot: TODO_ICON,
     })
     .eq("todo_id", todo.id)
     .eq("kind", "todo")

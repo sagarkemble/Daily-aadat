@@ -2,7 +2,6 @@ import {
   Item,
   ItemContent,
   ItemGroup,
-  ItemMedia,
 } from "@/components/ui/item"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -26,9 +25,6 @@ export function TodoListSkeleton({ mobile }: TodoListSkeletonProps) {
       <ItemGroup>
         {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
           <Item key={index} variant="outline" size="sm">
-            <ItemMedia variant="icon">
-              <Skeleton className="size-8 rounded-md" />
-            </ItemMedia>
             <ItemContent>
               <Skeleton className="h-4 w-2/3" />
               <Skeleton className="h-3 w-1/3" />

@@ -25,7 +25,7 @@ A named slot that belongs to the date, not a time of day. It is still a slot. Sh
 _Avoid_: no slot, unslotted, global activity, all-day as if it were not a slot
 
 **Placement**:
-One instance of an activity or a placed todo on a day. An activity placement snapshots name, icon, and note (the day's copy can change without changing catalog or template). A todo placement is a sticker: name, icon, note, and state live on the Todo. Edit on the day, the pile updates; edit in the pile, the day shows it.
+One instance of an activity or a placed todo on a day. An activity placement snapshots name, icon, and note (the day's copy can change without changing catalog or template). A todo placement is a sticker: name, note, and state live on the Todo; on the day it shows a fixed list-todo glyph. Edit on the day, the pile updates; edit in the pile, the day shows it.
 _Avoid_: activity (when you mean the Tuesday row), day item (in speech; fine in code later)
 
 **Note**:
@@ -33,7 +33,7 @@ Longer text than the name. Explains which Zoom, which meeting, which todo. For a
 _Avoid_: description (fine in UI copy; template already has its own playlist blurb), comment, journal
 
 **Todo**:
-A pile item. Name, icon, note, state, priority, and optional due date live here. It is not part of a template. Placing it on a day makes a sticker in any of the six slots, including Day-wide.
+A pile item. Name, note, state, priority, and optional due date live here. It is not part of a template. Placing it on a day makes a sticker in any of the six slots, including Day-wide (always shown with the list-todo icon on the day).
 _Avoid_: task, unslotted
 
 **Due date**:

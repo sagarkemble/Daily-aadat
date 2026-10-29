@@ -22,6 +22,7 @@ import type { TodoState } from "@/features/todos/types/todo"
 import { todoStateFromDayActivity } from "@/features/todos/lib/todo-state-from-day-activity"
 import type { DayPlanActivity } from "../types/day-plan"
 import { useUpdateDayItemNote } from "../hooks/use-update-day-item-note"
+import { placementIconName } from "../lib/placement-icon"
 
 type DayActivityDetailDialogProps = {
   activity: DayPlanActivity
@@ -51,7 +52,7 @@ function DayActivityDetailDialog({
     useUpdateDayItemNote()
   const { mutateAsync: updateTodo, isPending: isSavingTodo } = useUpdateTodo()
   const name = activity.name_snapshot
-  const icon = activity.icon_snapshot
+  const icon = placementIconName(activity)
   const isPending = isSavingItem || isSavingTodo
 
   useEffect(() => {

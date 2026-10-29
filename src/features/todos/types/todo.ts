@@ -13,7 +13,6 @@ type TodoAssignment = {
 type Todo = {
   id: string
   name: string
-  icon: string
   note: string | null
   state: TodoState
   priority: TodoPriority
