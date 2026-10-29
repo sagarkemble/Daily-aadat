@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { LayoutTemplateIcon } from "lucide-react"
+import { LayoutTemplateIcon, ChevronDownIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
@@ -50,11 +50,13 @@ import { Spinner } from "@/components/ui/spinner"
 type SelectTemplateDialogProps = {
   date: string
   hasActivitiesOnDay: boolean
+  appliedTemplateName?: string | null
 }
 
 const SelectTemplateDialog = ({
   date,
   hasActivitiesOnDay,
+  appliedTemplateName,
 }: SelectTemplateDialogProps) => {
   const [open, setOpen] = useState(false)
   const { data, isLoading, error } = useFetchTemplates()
@@ -111,11 +113,24 @@ const SelectTemplateDialog = ({
     runApply(template, "merge")
   }
 
+  const triggerLabel =
+    appliedTemplateName?.trim() || "Choose template"
+
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger render={<Button variant="outline" />}>
-          Choose template
+        <DialogTrigger
+          render={
+            <Button
+              variant="outline"
+              size="lg"
+              className="max-w-48 rounded-full font-normal"
+            />
+          }
+        >
+          <LayoutTemplateIcon className="text-primary" />
+          <span className="truncate">{triggerLabel}</span>
+          <ChevronDownIcon data-icon="inline-end" />
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

@@ -15,7 +15,6 @@ import { useAddActivity } from "../hooks/use-add-activity"
 import { useApplyActivityCommand } from "../hooks/use-apply-activity-command"
 import { useFetchDayPlan } from "../hooks/use-fetch-day-plan"
 import { useReorderDayPlanActivities } from "../hooks/use-reorder-day-plan-activities"
-import { useUnassignTodo } from "../hooks/use-unassign-todo"
 import {
   applyDayItemCommand,
   type DayItemCommand,
@@ -67,9 +66,16 @@ function countActivitiesOnBoard(board: DayBoard | undefined) {
   )
 }
 
+function countPlannedOnBoard(board: DayBoard | undefined) {
+  if (!board) return 0
+  return Object.values(board).reduce(
+    (total, slot) => total + slot.activities.length,
+    0
+  )
+}
+
 const DayPage = ({ date }: DayPageProps) => {
   const { data, isLoading, error } = useFetchDayPlan(date)
-  const [editing, setEditing] = useState(false)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [pickerSlot, setPickerSlot] = useState<Slot | undefined>()
   const [todoOpen, setTodoOpen] = useState(false)
@@ -78,7 +84,6 @@ const DayPage = ({ date }: DayPageProps) => {
     useApplyActivityCommand()
   const { mutate: changeTodoState, isPending: isChangingTodo } =
     useChangeTodoState()
-  const { mutate: unassignTodo, isPending: isUnassigning } = useUnassignTodo()
   const { mutateAsync: reorderActivities } = useReorderDayPlanActivities()
   const hasDayPlanRow = data != null
   const [board, setBoard] = useState<DayBoard | undefined>(data?.activities)
@@ -89,6 +94,7 @@ const DayPage = ({ date }: DayPageProps) => {
   const hasPlacements = dayHasPlacements(board)
   const todoCountOnDay = countTodosOnBoard(board)
   const activityCountOnDay = countActivitiesOnBoard(board)
+  const plannedCount = countPlannedOnBoard(board)
   const dayPlanId = data?.id ?? ""
 
   useEffect(() => {
@@ -102,7 +108,7 @@ const DayPage = ({ date }: DayPageProps) => {
 
   if (error) return <div>Error: {error.message}</div>
 
-  const busy = isApplying || isChangingTodo || isUnassigning
+  const busy = isApplying || isChangingTodo
 
   function onCommand(activity: DayPlanActivity, command: DayItemCommand) {
     const next = applyDayItemCommand(activity, command)
@@ -158,10 +164,10 @@ const DayPage = ({ date }: DayPageProps) => {
         <DayPlanActions
           date={date}
           hasDayPlanRow={hasDayPlanRow}
+          templateId={data?.template_id ?? null}
+          plannedCount={plannedCount}
           todoCountOnDay={todoCountOnDay}
           activityCountOnDay={activityCountOnDay}
-          editing={editing}
-          onEditingChange={setEditing}
           onAddActivity={() => {
             setPickerSlot(undefined)
             setPickerOpen(true)
@@ -233,16 +239,12 @@ const DayPage = ({ date }: DayPageProps) => {
           <DayWide
             items={board?.day_wide?.activities ?? []}
             isLoading={isLoading}
-            editing={editing}
-            date={date}
-            dayPlanId={dayPlanId}
             disabled={busy}
             onAddActivity={() => {
               setPickerSlot("day_wide")
               setPickerOpen(true)
             }}
             onCommand={onCommand}
-            onUnassign={unassignTodo}
           />
           {TIMED_SLOTS.map((slot, index) => (
             <DaySlot
@@ -251,10 +253,8 @@ const DayPage = ({ date }: DayPageProps) => {
               activities={board?.[slot]?.activities ?? []}
               startTime={board?.[slot]?.start_time ?? null}
               endTime={board?.[slot]?.end_time ?? null}
-              date={date}
               dayPlanId={dayPlanId}
               isLoading={isLoading}
-              editing={editing}
               showConnector={index < TIMED_SLOTS.length - 1}
               disabled={busy}
               onAddActivity={() => {
@@ -262,7 +262,6 @@ const DayPage = ({ date }: DayPageProps) => {
                 setPickerOpen(true)
               }}
               onCommand={onCommand}
-              onUnassign={unassignTodo}
             />
           ))}
         </DragDropProvider>

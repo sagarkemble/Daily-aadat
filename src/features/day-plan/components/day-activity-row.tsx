@@ -2,7 +2,6 @@ import { useState } from "react"
 import { Feedback } from "@dnd-kit/dom"
 import { useSortable } from "@dnd-kit/react/sortable"
 
-import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Item,
@@ -27,9 +26,7 @@ type DayActivityRowProps = {
   group: string
   activity: DayPlanActivity
   disabled?: boolean
-  editing?: boolean
   onCommand: (activity: DayPlanActivity, command: DayItemCommand) => void
-  onUnassign: (activityId: string) => void
 }
 
 function formatCountProgress(activity: DayPlanActivity) {
@@ -56,9 +53,7 @@ export function DayActivityRow({
   group,
   activity,
   disabled,
-  editing = false,
   onCommand,
-  onUnassign,
 }: DayActivityRowProps) {
   const { ref, sourceRef, isDragging } = useSortable({
     id,
@@ -119,18 +114,7 @@ export function DayActivityRow({
             className="shrink-0"
             onClick={(event) => event.stopPropagation()}
           >
-            {skipped ? (
-              editing ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  disabled={disabled}
-                  onClick={() => onCommand(activity, { type: "unskip" })}
-                >
-                  Unskip
-                </Button>
-              ) : null
-            ) : (
+            {skipped ? null : (
               <>
                 {activity.type === "timed" ? (
                   <TimedControls
@@ -164,16 +148,6 @@ export function DayActivityRow({
                     }
                   />
                 ) : null}
-                {editing ? (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled={disabled}
-                    onClick={() => onCommand(activity, { type: "skip" })}
-                  >
-                    Skip
-                  </Button>
-                ) : null}
               </>
             )}
           </ItemActions>
@@ -183,8 +157,6 @@ export function DayActivityRow({
         activity={activity}
         open={detailOpen}
         onOpenChange={setDetailOpen}
-        editing={editing}
-        onUnassign={onUnassign}
       />
     </div>
   )

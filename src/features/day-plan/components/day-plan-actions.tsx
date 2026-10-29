@@ -1,5 +1,11 @@
-import { useState } from "react"
-import { ListIcon, ListTodoIcon, PencilIcon, Undo2Icon } from "lucide-react"
+import { useMemo, useState } from "react"
+import {
+  ChevronDownIcon,
+  ListIcon,
+  ListTodoIcon,
+  PlusIcon,
+  Undo2Icon,
+} from "lucide-react"
 
 import {
   AlertDialog,
@@ -14,9 +20,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Spinner } from "@/components/ui/spinner"
-import { Toggle } from "@/components/ui/toggle"
 import { toast } from "@/components/ui/toast"
+import { useFetchTemplates } from "@/features/templates/hooks/use-fetch-templates"
 import SelectTemplateDialog from "@/features/day-plan/components/select-template-dialog"
 import {
   useUnplanDay,
@@ -26,10 +39,10 @@ import {
 type DayPlanActionsProps = {
   date: string
   hasDayPlanRow: boolean
+  templateId?: string | null
+  plannedCount: number
   todoCountOnDay: number
   activityCountOnDay: number
-  editing: boolean
-  onEditingChange: (editing: boolean) => void
   onAddActivity?: () => void
   isAddingActivity?: boolean
   onAddTodo?: () => void
@@ -38,16 +51,22 @@ type DayPlanActionsProps = {
 function DayPlanActions({
   date,
   hasDayPlanRow,
+  templateId,
+  plannedCount,
   todoCountOnDay,
   activityCountOnDay,
-  editing,
-  onEditingChange,
   onAddActivity,
   isAddingActivity = false,
   onAddTodo,
 }: DayPlanActionsProps) {
   const { mutateAsync: unplanDay, isPending } = useUnplanDay()
+  const { data: templates } = useFetchTemplates()
   const [confirmOpen, setConfirmOpen] = useState(false)
+
+  const appliedTemplateName = useMemo(() => {
+    if (!templateId) return null
+    return templates?.find((template) => template.id === templateId)?.name ?? null
+  }, [templateId, templates])
 
   function handleConfirmOpenChange(nextOpen: boolean) {
     if (isPending) return
@@ -65,56 +84,116 @@ function DayPlanActions({
   }
 
   const hasTodos = todoCountOnDay > 0
+  const plannedLabel =
+    plannedCount === 1 ? "1 task planned" : `${plannedCount} tasks planned`
+  const canAdd = Boolean(onAddActivity || onAddTodo)
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <SelectTemplateDialog
-        date={date}
-        hasActivitiesOnDay={activityCountOnDay > 0}
-      />
-      {hasDayPlanRow ? (
-        <AlertDialog open={confirmOpen} onOpenChange={handleConfirmOpenChange}>
-          <AlertDialogTrigger
-            render={<Button variant="outline" />}
-            disabled={isPending}
-          >
-            Unplan Day
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogMedia>
-                <Undo2Icon />
-              </AlertDialogMedia>
-              <AlertDialogTitle>
-                {hasTodos ? "Clear this day?" : "Unplan this day?"}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {hasTodos
-                  ? "Activities, template, and slot times will be removed."
-                  : "This removes activities, template, and slot times for this date."}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-              {hasTodos ? (
-                <>
-                  <AlertDialogAction
-                    variant="outline"
-                    disabled={isPending}
-                    onClick={(event) => {
-                      event.preventDefault()
-                      runUnplan("keepTodos")
-                    }}
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex min-w-0 flex-wrap items-center gap-3">
+        <SelectTemplateDialog
+          date={date}
+          hasActivitiesOnDay={activityCountOnDay > 0}
+          appliedTemplateName={appliedTemplateName}
+        />
+        <p className="text-sm text-muted-foreground">{plannedLabel}</p>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        {canAdd ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  size="lg"
+                  className="rounded-full"
+                  disabled={isAddingActivity}
+                />
+              }
+            >
+              <PlusIcon data-icon="inline-start" />
+              Add
+              <ChevronDownIcon data-icon="inline-end" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuGroup>
+                {onAddActivity ? (
+                  <DropdownMenuItem
+                    disabled={isAddingActivity}
+                    onClick={onAddActivity}
                   >
-                    {isPending ? (
-                      <>
-                        <Spinner data-icon="inline-start" />
-                        Clearing…
-                      </>
-                    ) : (
-                      "Keep todos here"
-                    )}
-                  </AlertDialogAction>
+                    <ListIcon />
+                    Activity
+                  </DropdownMenuItem>
+                ) : null}
+                {onAddTodo ? (
+                  <DropdownMenuItem onClick={onAddTodo}>
+                    <ListTodoIcon />
+                    Todo
+                  </DropdownMenuItem>
+                ) : null}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
+        {hasDayPlanRow ? (
+          <AlertDialog open={confirmOpen} onOpenChange={handleConfirmOpenChange}>
+            <AlertDialogTrigger
+              render={
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="rounded-full"
+                  disabled={isPending}
+                />
+              }
+            >
+              Clear day
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogMedia>
+                  <Undo2Icon />
+                </AlertDialogMedia>
+                <AlertDialogTitle>Clear this day?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {hasTodos
+                    ? "Activities, template, and slot times will be removed."
+                    : "This removes activities, template, and slot times for this date."}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+                {hasTodos ? (
+                  <>
+                    <AlertDialogAction
+                      variant="outline"
+                      disabled={isPending}
+                      onClick={(event) => {
+                        event.preventDefault()
+                        runUnplan("keepTodos")
+                      }}
+                    >
+                      {isPending ? (
+                        <>
+                          <Spinner data-icon="inline-start" />
+                          Clearing…
+                        </>
+                      ) : (
+                        "Keep todos here"
+                      )}
+                    </AlertDialogAction>
+                    <AlertDialogAction
+                      variant="destructive"
+                      disabled={isPending}
+                      onClick={(event) => {
+                        event.preventDefault()
+                        runUnplan("sendToPile")
+                      }}
+                    >
+                      Send todos to pile
+                    </AlertDialogAction>
+                  </>
+                ) : (
                   <AlertDialogAction
                     variant="destructive"
                     disabled={isPending}
@@ -123,56 +202,21 @@ function DayPlanActions({
                       runUnplan("sendToPile")
                     }}
                   >
-                    Send todos to pile
+                    {isPending ? (
+                      <>
+                        <Spinner data-icon="inline-start" />
+                        Clearing…
+                      </>
+                    ) : (
+                      "Yes, clear day"
+                    )}
                   </AlertDialogAction>
-                </>
-              ) : (
-                <AlertDialogAction
-                  variant="destructive"
-                  disabled={isPending}
-                  onClick={(event) => {
-                    event.preventDefault()
-                    runUnplan("sendToPile")
-                  }}
-                >
-                  {isPending ? (
-                    <>
-                      <Spinner data-icon="inline-start" />
-                      Unplanning…
-                    </>
-                  ) : (
-                    "Yes, unplan"
-                  )}
-                </AlertDialogAction>
-              )}
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      ) : null}
-      {onAddActivity ? (
-        <Button
-          variant="secondary"
-          disabled={isAddingActivity}
-          onClick={onAddActivity}
-        >
-          <ListIcon data-icon="inline-start" />
-          Add activity
-        </Button>
-      ) : null}
-      {onAddTodo ? (
-        <Button variant="secondary" onClick={onAddTodo}>
-          <ListTodoIcon data-icon="inline-start" />
-          Add todo
-        </Button>
-      ) : null}
-      <Toggle
-        variant="outline"
-        pressed={editing}
-        onPressedChange={onEditingChange}
-      >
-        <PencilIcon />
-        Edit
-      </Toggle>
+                )}
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : null}
+      </div>
     </div>
   )
 }

@@ -27,9 +27,7 @@ type DayActivityCardProps = {
   group: string
   activity: DayPlanActivity
   disabled?: boolean
-  editing?: boolean
   onCommand: (activity: DayPlanActivity, command: DayItemCommand) => void
-  onUnassign: (activityId: string) => void
 }
 
 function DayActivityCard({
@@ -38,9 +36,7 @@ function DayActivityCard({
   group,
   activity,
   disabled,
-  editing = false,
   onCommand,
-  onUnassign,
 }: DayActivityCardProps) {
   const { ref, sourceRef, isDragging } = useSortable({
     id,
@@ -131,8 +127,6 @@ function DayActivityCard({
         activity={activity}
         open={detailOpen}
         onOpenChange={setDetailOpen}
-        editing={editing}
-        onUnassign={onUnassign}
       />
     </div>
   )

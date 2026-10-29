@@ -17,23 +17,13 @@ import { cn } from "@/lib/utils"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
 import { DayActivityCard } from "./day-activity-card"
-import { SlotAddControl } from "./slot-add-control"
 
 type DayWideProps = {
   items: DayPlanActivity[]
   isLoading?: boolean
-  editing?: boolean
-  date: string
-  dayPlanId: string
   disabled?: boolean
   onAddActivity?: () => void
   onCommand: (activity: DayPlanActivity, command: DayItemCommand) => void
-  onUnassign: (activityId: string) => void
-}
-
-function nextSortOrder(activities: DayPlanActivity[]) {
-  if (activities.length === 0) return 0
-  return Math.max(...activities.map((activity) => activity.slot_order)) + 1
 }
 
 function DayCarouselControls() {
@@ -92,13 +82,9 @@ function DayCarouselControls() {
 function DayWide({
   items,
   isLoading = false,
-  editing = false,
-  date,
-  dayPlanId,
   disabled,
   onAddActivity,
   onCommand,
-  onUnassign,
 }: DayWideProps) {
   const { ref, isDropTarget } = useDroppable({
     id: "day_wide",
@@ -108,17 +94,6 @@ function DayWide({
 
   return (
     <section className="flex min-w-0 flex-col gap-3">
-      {editing ? (
-        <div className="flex justify-end">
-          <SlotAddControl
-            slot="day_wide"
-            date={date}
-            dayPlanId={dayPlanId}
-            nextSlotOrder={nextSortOrder(items)}
-            disabled={disabled}
-          />
-        </div>
-      ) : null}
       <div
         ref={ref}
         className={cn("min-w-0", isDropTarget && "rounded-xl bg-muted")}
@@ -182,9 +157,7 @@ function DayWide({
                     group="day_wide"
                     activity={item}
                     disabled={disabled}
-                    editing={editing}
                     onCommand={onCommand}
-                    onUnassign={onUnassign}
                   />
                 </CarouselItem>
               ))}

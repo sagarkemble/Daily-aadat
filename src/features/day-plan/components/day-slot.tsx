@@ -14,43 +14,31 @@ import type { DayItemCommand } from "../lib/day-item-command"
 import { DayActivityRow } from "./day-activity-row"
 import DayActivityRowSkeleton from "./day-activity-row-skeleton"
 import { DaySlotTimeFields } from "./day-slot-time-fields"
-import { SlotAddControl } from "./slot-add-control"
 
 type DaySlotProps = {
   slot: Slot
   activities: DayPlanActivity[]
-  date: string
   dayPlanId: string
   startTime?: string | null
   endTime?: string | null
   isLoading: boolean
-  editing: boolean
   showConnector?: boolean
   disabled?: boolean
   onAddActivity?: () => void
   onCommand: (activity: DayPlanActivity, command: DayItemCommand) => void
-  onUnassign: (activityId: string) => void
-}
-
-function nextSortOrder(activities: DayPlanActivity[]) {
-  if (activities.length === 0) return 0
-  return Math.max(...activities.map((activity) => activity.slot_order)) + 1
 }
 
 const DaySlot = ({
   slot,
   activities,
-  date,
   dayPlanId,
   startTime = null,
   endTime = null,
   isLoading,
-  editing,
   showConnector = true,
   disabled,
   onAddActivity,
   onCommand,
-  onUnassign,
 }: DaySlotProps) => {
   const { ref, isDropTarget } = useDroppable({
     id: slot,
@@ -75,15 +63,6 @@ const DaySlot = ({
             startTime={startTime}
             endTime={endTime}
             disabled={isLoading}
-          />
-        ) : null}
-        {editing ? (
-          <SlotAddControl
-            slot={slot}
-            date={date}
-            dayPlanId={dayPlanId}
-            nextSlotOrder={nextSortOrder(activities)}
-            disabled={disabled}
           />
         ) : null}
       </div>
@@ -123,9 +102,7 @@ const DaySlot = ({
                 group={slot}
                 activity={item}
                 disabled={disabled}
-                editing={editing}
                 onCommand={onCommand}
-                onUnassign={onUnassign}
               />
             ))}
           </ItemGroup>
