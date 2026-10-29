@@ -23,6 +23,7 @@ type DayWideProps = {
   items: DayPlanActivity[]
   isLoading?: boolean
   editing?: boolean
+  date: string
   dayPlanId: string
   disabled?: boolean
   onAddActivity?: () => void
@@ -92,6 +93,7 @@ function DayWide({
   items,
   isLoading = false,
   editing = false,
+  date,
   dayPlanId,
   disabled,
   onAddActivity,
@@ -106,10 +108,11 @@ function DayWide({
 
   return (
     <section className="flex min-w-0 flex-col gap-3">
-      {editing && dayPlanId !== "" ? (
+      {editing ? (
         <div className="flex justify-end">
           <SlotAddControl
             slot="day_wide"
+            date={date}
             dayPlanId={dayPlanId}
             nextSlotOrder={nextSortOrder(items)}
             disabled={disabled}

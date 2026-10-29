@@ -7,6 +7,7 @@ import { AddTodoDialog } from "./add-todo-dialog/add-todo-dialog"
 
 type SlotAddControlProps = {
   slot: Slot
+  date: string
   dayPlanId: string
   nextSlotOrder: number
   disabled?: boolean
@@ -14,12 +15,13 @@ type SlotAddControlProps = {
 
 function SlotAddControl({
   slot,
+  date,
   dayPlanId,
   nextSlotOrder,
   disabled = false,
 }: SlotAddControlProps) {
   const [todoOpen, setTodoOpen] = useState(false)
-  const canAdd = dayPlanId !== "" && !disabled
+  const canAdd = !disabled
 
   return (
     <>
@@ -32,15 +34,14 @@ function SlotAddControl({
         <ListTodoIcon data-icon="inline-start" />
         Todo
       </Button>
-      {dayPlanId !== "" ? (
-        <AddTodoDialog
-          slot={slot}
-          dayPlanId={dayPlanId}
-          nextSlotOrder={nextSlotOrder}
-          open={todoOpen}
-          onOpenChange={setTodoOpen}
-        />
-      ) : null}
+      <AddTodoDialog
+        slot={slot}
+        date={date}
+        dayPlanId={dayPlanId || undefined}
+        nextSlotOrder={nextSlotOrder}
+        open={todoOpen}
+        onOpenChange={setTodoOpen}
+      />
     </>
   )
 }

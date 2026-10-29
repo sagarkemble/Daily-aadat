@@ -7,6 +7,7 @@ import { isSortable } from "@dnd-kit/react/sortable"
 import { ActivityPickerDialog } from "@/features/activity/components/activity-picker/activity-picker-dialog"
 import type { ActivityWithConfiguration } from "@/features/activity/types/activity"
 import { toast } from "@/components/ui/toast"
+import { Skeleton } from "@/components/ui/skeleton"
 import { SLOTS, TIMED_SLOTS, type Slot } from "@/features/templates/types/slots"
 import { useChangeTodoState } from "@/features/todos/hooks/use-change-todo-state"
 import type { TodoState } from "@/features/todos/types/todo"
@@ -19,6 +20,7 @@ import {
   applyDayItemCommand,
   type DayItemCommand,
 } from "../lib/day-item-command"
+import { dayHasPlacements } from "../lib/day-has-placements"
 import type {
   DayBoard,
   DayPlanActivity,
@@ -26,6 +28,7 @@ import type {
 } from "../types/day-plan"
 import { AddTodoDialog } from "./add-todo-dialog/add-todo-dialog"
 import { DayPlanActions } from "./day-plan-actions"
+import { DayEmptyState } from "./day-empty-state"
 import { DayRail } from "./day-rail"
 import DaySlot from "./day-slot"
 import { DayWide } from "./day-wide"
@@ -46,6 +49,24 @@ function todoStateFromDayItem(state: DayPlanActivity["state"]): TodoState {
   return state
 }
 
+function countTodosOnBoard(board: DayBoard | undefined) {
+  if (!board) return 0
+  return Object.values(board).reduce(
+    (total, slot) =>
+      total + slot.activities.filter((item) => item.kind === "todo").length,
+    0
+  )
+}
+
+function countActivitiesOnBoard(board: DayBoard | undefined) {
+  if (!board) return 0
+  return Object.values(board).reduce(
+    (total, slot) =>
+      total + slot.activities.filter((item) => item.kind === "activity").length,
+    0
+  )
+}
+
 const DayPage = ({ date }: DayPageProps) => {
   const { data, isLoading, error } = useFetchDayPlan(date)
   const [editing, setEditing] = useState(false)
@@ -59,22 +80,23 @@ const DayPage = ({ date }: DayPageProps) => {
     useChangeTodoState()
   const { mutate: unassignTodo, isPending: isUnassigning } = useUnassignTodo()
   const { mutateAsync: reorderActivities } = useReorderDayPlanActivities()
-  const isPlanned = data != null
+  const hasDayPlanRow = data != null
   const [board, setBoard] = useState<DayBoard | undefined>(data?.activities)
   const boardRef = useRef(board)
   boardRef.current = board
   const isDragging = useRef(false)
   const snapshot = useRef(board)
-
-  useEffect(() => {
-    if (!isPlanned) {
-      setEditing(false)
-    }
-  }, [isPlanned])
+  const hasPlacements = dayHasPlacements(board)
+  const todoCountOnDay = countTodosOnBoard(board)
+  const activityCountOnDay = countActivitiesOnBoard(board)
+  const dayPlanId = data?.id ?? ""
 
   useEffect(() => {
     if (data && !isDragging.current) {
       setBoard(data.activities)
+    }
+    if (!data) {
+      setBoard(undefined)
     }
   }, [data])
 
@@ -101,13 +123,12 @@ const DayPage = ({ date }: DayPageProps) => {
     configured: ActivityWithConfiguration[],
     slot?: Slot
   ) {
-    if (!slot || !data) return
+    if (!slot) return
     const sortOrderStart = nextSortOrder(
       (board?.[slot]?.activities ?? []).map((activity) => activity.slot_order)
     )
-    const dayItems: NewDayPlanActivity[] = configured.map(
+    const dayItems: Omit<NewDayPlanActivity, "day_plan_id">[] = configured.map(
       (activity, index) => ({
-        day_plan_id: data.id,
         kind: "activity",
         activity_id: activity.id,
         name_snapshot: activity.name,
@@ -121,19 +142,24 @@ const DayPage = ({ date }: DayPageProps) => {
         note_snapshot: null,
       })
     )
-    toast.promise(addActivities(dayItems), {
+    toast.promise(addActivities({ date, activities: dayItems }), {
       loading: { title: "Adding activities…" },
       success: { title: "Activities added" },
       error: { title: "Failed to add activities" },
     })
   }
 
+  const showEmptyDay = !isLoading && !hasPlacements
+  const showSlotBoard = hasPlacements
+
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
       <div className="flex min-w-0 flex-1 flex-col gap-8">
         <DayPlanActions
           date={date}
-          isPlanned={isPlanned}
+          hasDayPlanRow={hasDayPlanRow}
+          todoCountOnDay={todoCountOnDay}
+          activityCountOnDay={activityCountOnDay}
           editing={editing}
           onEditingChange={setEditing}
           onAddActivity={() => {
@@ -141,14 +167,18 @@ const DayPage = ({ date }: DayPageProps) => {
             setPickerOpen(true)
           }}
           isAddingActivity={isAdding}
-          onAddTodo={
-            isPlanned
-              ? () => {
-                  setTodoOpen(true)
-                }
-              : undefined
-          }
+          onAddTodo={() => setTodoOpen(true)}
         />
+        {isLoading && !hasPlacements ? (
+          <div className="flex min-h-72 flex-col items-center justify-center gap-3 rounded-xl border border-dashed px-6 py-12">
+            <Skeleton className="size-12 rounded-full" />
+            <Skeleton className="h-5 w-52" />
+            <Skeleton className="h-4 w-72 max-w-full" />
+          </div>
+        ) : showEmptyDay ? (
+          <DayEmptyState />
+        ) : null}
+        {showSlotBoard ? (
         <DragDropProvider
           onDragStart={() => {
             isDragging.current = true
@@ -183,7 +213,7 @@ const DayPage = ({ date }: DayPageProps) => {
             if (!isSortable(source)) return
 
             const next = boardRef.current
-            if (!next) return
+            if (!next || !dayPlanId) return
 
             const payload = SLOTS.flatMap((slot) =>
               (next[slot]?.activities ?? []).map((item, index) => ({
@@ -204,16 +234,13 @@ const DayPage = ({ date }: DayPageProps) => {
             items={board?.day_wide?.activities ?? []}
             isLoading={isLoading}
             editing={editing}
-            dayPlanId={data?.id ?? ""}
+            date={date}
+            dayPlanId={dayPlanId}
             disabled={busy}
-            onAddActivity={
-              isPlanned
-                ? () => {
-                    setPickerSlot("day_wide")
-                    setPickerOpen(true)
-                  }
-                : undefined
-            }
+            onAddActivity={() => {
+              setPickerSlot("day_wide")
+              setPickerOpen(true)
+            }}
             onCommand={onCommand}
             onUnassign={unassignTodo}
           />
@@ -224,53 +251,48 @@ const DayPage = ({ date }: DayPageProps) => {
               activities={board?.[slot]?.activities ?? []}
               startTime={board?.[slot]?.start_time ?? null}
               endTime={board?.[slot]?.end_time ?? null}
-              dayPlanId={data?.id || ""}
+              date={date}
+              dayPlanId={dayPlanId}
               isLoading={isLoading}
               editing={editing}
               showConnector={index < TIMED_SLOTS.length - 1}
               disabled={busy}
-              onAddActivity={
-                isPlanned
-                  ? () => {
-                      setPickerSlot(slot)
-                      setPickerOpen(true)
-                    }
-                  : undefined
-              }
+              onAddActivity={() => {
+                setPickerSlot(slot)
+                setPickerOpen(true)
+              }}
               onCommand={onCommand}
               onUnassign={unassignTodo}
             />
           ))}
         </DragDropProvider>
+        ) : null}
       </div>
       <DayRail date={date} board={board} isLoading={isLoading} />
-      {isPlanned && data ? (
-        <AddTodoDialog
-          dayPlanId={data.id}
-          nextSlotOrder={(slot) =>
-            nextSortOrder(
-              (board?.[slot]?.activities ?? []).map(
-                (activity) => activity.slot_order
-              )
+      <AddTodoDialog
+        date={date}
+        dayPlanId={dayPlanId || undefined}
+        nextSlotOrder={(slot) =>
+          nextSortOrder(
+            (board?.[slot]?.activities ?? []).map(
+              (activity) => activity.slot_order
             )
-          }
-          open={todoOpen}
-          onOpenChange={setTodoOpen}
-        />
-      ) : null}
-      {isPlanned ? (
-        <ActivityPickerDialog
-          requireSlot
-          initialSlot={pickerSlot}
-          open={pickerOpen}
-          onOpenChange={(open) => {
-            setPickerOpen(open)
-            if (!open) setPickerSlot(undefined)
-          }}
-          onAdd={handleAddActivities}
-          isPending={isAdding}
-        />
-      ) : null}
+          )
+        }
+        open={todoOpen}
+        onOpenChange={setTodoOpen}
+      />
+      <ActivityPickerDialog
+        requireSlot
+        initialSlot={pickerSlot}
+        open={pickerOpen}
+        onOpenChange={(open) => {
+          setPickerOpen(open)
+          if (!open) setPickerSlot(undefined)
+        }}
+        onAdd={handleAddActivities}
+        isPending={isAdding}
+      />
     </div>
   )
 }

@@ -3,18 +3,20 @@ import type { Todo } from "@/features/todos/types/todo"
 import { supabase } from "@/lib/supabase"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import type { NewDayPlanTodo } from "../types/day-plan"
+import { ensureDayPlan } from "./ensure-day-plan"
 
 async function assignTodo({
+  date,
   todo,
-  dayPlanId,
   slot,
   slotOrder,
 }: {
+  date: string
   todo: Todo
-  dayPlanId: string
   slot: Slot
   slotOrder: number
 }) {
+  const dayPlanId = await ensureDayPlan(date)
   const dayItem: NewDayPlanTodo = {
     day_plan_id: dayPlanId,
     kind: "todo",
@@ -36,8 +38,8 @@ export function useAssignTodo() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: assignTodo,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["day-plan"] })
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["day-plan", variables.date] })
       queryClient.invalidateQueries({ queryKey: ["todos"] })
     },
   })

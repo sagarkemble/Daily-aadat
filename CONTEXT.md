@@ -9,8 +9,8 @@ A reusable catalog item with a name and icon. It is not a row on a Tuesday.
 _Avoid_: habit, task
 
 **Day**:
-One calendar date for one person. It has placements. It has no empty/planned/ended machine. What you did that date is the placements themselves (how many, which are done, how long).
-_Avoid_: day status, in progress, ended day
+One calendar date for one person. It has placements. It has no empty/planned/ended machine. What you did that date is the placements themselves (how many, which are done, how long). A template is optional: placements can exist with none applied.
+_Avoid_: day status, in progress, ended day, unplanned (when you mean no template), planned (when you mean the date has placements)
 
 **Slot**:
 One of six named bands: Day-wide, early morning, morning, afternoon, evening, night. Day-wide is listed first. A slot is the band, not the clock.
@@ -36,6 +36,14 @@ _Avoid_: description (fine in UI copy; template already has its own playlist blu
 An undated pile item. Name, icon, note, and state live here. It is not part of a template. Placing it on a day makes a sticker in any of the six slots, including Day-wide.
 _Avoid_: task, unslotted
 
+**Unplan**:
+Clearing a date's activities, applied template, and slot times. Todos on that date either stay as stickers or go back to the pile; the person chooses. Pile todos and templates are never deleted.
+_Avoid_: reset, delete day, end day
+
+**Merge**:
+Applying a template to a date that already has activities, keeping them and adding the template's alongside (duplicates allowed). The alternative is start fresh: drop the date's activities, then apply. Todos stay either way.
+_Avoid_: overwrite, replace, sync
+
 **Template**:
-A named day shape: placements in the six slots (Day-wide first) and optional slot times on the time-of-day bands.
-_Avoid_: routine, schedule
+A named day shape: placements in the six slots (Day-wide first) and optional slot times on the time-of-day bands. Applying it copies that shape onto a date. A date can hold placements with no template applied.
+_Avoid_: routine, schedule, unplanned day (that is a date with no template, not a status)

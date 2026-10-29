@@ -22,7 +22,7 @@ const TodoPage = () => {
       ) : todos.length === 0 ? (
         <EmptyTodos
           title="No todos yet"
-          description="Capture something undated, then place it on a planned day."
+          description="Capture something undated, then place it on any day."
           icon={<ListTodoIcon />}
         >
           <CreateTodoDialog />

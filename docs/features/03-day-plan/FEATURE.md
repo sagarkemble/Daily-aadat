@@ -81,21 +81,16 @@ Same screen, not a separate route. Live Done / Start / +1 stay on the default vi
 - Ended day: re-open first; Edit day is locked until then  
 
 ### Unplan day
-Wipe this date back to an empty canvas so a different template can be applied (College → clear → Home).
+Clear activities, template link, and slot times. If todos are on the date, user picks **Keep todos here** or **Send todos to pile**. With no todos, delete the `day_plans` row. Pile todos and templates are unchanged. See ADR 0003.
 
-- **Unplan day** (when the day has items and is not ended) → confirm  
-- Deletes **activities** and todo **placements** on that date; `todos` pile rows remain (FK cascade / delete placements)  
-- Sets status `empty`, clears `template_id`  
-- Does **not** change any template  
-- Distinct from **apply overwrite** (replace activities in one step) and from **End day** (lock and keep history)  
+### Empty day (no placements)
+- Copy: no activities or todos planned; add activity, add todo, or choose template  
+- No `day_plans` row until first placement or template apply (`ensure_day_plan`)
 
-### Empty day
-- Soft card: **Let’s plan this day** → **Apply template** sheet  
-
-### Apply template sheet
-- List templates (Home, College, …)  
-- Tap to apply  
-- If day already has items → **overwrite confirm**   
+### Apply template
+- **Choose template** always in the header  
+- Date already has **activities** → **Merge with template** or **Start fresh (todos stay)**  
+- Todos on the date are never removed by apply  
 
 ### Ended day
 - List shows final states (done / skipped / durations / counts)  

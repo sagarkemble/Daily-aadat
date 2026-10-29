@@ -18,11 +18,16 @@ import { Spinner } from "@/components/ui/spinner"
 import { Toggle } from "@/components/ui/toggle"
 import { toast } from "@/components/ui/toast"
 import SelectTemplateDialog from "@/features/day-plan/components/select-template-dialog"
-import { useUnplanDay } from "../hooks/use-unplan-day"
+import {
+  useUnplanDay,
+  type UnplanDayMode,
+} from "../hooks/use-unplan-day"
 
 type DayPlanActionsProps = {
   date: string
-  isPlanned: boolean
+  hasDayPlanRow: boolean
+  todoCountOnDay: number
+  activityCountOnDay: number
   editing: boolean
   onEditingChange: (editing: boolean) => void
   onAddActivity?: () => void
@@ -32,7 +37,9 @@ type DayPlanActionsProps = {
 
 function DayPlanActions({
   date,
-  isPlanned,
+  hasDayPlanRow,
+  todoCountOnDay,
+  activityCountOnDay,
   editing,
   onEditingChange,
   onAddActivity,
@@ -46,19 +53,26 @@ function DayPlanActions({
     if (isPending) return
     setConfirmOpen(nextOpen)
   }
-  function handleUnplanDay() {
+
+  function runUnplan(mode: UnplanDayMode) {
     toast
-      .promise(unplanDay(date), {
-        loading: "Unplanning day...",
-        success: "Day unplanned",
-        error: "Could not unplan day",
+      .promise(unplanDay({ date, mode }), {
+        loading: "Clearing day…",
+        success: "Day cleared",
+        error: "Could not clear day",
       })
       .then(() => setConfirmOpen(false))
   }
 
+  const hasTodos = todoCountOnDay > 0
+
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {isPlanned ? (
+      <SelectTemplateDialog
+        date={date}
+        hasActivitiesOnDay={activityCountOnDay > 0}
+      />
+      {hasDayPlanRow ? (
         <AlertDialog open={confirmOpen} onOpenChange={handleConfirmOpenChange}>
           <AlertDialogTrigger
             render={<Button variant="outline" />}
@@ -71,37 +85,71 @@ function DayPlanActions({
               <AlertDialogMedia>
                 <Undo2Icon />
               </AlertDialogMedia>
-              <AlertDialogTitle>Unplan this day?</AlertDialogTitle>
+              <AlertDialogTitle>
+                {hasTodos ? "Clear this day?" : "Unplan this day?"}
+              </AlertDialogTitle>
               <AlertDialogDescription>
-                This removes the plan for this date. This cannot be undone.
+                {hasTodos
+                  ? "Activities, template, and slot times will be removed."
+                  : "This removes activities, template, and slot times for this date."}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel disabled={isPending}>No</AlertDialogCancel>
-              <AlertDialogAction
-                variant="destructive"
-                disabled={isPending}
-                onClick={(event) => {
-                  event.preventDefault()
-                  handleUnplanDay()
-                }}
-              >
-                {isPending ? (
-                  <>
-                    <Spinner data-icon="inline-start" />
-                    Unplanning…
-                  </>
-                ) : (
-                  "Yes, unplan"
-                )}
-              </AlertDialogAction>
+              <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+              {hasTodos ? (
+                <>
+                  <AlertDialogAction
+                    variant="outline"
+                    disabled={isPending}
+                    onClick={(event) => {
+                      event.preventDefault()
+                      runUnplan("keepTodos")
+                    }}
+                  >
+                    {isPending ? (
+                      <>
+                        <Spinner data-icon="inline-start" />
+                        Clearing…
+                      </>
+                    ) : (
+                      "Keep todos here"
+                    )}
+                  </AlertDialogAction>
+                  <AlertDialogAction
+                    variant="destructive"
+                    disabled={isPending}
+                    onClick={(event) => {
+                      event.preventDefault()
+                      runUnplan("sendToPile")
+                    }}
+                  >
+                    Send todos to pile
+                  </AlertDialogAction>
+                </>
+              ) : (
+                <AlertDialogAction
+                  variant="destructive"
+                  disabled={isPending}
+                  onClick={(event) => {
+                    event.preventDefault()
+                    runUnplan("sendToPile")
+                  }}
+                >
+                  {isPending ? (
+                    <>
+                      <Spinner data-icon="inline-start" />
+                      Unplanning…
+                    </>
+                  ) : (
+                    "Yes, unplan"
+                  )}
+                </AlertDialogAction>
+              )}
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      ) : (
-        <SelectTemplateDialog date={date} />
-      )}
-      {isPlanned && onAddActivity ? (
+      ) : null}
+      {onAddActivity ? (
         <Button
           variant="secondary"
           disabled={isAddingActivity}
@@ -111,22 +159,20 @@ function DayPlanActions({
           Add activity
         </Button>
       ) : null}
-      {isPlanned && onAddTodo ? (
+      {onAddTodo ? (
         <Button variant="secondary" onClick={onAddTodo}>
           <ListTodoIcon data-icon="inline-start" />
           Add todo
         </Button>
       ) : null}
-      {isPlanned ? (
-        <Toggle
-          variant="outline"
-          pressed={editing}
-          onPressedChange={onEditingChange}
-        >
-          <PencilIcon />
-          Edit
-        </Toggle>
-      ) : null}
+      <Toggle
+        variant="outline"
+        pressed={editing}
+        onPressedChange={onEditingChange}
+      >
+        <PencilIcon />
+        Edit
+      </Toggle>
     </div>
   )
 }

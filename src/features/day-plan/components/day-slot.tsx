@@ -19,6 +19,7 @@ import { SlotAddControl } from "./slot-add-control"
 type DaySlotProps = {
   slot: Slot
   activities: DayPlanActivity[]
+  date: string
   dayPlanId: string
   startTime?: string | null
   endTime?: string | null
@@ -39,6 +40,7 @@ function nextSortOrder(activities: DayPlanActivity[]) {
 const DaySlot = ({
   slot,
   activities,
+  date,
   dayPlanId,
   startTime = null,
   endTime = null,
@@ -75,9 +77,10 @@ const DaySlot = ({
             disabled={isLoading}
           />
         ) : null}
-        {editing && dayPlanId !== "" ? (
+        {editing ? (
           <SlotAddControl
             slot={slot}
+            date={date}
             dayPlanId={dayPlanId}
             nextSlotOrder={nextSortOrder(activities)}
             disabled={disabled}

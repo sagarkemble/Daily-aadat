@@ -34,8 +34,9 @@ import { AddTodoTabs } from "./add-todo-tabs"
 import { AddTodoToolbar } from "./add-todo-toolbar"
 
 type AddTodoDialogProps = {
+  date: string
   slot?: Slot
-  dayPlanId: string
+  dayPlanId?: string
   nextSlotOrder: number | ((slot: Slot) => number)
   open?: boolean
   onOpenChange?: (open: boolean) => void
@@ -49,6 +50,7 @@ function isOnThisSlot(todo: Todo, dayPlanId: string, slot: Slot) {
 
 export function AddTodoDialog({
   slot,
+  date,
   dayPlanId,
   nextSlotOrder,
   open,
@@ -77,7 +79,8 @@ export function AddTodoDialog({
     const todos = data ?? []
     return todos.filter((todo) => {
       if (todo.state !== "pending") return false
-      if (targetSlot && isOnThisSlot(todo, dayPlanId, targetSlot)) return false
+      if (targetSlot && dayPlanId && isOnThisSlot(todo, dayPlanId, targetSlot))
+        return false
       if (query === "") return true
       return todo.name.toLowerCase().includes(query)
     })
@@ -114,7 +117,7 @@ export function AddTodoDialog({
     }
     return assignTodo({
       todo,
-      dayPlanId,
+      date,
       slot: targetSlot,
       slotOrder: resolveOrder(targetSlot),
     })
@@ -154,7 +157,7 @@ export function AddTodoDialog({
   }
 
   function handleConfirmMove() {
-    if (!todoToMove || !targetSlot) return
+    if (!todoToMove || !targetSlot || !dayPlanId) return
     const todo = todoToMove
     toast
       .promise(

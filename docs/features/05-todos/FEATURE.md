@@ -10,16 +10,16 @@ No UI mockups for this feature (spec only).
 
 ## Goal
 
-**Todos** are captured as undated one-offs, then **placed** onto a **planned** day’s slot. Same pattern as activities: a **pile table** plus a **timeline placement**. **Done** and **Skip** are one field on the todo (list ↔ day): left to do, done, or decided not to do.
+**Todos** are captured as undated one-offs, then **placed** onto a day’s slot. The day row is created on the first activity or todo (template optional). Same pattern as activities: a **pile table** plus a **timeline placement**. **Done** and **Skip** are one field on the todo (list ↔ day): left to do, done, or decided not to do.
 
 ---
 
 ## Where it appears
 
 - **Todos list** (`/todos`) — capture, rename, Done/Skip, filter Open/Done/Skipped, delete, assignment badge (tap opens that day)
-- **Day screen** (date already planned): **+ Todo** on each slot (beside **+ Activity**); todo placements inside slots (tick + unassign)
+- **Day screen** (any date): **+ Todo** on each slot (beside **+ Activity**); todo placements inside slots (tick + unassign)
 
-Not on templates. Not on an empty/unplanned date.
+Not on templates. Assign from the day only (not from `/todos`). First placement on a date creates `day_plans` with `template_id` null if needed (`ensure_day_plan`).
 
 ---
 
@@ -110,7 +110,7 @@ Unchanged: `day_plan_id` not null + on delete cascade; no `user_id` on `day_item
 
 ### Day — planned slot
 
-- **+ Todo** sits beside **+ Activity** on that slot. Empty/unplanned date: no **+ Todo**. Ended day: no extra todo lock  
+- **+ Todo** sits beside **+ Activity** on that slot (any date; first placement ensures the day row). Ended day: no extra todo lock  
 - One popup: **create** (name + icon) at the top, then the pile. Simple **name search**. Pick **one** todo at a time (not multi-add like activities)  
 - New title (+ icon) → insert `todos` (`pending`) **and** a placement on this plan + slot (snapshots copied)  
 - Picker tabs (default **Unassigned**):  
@@ -145,7 +145,7 @@ Unchanged: `day_plan_id` not null + on delete cascade; no `user_id` on `day_item
 ## Acceptance criteria
 
 - [ ] Add “Meet client” in the Todos list → `todos` row only, shows under Open  
-- [ ] Cannot + Todo on an empty/unplanned day  
+- [ ] Can + Todo on a date with no template (creates day plan on first placement)  
 - [ ] + Todo from Afternoon on a planned day: create lands in Afternoon; Unassigned tab attaches an existing Open pile item (one at a time)  
 - [ ] Picker: Unassigned / Assigned tabs; Unassigned opens first; name search; create form in the same popup  
 - [ ] Assigned tab shows date · slot; hides the todo already in **this** slot; still shows other slots on this date  
@@ -173,7 +173,7 @@ Unchanged: `day_plan_id` not null + on delete cascade; no `user_id` on `day_item
 - Recurring todos  
 - Notes, subtasks, priorities, due times  
 - Todos on templates  
-- Assigning onto an unplanned date (no auto-creating `day_plans`)  
+- ~~Assigning onto an unplanned date (no auto-creating `day_plans`)~~ — superseded by `ensure_day_plan` (ADR 0003)  
 - Assign / date-picker from the Todos list (badge **opens** a day; it does not assign)  
 - Cross-slot **drag** as the way to move a todo (see Drag-drop; v1 path is **+ Todo** picker + confirm)  
 - Done / Skipped in the **+ Todo** picker (show them only after they are Open again)  
