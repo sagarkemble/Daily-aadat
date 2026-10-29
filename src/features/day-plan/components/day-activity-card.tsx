@@ -54,35 +54,27 @@ function DayActivityCard({
   const [detailOpen, setDetailOpen] = useState(false)
   const note = activity.note_snapshot?.trim()
   const skipped = activity.state === "skipped"
-  const controls = skipped
-    ? null
-    : activity.type === "timed"
-      ? (
-          <TimedControls
-            activity={activity}
-            disabled={disabled}
-            onCommand={onCommand}
-          />
-        )
-      : activity.type === "count"
-        ? (
-            <CountControls
-              activity={activity}
-              disabled={disabled}
-              onCommand={onCommand}
-              showTarget
-              round
-            />
-          )
-        : activity.kind === "todo" || activity.type === "check"
-          ? (
-              <CheckControl
-                activity={activity}
-                disabled={disabled}
-                onCommand={onCommand}
-              />
-            )
-          : null
+  const controls = skipped ? null : activity.type === "timed" ? (
+    <TimedControls
+      activity={activity}
+      disabled={disabled}
+      onCommand={onCommand}
+    />
+  ) : activity.type === "count" ? (
+    <CountControls
+      activity={activity}
+      disabled={disabled}
+      onCommand={onCommand}
+      showTarget
+      round
+    />
+  ) : activity.kind === "todo" || activity.type === "check" ? (
+    <CheckControl
+      activity={activity}
+      disabled={disabled}
+      onCommand={onCommand}
+    />
+  ) : null
 
   return (
     <div ref={ref} className={cn("aspect-square", isDragging && "opacity-50")}>
@@ -108,9 +100,7 @@ function DayActivityCard({
                 {activity.name_snapshot}
               </CardTitle>
               {note ? (
-                <CardDescription className="w-full truncate">
-                  {note}
-                </CardDescription>
+                <CardDescription className="w-full truncate">{note}</CardDescription>
               ) : null}
             </div>
           </div>

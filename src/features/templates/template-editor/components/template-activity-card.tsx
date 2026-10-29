@@ -2,11 +2,16 @@ import { useState } from "react"
 import { Feedback } from "@dnd-kit/dom"
 import { useSortable } from "@dnd-kit/react/sortable"
 
-import { Badge } from "@/components/ui/badge"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DynamicIcon } from "@/components/dynamic-icon"
-import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { activityTypeLabels } from "@/features/activity/types/activity"
+import { cn } from "@/lib/utils"
 import type { TemplateActivity } from "../../types/template"
 import { TemplateActivityDetailDialog } from "./template-activity-detail-dialog"
 
@@ -15,11 +20,6 @@ type TemplateActivityCardProps = {
   index: number
   group: string
   activity: TemplateActivity
-}
-
-function formatTarget(activity: TemplateActivity) {
-  if (activity.target == null) return null
-  return [activity.target, activity.unit].filter(Boolean).join(" ")
 }
 
 function TemplateActivityCard({
@@ -39,34 +39,34 @@ function TemplateActivityCard({
       Feedback.configure({ feedback: "clone" }),
     ],
   })
-  const target = formatTarget(activity)
   const icon = activity.activity?.icon
   const [detailOpen, setDetailOpen] = useState(false)
   const note = activity.note?.trim()
-  const description = note || target
 
   return (
-    <div ref={ref} className={cn("h-full", isDragging && "opacity-50")}>
+    <div ref={ref} className={cn("aspect-square", isDragging && "opacity-50")}>
       <Card
         ref={sourceRef}
         size="sm"
-        className="h-full min-h-44 cursor-pointer border border-border ring-0"
+        className="size-full cursor-pointer border border-border ring-0 [--card-spacing:--spacing(5)]"
         onClick={() => {
           if (!isDragging) setDetailOpen(true)
         }}
       >
-        <CardHeader className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
-          {icon ? (
-            <DynamicIcon name={icon} size="md" variant="muted" />
-          ) : null}
-          <CardTitle className="max-w-full truncate">
-            {activity.activity?.name}
-          </CardTitle>
-          {description ? (
-            <CardDescription className="line-clamp-2">
-              {description}
-            </CardDescription>
-          ) : null}
+        <CardHeader className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+          <div className="flex w-full flex-col items-center gap-2">
+            {icon ? (
+              <DynamicIcon name={icon} size="md" variant="muted" />
+            ) : null}
+            <div className="flex w-full flex-col items-center gap-0.5">
+              <CardTitle className="w-full min-w-0 truncate">
+                {activity.activity?.name}
+              </CardTitle>
+              {note ? (
+                <CardDescription className="w-full truncate">{note}</CardDescription>
+              ) : null}
+            </div>
+          </div>
           <Badge variant="outline">{activityTypeLabels[activity.type]}</Badge>
         </CardHeader>
       </Card>
