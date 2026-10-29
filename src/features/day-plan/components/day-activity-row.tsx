@@ -15,6 +15,7 @@ import { DynamicIcon } from "@/components/dynamic-icon"
 import { cn } from "@/lib/utils"
 import { TodoMeta } from "@/features/todos/components/todo-meta"
 import type { TodoState } from "@/features/todos/types/todo"
+import { todoStateFromDayActivity } from "@/features/todos/lib/todo-state-from-day-activity"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
 import { CountControls, TimedControls } from "./day-activity-controls"
@@ -43,8 +44,7 @@ function formatTimedTarget(activity: DayPlanActivity) {
 }
 
 function todoStateFromActivity(state: DayPlanActivity["state"]): TodoState {
-  if (state === "running") return "pending"
-  return state
+  return todoStateFromDayActivity(state)
 }
 
 export function DayActivityRow({

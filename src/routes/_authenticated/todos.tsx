@@ -6,7 +6,7 @@ import TodoPage from "@/features/todos/components/todo-page"
 const todoSearchSchema = z.object({
   q: z.string().optional(),
   status: z
-    .array(z.enum(["unassigned", "assigned", "done", "skipped"]))
+    .array(z.enum(["unassigned", "assigned", "done"]))
     .optional(),
   priority: z.array(z.enum(["high", "medium", "low"])).optional(),
   sort: z

@@ -30,7 +30,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/toast"
 import { useUnassignTodo } from "@/features/day-plan/hooks/use-unassign-todo"
 import { formatTodoAssignment } from "../lib/format-todo-assignment"
-import { useChangeTodoState } from "../hooks/use-change-todo-state"
 import { useDeleteTodo } from "../hooks/use-delete-todo"
 import { useUpdateTodo } from "../hooks/use-update-todo"
 import type { Todo, TodoPriority } from "../types/todo"
@@ -54,15 +53,10 @@ function TodoDetailDialog({ todo, open, onOpenChange }: TodoDetailDialogProps) {
   const [dueDate, setDueDate] = useState<string | null>(savedDueDate)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const { mutateAsync: updateTodo, isPending: isSaving } = useUpdateTodo()
-  const { mutateAsync: changeTodoState, isPending: isChangingState } =
-    useChangeTodoState()
   const { mutateAsync: unassignTodo, isPending: isUnassigning } =
     useUnassignTodo()
   const { mutateAsync: deleteTodo, isPending: isDeleting } = useDeleteTodo()
-  const isPending =
-    isSaving || isChangingState || isUnassigning || isDeleting
-  const skipped = todo.state === "skipped"
-  const done = todo.state === "done"
+  const isPending = isSaving || isUnassigning || isDeleting
 
   useEffect(() => {
     if (open) {
@@ -103,20 +97,6 @@ function TodoDetailDialog({ todo, open, onOpenChange }: TodoDetailDialogProps) {
         loading: { title: "Saving…" },
         success: { title: "Todo saved" },
         error: { title: "Failed to save" },
-      }
-    )
-  }
-
-  function handleSkipToggle() {
-    const nextState = skipped ? "pending" : "skipped"
-    toast.promise(
-      changeTodoState({ id: todo.id, state: nextState }).then(() => {
-        onOpenChange(false)
-      }),
-      {
-        loading: { title: "Updating…" },
-        success: { title: "Todo updated" },
-        error: { title: "Failed to update" },
       }
     )
   }
@@ -194,16 +174,6 @@ function TodoDetailDialog({ todo, open, onOpenChange }: TodoDetailDialogProps) {
         </FieldGroup>
         <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-between">
           <div className="flex flex-wrap gap-2">
-            {!done ? (
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={isPending}
-                onClick={handleSkipToggle}
-              >
-                {skipped ? "Unskip" : "Skip"}
-              </Button>
-            ) : null}
             {todo.assignment ? (
               <Button
                 variant="outline"

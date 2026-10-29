@@ -19,6 +19,7 @@ import { activityTypeLabels } from "@/features/activity/types/activity"
 import { TodoMeta } from "@/features/todos/components/todo-meta"
 import { useUpdateTodo } from "@/features/todos/hooks/use-update-todo"
 import type { TodoState } from "@/features/todos/types/todo"
+import { todoStateFromDayActivity } from "@/features/todos/lib/todo-state-from-day-activity"
 import type { DayPlanActivity } from "../types/day-plan"
 import { useUpdateDayItemNote } from "../hooks/use-update-day-item-note"
 
@@ -35,8 +36,7 @@ function kindLabel(activity: DayPlanActivity) {
 }
 
 function todoStateFromActivity(state: DayPlanActivity["state"]): TodoState {
-  if (state === "running") return "pending"
-  return state
+  return todoStateFromDayActivity(state)
 }
 
 function DayActivityDetailDialog({

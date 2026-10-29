@@ -44,10 +44,10 @@ function sortTodosByUpdatedDesc(a: Todo, b: Todo): number {
 }
 
 function sortTodosInGroup(
-  group: "unassigned" | "assigned" | "done" | "skipped",
+  group: "unassigned" | "assigned" | "done",
   todos: Todo[]
 ): Todo[] {
-  if (group === "done" || group === "skipped") {
+  if (group === "done") {
     return [...todos].sort(sortTodosByUpdatedDesc)
   }
   const today = calendarDayFromDate(new Date())

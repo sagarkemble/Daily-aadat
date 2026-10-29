@@ -2,12 +2,7 @@ import type { Todo, TodoPriority } from "../types/todo"
 import type { TodoListSort } from "./sort-todos"
 import { todoGroup, type TodoGroup } from "./todo-groups"
 
-const ALL_TODO_GROUPS: TodoGroup[] = [
-  "unassigned",
-  "assigned",
-  "done",
-  "skipped",
-]
+const ALL_TODO_GROUPS: TodoGroup[] = ["unassigned", "assigned", "done"]
 
 const ALL_TODO_PRIORITIES: TodoPriority[] = ["high", "medium", "low"]
 

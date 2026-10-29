@@ -39,7 +39,7 @@ The **Day plan** is the app home. One screen for a chosen calendar date: plan an
 |-------|--------|
 | `kind` | `activity` \| `todo` |
 | Snapshot (activity) | `activityId`, `name`, `icon`, **`type` (per placement)**, count `target`/`unit` if count |
-| `todo_id` (todo) | Placement of a `todos` row on this day (`kind = todo`). Pending / done / skipped live on `todos` (see Todos) |
+| `todo_id` (todo) | Placement of a `todos` row on this day (`kind = todo`). Pending / done live on `todos` (see Todos) |
 | `slot` | One of the 5 slots for anything on this day (todo pile is not `unslotted` on `day_items`) |
 | `order` | Position within slot / todos list |
 | `state` | `pending` \| `done` \| `skipped` \| `running` (timed only) |
@@ -66,7 +66,7 @@ Early morning · Morning · Afternoon · Evening · Night
 | Check activity | Done · Skip |
 | Timed activity | Start · Stop (+ live elapsed) |
 | Count activity | +1 · show progress (e.g. 6/10) |
-| Todo in slot | Done / undo · Skip / undo skip · Unassign (not delete) |
+| Todo in slot | Done / undo (from `todos.state`) |
 
 - **+ Activity** in a slot → Activities picker (multi-select, tap order) → **choose tracking type** for each → placements added to that slot  
 - **+ Todo** (planned day only, beside **+ Activity**) → Open pile / other slots and dates (confirm to move), or type a new title already attached to this slot (see Todos)  

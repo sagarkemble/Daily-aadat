@@ -20,7 +20,7 @@ Define how day-plan **activity placements** are completed: **check**, **timed** 
 
 - Activity rows on the **Day plan**  
 - Not on the Activities catalog tab  
-- Todo Done/Skip follows the same Done/Skip pattern but is owned by the Todos feature  
+- Todo **Done** is owned by the Todos feature (`todos.state`); activities still support Done and Skip on `day_items`  
 
 ---
 

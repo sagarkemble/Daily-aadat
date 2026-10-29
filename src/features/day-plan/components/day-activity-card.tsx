@@ -12,6 +12,7 @@ import { DynamicIcon } from "@/components/dynamic-icon"
 import { cn } from "@/lib/utils"
 import { TodoMeta } from "@/features/todos/components/todo-meta"
 import type { TodoState } from "@/features/todos/types/todo"
+import { todoStateFromDayActivity } from "@/features/todos/lib/todo-state-from-day-activity"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
 import {
@@ -52,10 +53,7 @@ function DayActivityCard({
   const [detailOpen, setDetailOpen] = useState(false)
   const note = activity.note_snapshot?.trim()
   const skipped = activity.state === "skipped"
-  const todoState = (): TodoState => {
-    if (activity.state === "running") return "pending"
-    return activity.state
-  }
+  const todoState = (): TodoState => todoStateFromDayActivity(activity.state)
   const controls = skipped ? null : activity.type === "timed" ? (
     <TimedControls
       activity={activity}

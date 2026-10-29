@@ -24,9 +24,8 @@ type TodoMobileListProps = {
 function TodoMobileRow({ todo }: { todo: Todo }) {
   const [detailOpen, setDetailOpen] = useState(false)
   const { mutateAsync: changeTodoState, isPending } = useChangeTodoState()
-  const muted = todo.state === "done" || todo.state === "skipped"
+  const muted = todo.state === "done"
   const done = todo.state === "done"
-  const skipped = todo.state === "skipped"
 
   function handleCheckedChange(checked: boolean) {
     toast.promise(
@@ -49,15 +48,13 @@ function TodoMobileRow({ todo }: { todo: Todo }) {
       >
         <ItemContent className="min-w-0 gap-1">
           <div className="flex min-w-0 items-start gap-2">
-            {!skipped ? (
-              <Checkbox
-                checked={done}
-                disabled={isPending}
-                onClick={(event) => event.stopPropagation()}
-                onCheckedChange={handleCheckedChange}
-                aria-label={done ? "Mark as open" : "Mark as done"}
-              />
-            ) : null}
+            <Checkbox
+              checked={done}
+              disabled={isPending}
+              onClick={(event) => event.stopPropagation()}
+              onCheckedChange={handleCheckedChange}
+              aria-label={done ? "Mark as open" : "Mark as done"}
+            />
             <ItemTitle
               className={cn(
                 "min-w-0 flex-1 truncate",

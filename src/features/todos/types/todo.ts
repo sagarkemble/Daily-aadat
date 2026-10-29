@@ -1,6 +1,6 @@
 import type { Slot } from "@/features/templates/types/slots"
 
-type TodoState = "pending" | "done" | "skipped"
+type TodoState = "pending" | "done"
 
 type TodoPriority = "high" | "medium" | "low"
 

@@ -10,6 +10,7 @@ import { toast } from "@/components/ui/toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { SLOTS, TIMED_SLOTS, type Slot } from "@/features/templates/types/slots"
 import { useChangeTodoState } from "@/features/todos/hooks/use-change-todo-state"
+import { todoStateFromDayActivity } from "@/features/todos/lib/todo-state-from-day-activity"
 import type { TodoState } from "@/features/todos/types/todo"
 import { useAddActivity } from "../hooks/use-add-activity"
 import { useApplyActivityCommand } from "../hooks/use-apply-activity-command"
@@ -42,10 +43,7 @@ function nextSortOrder(slotOrders: number[]) {
 }
 
 function todoStateFromDayItem(state: DayPlanActivity["state"]): TodoState {
-  if (state === "running") {
-    throw new Error("Todos cannot be running")
-  }
-  return state
+  return todoStateFromDayActivity(state)
 }
 
 function countTodosOnBoard(board: DayBoard | undefined) {

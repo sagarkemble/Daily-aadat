@@ -26,9 +26,8 @@ function TodoTableRow({ todo, disabled }: TodoTableRowProps) {
   const [detailOpen, setDetailOpen] = useState(false)
   const { mutateAsync: changeTodoState, isPending: isChanging } =
     useChangeTodoState()
-  const muted = todo.state === "done" || todo.state === "skipped"
+  const muted = todo.state === "done"
   const done = todo.state === "done"
-  const skipped = todo.state === "skipped"
   const note = todo.note?.trim()
   const due = formatDueDate(todo.due_date, todo.state)
   const rowDisabled = disabled || isChanging
@@ -51,14 +50,12 @@ function TodoTableRow({ todo, disabled }: TodoTableRowProps) {
         onClick={() => setDetailOpen(true)}
       >
         <TableCell onClick={(event) => event.stopPropagation()}>
-          {skipped ? null : (
-            <Checkbox
-              checked={done}
-              disabled={rowDisabled}
-              onCheckedChange={handleCheckedChange}
-              aria-label={done ? "Mark as open" : "Mark as done"}
-            />
-          )}
+          <Checkbox
+            checked={done}
+            disabled={rowDisabled}
+            onCheckedChange={handleCheckedChange}
+            aria-label={done ? "Mark as open" : "Mark as done"}
+          />
         </TableCell>
         <TableCell className="max-w-0 whitespace-normal">
           <div className="flex min-w-0 flex-col gap-0.5">
