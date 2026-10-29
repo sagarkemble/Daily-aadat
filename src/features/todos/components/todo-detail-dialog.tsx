@@ -24,9 +24,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/toast"
+import { cn } from "@/lib/utils"
 import { useUnassignTodo } from "@/features/day-plan/hooks/use-unassign-todo"
 import { formatTodoAssignment } from "../lib/format-todo-assignment"
 import { useDeleteTodo } from "../hooks/use-delete-todo"
@@ -42,9 +44,11 @@ type TodoDetailDialogProps = {
 }
 
 function TodoDetailDialog({ todo, open, onOpenChange }: TodoDetailDialogProps) {
+  const savedName = todo.name
   const savedNote = todo.note ?? ""
   const savedPriority = todo.priority
   const savedDueDate = todo.due_date
+  const [name, setName] = useState(savedName)
   const [note, setNote] = useState(savedNote)
   const [priority, setPriority] = useState<TodoPriority>(savedPriority)
   const [dueDate, setDueDate] = useState<string | null>(savedDueDate)
@@ -54,30 +58,38 @@ function TodoDetailDialog({ todo, open, onOpenChange }: TodoDetailDialogProps) {
     useUnassignTodo()
   const { mutateAsync: deleteTodo, isPending: isDeleting } = useDeleteTodo()
   const isPending = isSaving || isUnassigning || isDeleting
+  const trimmedName = name.trim()
+  const nameInvalid = trimmedName === ""
 
   useEffect(() => {
     if (open) {
+      setName(savedName)
       setNote(savedNote)
       setPriority(savedPriority)
       setDueDate(savedDueDate)
       setDeleteOpen(false)
     }
-  }, [open, savedNote, savedPriority, savedDueDate])
+  }, [open, savedName, savedNote, savedPriority, savedDueDate])
 
   function handleSave() {
+    if (nameInvalid) return
+
     const nextNote = note.trim() === "" ? null : note.trim()
     const patch: {
       id: string
+      name?: string
       note?: string | null
       priority?: TodoPriority
       due_date?: string | null
     } = { id: todo.id }
 
+    if (trimmedName !== savedName) patch.name = trimmedName
     if (nextNote !== savedNote) patch.note = nextNote
     if (priority !== savedPriority) patch.priority = priority
     if (dueDate !== savedDueDate) patch.due_date = dueDate
 
     if (
+      patch.name === undefined &&
       patch.note === undefined &&
       patch.priority === undefined &&
       patch.due_date === undefined
@@ -127,40 +139,59 @@ function TodoDetailDialog({ todo, open, onOpenChange }: TodoDetailDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>{todo.name}</DialogTitle>
+          <DialogTitle>Edit to-do</DialogTitle>
           <DialogDescription>
             {todo.assignment
               ? formatTodoAssignment(todo.assignment)
-              : "Todo"}
+              : "Update the details below."}
           </DialogDescription>
         </DialogHeader>
-        <FieldGroup>
+
+        <FieldGroup className="gap-6">
+          <Field
+            data-invalid={nameInvalid || undefined}
+            data-disabled={isPending || undefined}
+          >
+            <FieldLabel htmlFor={`${todo.id}-detail-name`} className="sr-only">
+              Name
+            </FieldLabel>
+            <Input
+              id={`${todo.id}-detail-name`}
+              value={name}
+              disabled={isPending}
+              aria-invalid={nameInvalid}
+              onChange={(event) => setName(event.target.value)}
+            />
+          </Field>
+          <Field data-disabled={isPending || undefined}>
+            <FieldLabel htmlFor={`${todo.id}-detail-note`} className="sr-only">
+              Description
+            </FieldLabel>
+            <Textarea
+              id={`${todo.id}-detail-note`}
+              value={note}
+              placeholder="Add a note..."
+              rows={3}
+              disabled={isPending}
+              onChange={(event) => setNote(event.target.value)}
+            />
+          </Field>
           <TodoPriorityField
             value={priority}
             onChange={setPriority}
             disabled={isPending}
           />
           <TodoDueDateField
+            mode="presets"
             value={dueDate}
             onChange={setDueDate}
             disabled={isPending}
           />
-          <Field data-disabled={isPending || undefined}>
-            <FieldLabel htmlFor={`${todo.id}-detail-note`}>
-              Description
-            </FieldLabel>
-            <Textarea
-              id={`${todo.id}-detail-note`}
-              value={note}
-              placeholder="Add note"
-              disabled={isPending}
-              onChange={(event) => setNote(event.target.value)}
-            />
-          </Field>
         </FieldGroup>
-        <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-between">
+
+        <DialogFooter className="sm:justify-between">
           <div className="flex flex-wrap gap-2">
             {todo.assignment ? (
               <Button
@@ -174,9 +205,18 @@ function TodoDetailDialog({ todo, open, onOpenChange }: TodoDetailDialogProps) {
             ) : null}
             <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
               <AlertDialogTrigger
-                render={<Button variant="outline" size="sm" />}
+                render={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      "text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    )}
+                  />
+                }
                 disabled={isPending}
               >
+                <Trash2Icon data-icon="inline-start" />
                 Delete
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -215,13 +255,13 @@ function TodoDetailDialog({ todo, open, onOpenChange }: TodoDetailDialogProps) {
               </AlertDialogContent>
             </AlertDialog>
           </div>
-          <div className="flex gap-2 sm:justify-end">
+          <div className="flex flex-wrap gap-2 sm:justify-end">
             <DialogClose
               render={<Button variant="outline" disabled={isPending} />}
             >
               Cancel
             </DialogClose>
-            <Button disabled={isPending} onClick={handleSave}>
+            <Button disabled={isPending || nameInvalid} onClick={handleSave}>
               {isSaving ? (
                 <>
                   <Spinner data-icon="inline-start" />

@@ -154,7 +154,7 @@ export function CreateTodoDialog() {
           <DialogFooter>
             <DialogClose
               render={
-                <Button type="button" variant="ghost" disabled={isPending} />
+                <Button type="button" variant="outline" disabled={isPending} />
               }
             >
               Cancel

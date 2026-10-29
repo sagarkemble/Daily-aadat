@@ -1,7 +1,22 @@
-import { useEffect, useState } from "react"
+import { lazy, Suspense, useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2 } from "lucide-react"
+import { PencilIcon, Trash2Icon } from "lucide-react"
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   DialogClose,
   DialogContent,
@@ -10,16 +25,25 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
+  FieldLegend,
+  FieldSet,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Spinner } from "@/components/ui/spinner"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { toast } from "@/components/ui/toast"
 import { DynamicIcon } from "@/components/dynamic-icon"
+import { cn } from "@/lib/utils"
 import {
   activityTypeItems,
   activityTypeLabels,
@@ -31,17 +55,8 @@ import {
 } from "../types/add-activity-input"
 import { useDeleteActivities } from "../hooks/use-delete-activities"
 import { useUpdateActivities } from "../hooks/use-update-activities"
-import IconPickerPopover from "@/components/icon-picker-popover"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 
-type Step = "view" | "confirm-edit" | "edit" | "confirm-delete"
+const IconPicker = lazy(() => import("@/components/icon-picker-tanstack"))
 
 function toFormValues(activity: Activity): AddActivityInput {
   return {
@@ -51,6 +66,63 @@ function toFormValues(activity: Activity): AddActivityInput {
     suggested_target: activity.suggested_target?.toString() ?? "",
     suggested_unit: activity.suggested_unit ?? "",
   }
+}
+
+function ActivityIconDisplay({ icon }: { icon: string }) {
+  return (
+    <div className="relative w-fit shrink-0 self-start">
+      <span className="flex size-12 items-center justify-center rounded-lg bg-muted text-foreground">
+        <DynamicIcon name={icon} size="md" variant="muted" />
+      </span>
+    </div>
+  )
+}
+
+function ActivityIconPicker({
+  selectedIcon,
+  onSelect,
+  disabled,
+}: {
+  selectedIcon: string
+  onSelect: (icon: string) => void
+  disabled?: boolean
+}) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className="relative w-fit shrink-0 self-start">
+      <ActivityIconDisplay icon={selectedIcon} />
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger
+          render={
+            <Button
+              type="button"
+              variant="outline"
+              size="icon-xs"
+              disabled={disabled}
+              className="absolute -right-1 -bottom-1 size-6 rounded-full bg-background shadow-sm"
+              aria-label="Change icon"
+            />
+          }
+        >
+          <PencilIcon />
+        </PopoverTrigger>
+        {open ? (
+          <PopoverContent className="w-auto p-0" align="start">
+            <Suspense fallback={<div className="h-80 w-72" />}>
+              <IconPicker
+                selectedIcon={selectedIcon}
+                setSelectedIcon={(iconName) => {
+                  onSelect(iconName)
+                  setOpen(false)
+                }}
+              />
+            </Suspense>
+          </PopoverContent>
+        ) : null}
+      </Popover>
+    </div>
+  )
 }
 
 export function ActivityDetailDialog({
@@ -63,12 +135,8 @@ export function ActivityDetailDialog({
   onClose: () => void
 }) {
   const isCustom = activity.source === "custom"
-  const [step, setStep] = useState<Step>("view")
   const [selectedIcon, setSelectedIcon] = useState(activity.icon)
-
-  useEffect(() => {
-    if (!open) setStep("view")
-  }, [open])
+  const [deleteOpen, setDeleteOpen] = useState(false)
   const { mutate: updateActivity, isPending: isUpdating } =
     useUpdateActivities()
   const { mutate: deleteActivity, isPending: isDeleting } =
@@ -80,6 +148,7 @@ export function ActivityDetailDialog({
     reset,
     watch,
     control,
+    setValue,
     formState: { errors },
   } = useForm<AddActivityInput>({
     resolver: zodResolver(addActivityInputSchema),
@@ -87,16 +156,14 @@ export function ActivityDetailDialog({
   })
 
   const suggestedType = watch("suggested_type")
-  const isCount = activity.suggested_type === "count"
-  const goal =
-    activity.suggested_target != null
-      ? `${activity.suggested_target}${activity.suggested_unit ? ` ${activity.suggested_unit}` : ""}`
-      : "None"
+  const isPending = isUpdating || isDeleting
 
-  function startEdit() {
+  useEffect(() => {
+    if (!open) return
     reset(toFormValues(activity))
-    setStep("edit")
-  }
+    setSelectedIcon(activity.icon)
+    setDeleteOpen(false)
+  }, [open, activity, reset])
 
   function onSave(data: AddActivityInput) {
     updateActivity(
@@ -142,6 +209,7 @@ export function ActivityDetailDialog({
           description: "It is hidden from your catalog.",
           type: "success",
         })
+        setDeleteOpen(false)
         onClose()
       },
       onError: (error) => {
@@ -155,244 +223,221 @@ export function ActivityDetailDialog({
     })
   }
 
-  if (step === "confirm-edit") {
+  if (!isCustom) {
     return (
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit {activity.name}?</DialogTitle>
-          <DialogDescription>
-            This updates the activity in your catalog and in templates that use
-            it. Past days keep the old name and icon.
-          </DialogDescription>
+          <DialogTitle>Activity</DialogTitle>
+          <DialogDescription>Predefined — view only.</DialogDescription>
         </DialogHeader>
+
+        <div className="flex items-center gap-3">
+          <ActivityIconDisplay icon={activity.icon} />
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <p className="text-sm leading-snug">{activity.name}</p>
+            <Badge variant="outline" className="w-fit">
+              {activityTypeLabels[activity.suggested_type]}
+            </Badge>
+          </div>
+        </div>
+
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setStep("view")}
-          >
-            Cancel
-          </Button>
-          <Button type="button" onClick={startEdit}>
-            Continue
-          </Button>
+          <DialogClose render={<Button variant="outline" />}>Close</DialogClose>
         </DialogFooter>
-      </DialogContent>
-    )
-  }
-
-  if (step === "confirm-delete") {
-    return (
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Delete {activity.name}?</DialogTitle>
-          <DialogDescription>
-            This hides it from your catalog. You cannot use it in new templates
-            or days. Past days keep their snapshots.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setStep("view")}
-            disabled={isDeleting}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={onArchive}
-            disabled={isDeleting}
-          >
-            {isDeleting ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Deleting...
-              </>
-            ) : (
-              "Delete"
-            )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    )
-  }
-
-  if (step === "edit") {
-    return (
-      <DialogContent className="sm:max-w-md">
-        <form
-          id="edit-activity-form"
-          onSubmit={handleSubmit(onSave)}
-          className="flex flex-col gap-4"
-        >
-          <DialogHeader>
-            <DialogTitle>Edit activity</DialogTitle>
-            <DialogDescription>
-              Change the name, icon, or suggested tracking hints.
-            </DialogDescription>
-          </DialogHeader>
-
-          <FieldGroup className="gap-4">
-            <Field data-invalid={!!errors.name || undefined}>
-              <FieldLabel htmlFor="edit-activity-name">Name</FieldLabel>
-              <Input
-                id="edit-activity-name"
-                placeholder="Drive"
-                aria-invalid={!!errors.name}
-                {...register("name")}
-                disabled={isUpdating}
-              />
-              <FieldError errors={[errors.name]} />
-            </Field>
-
-            <Field data-invalid={!!errors.icon || undefined}>
-              <FieldLabel htmlFor="edit-activity-icon">Icon</FieldLabel>
-              <IconPickerPopover
-                selectedIcon={selectedIcon}
-                setSelectedIcon={setSelectedIcon}
-                disabled={isUpdating}
-              />
-              <FieldError errors={[errors.icon]} />
-            </Field>
-
-            <Field data-invalid={!!errors.suggested_type || undefined}>
-              <FieldLabel htmlFor="edit-activity-type">
-                Suggested type
-              </FieldLabel>
-              <Controller
-                name="suggested_type"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    items={activityTypeItems}
-                    value={field.value}
-                    disabled={isUpdating}
-                    onValueChange={(value) => {
-                      if (value == null) return
-                      field.onChange(value)
-                    }}
-                  >
-                    <SelectTrigger
-                      id="edit-activity-type"
-                      className="w-full"
-                      aria-invalid={!!errors.suggested_type}
-                    >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {activityTypeItems.map((item) => (
-                          <SelectItem key={item.value} value={item.value}>
-                            {item.label}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              <FieldError errors={[errors.suggested_type]} />
-            </Field>
-
-            {suggestedType === "count" ? (
-              <div className="grid grid-cols-2 gap-3">
-                <Field data-invalid={!!errors.suggested_target || undefined}>
-                  <FieldLabel htmlFor="edit-activity-target">Target</FieldLabel>
-                  <Input
-                    id="edit-activity-target"
-                    type="number"
-                    min={1}
-                    placeholder="10"
-                    aria-invalid={!!errors.suggested_target}
-                    {...register("suggested_target")}
-                    disabled={isUpdating}
-                  />
-                  <FieldError errors={[errors.suggested_target]} />
-                </Field>
-                <Field data-invalid={!!errors.suggested_unit || undefined}>
-                  <FieldLabel htmlFor="edit-activity-unit">Unit</FieldLabel>
-                  <Input
-                    id="edit-activity-unit"
-                    placeholder="glasses"
-                    aria-invalid={!!errors.suggested_unit}
-                    {...register("suggested_unit")}
-                    disabled={isUpdating}
-                  />
-                  <FieldError errors={[errors.suggested_unit]} />
-                </Field>
-              </div>
-            ) : null}
-          </FieldGroup>
-
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setStep("view")}
-              disabled={isUpdating}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              form="edit-activity-form"
-              disabled={isUpdating}
-            >
-              {isUpdating ? (
-                <>
-                  <Loader2 className="size-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                "Save"
-              )}
-            </Button>
-          </DialogFooter>
-        </form>
       </DialogContent>
     )
   }
 
   return (
     <DialogContent>
-      <DialogHeader>
-        <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <DynamicIcon name={activity.icon} className="size-5" />
-        </div>
-        <DialogTitle>{activity.name}</DialogTitle>
-      </DialogHeader>
+      <form className="contents" onSubmit={handleSubmit(onSave)}>
+        <DialogHeader>
+          <DialogTitle>Edit activity</DialogTitle>
+          <DialogDescription>
+            Updates catalog and templates. Past days stay unchanged.
+          </DialogDescription>
+        </DialogHeader>
 
-      <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-        <dt className="text-muted-foreground">Type</dt>
-        <dd>{activityTypeLabels[activity.suggested_type]}</dd>
-        {isCount ? (
-          <>
-            <dt className="text-muted-foreground">Target</dt>
-            <dd>{goal}</dd>
-          </>
-        ) : null}
-      </dl>
-
-      <DialogFooter>
-        <DialogClose render={<Button variant="outline" />}>Close</DialogClose>
-        {isCustom ? (
-          <>
-            <Button type="button" onClick={() => setStep("confirm-edit")}>
-              Edit
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={() => setStep("confirm-delete")}
+        <FieldGroup className="gap-6">
+          <div className="flex flex-col gap-3">
+            <ActivityIconPicker
+              selectedIcon={selectedIcon}
+              onSelect={(icon) => {
+                setSelectedIcon(icon)
+                setValue("icon", icon, { shouldValidate: true })
+              }}
+              disabled={isPending}
+            />
+            <Field
+              className="min-w-0"
+              data-invalid={!!errors.name || undefined}
+              data-disabled={isPending || undefined}
             >
+              <FieldLabel htmlFor="edit-activity-name">Name</FieldLabel>
+              <Input
+                id="edit-activity-name"
+                placeholder="Activity name"
+                aria-invalid={!!errors.name}
+                {...register("name")}
+                disabled={isPending}
+              />
+              <FieldError errors={[errors.name]} />
+            </Field>
+          </div>
+
+          <FieldSet>
+            <FieldLegend variant="label">Type</FieldLegend>
+            <Field
+              data-invalid={!!errors.suggested_type || undefined}
+              data-disabled={isPending || undefined}
+            >
+              <Controller
+                name="suggested_type"
+                control={control}
+                render={({ field }) => (
+                  <ToggleGroup
+                    id="edit-activity-type"
+                    value={[field.value]}
+                    onValueChange={(next) => {
+                      const picked = next[0]
+                      if (
+                        picked === "check" ||
+                        picked === "timed" ||
+                        picked === "count"
+                      ) {
+                        field.onChange(picked)
+                      }
+                    }}
+                    disabled={isPending}
+                    variant="outline"
+                    size="sm"
+                    className="flex-wrap"
+                  >
+                    {activityTypeItems.map((item) => (
+                      <ToggleGroupItem key={item.value} value={item.value}>
+                        {item.label}
+                      </ToggleGroupItem>
+                    ))}
+                  </ToggleGroup>
+                )}
+              />
+              <FieldError errors={[errors.suggested_type]} />
+            </Field>
+          </FieldSet>
+
+          {suggestedType === "count" ? (
+            <FieldGroup className="flex-row gap-3">
+              <Field
+                className="min-w-0 flex-1"
+                data-invalid={!!errors.suggested_target || undefined}
+                data-disabled={isPending || undefined}
+              >
+                <FieldLabel htmlFor="edit-activity-target">Target</FieldLabel>
+                <Input
+                  id="edit-activity-target"
+                  type="number"
+                  min={1}
+                  placeholder="10"
+                  aria-invalid={!!errors.suggested_target}
+                  {...register("suggested_target")}
+                  disabled={isPending}
+                />
+                <FieldError errors={[errors.suggested_target]} />
+              </Field>
+              <Field
+                className="min-w-0 flex-1"
+                data-invalid={!!errors.suggested_unit || undefined}
+                data-disabled={isPending || undefined}
+              >
+                <FieldLabel htmlFor="edit-activity-unit">Unit</FieldLabel>
+                <Input
+                  id="edit-activity-unit"
+                  placeholder="glasses"
+                  aria-invalid={!!errors.suggested_unit}
+                  {...register("suggested_unit")}
+                  disabled={isPending}
+                />
+                <FieldError errors={[errors.suggested_unit]} />
+              </Field>
+            </FieldGroup>
+          ) : null}
+        </FieldGroup>
+
+        <DialogFooter className="sm:justify-between">
+          <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+            <AlertDialogTrigger
+              render={
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={isPending}
+                  className={cn(
+                    "text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  )}
+                />
+              }
+            >
+              <Trash2Icon data-icon="inline-start" />
               Delete
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogMedia>
+                  <Trash2Icon />
+                </AlertDialogMedia>
+                <AlertDialogTitle>Delete {activity.name}?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This hides it from your catalog. You cannot use it in new
+                  templates or days. Past days keep their snapshots.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isDeleting}>
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  variant="destructive"
+                  disabled={isDeleting}
+                  onClick={(event) => {
+                    event.preventDefault()
+                    onArchive()
+                  }}
+                >
+                  {isDeleting ? (
+                    <>
+                      <Spinner data-icon="inline-start" />
+                      Deleting…
+                    </>
+                  ) : (
+                    "Delete"
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <div className="flex flex-wrap gap-2 sm:justify-end">
+            <DialogClose
+              render={
+                <Button type="button" variant="outline" disabled={isPending} />
+              }
+            >
+              Cancel
+            </DialogClose>
+            <Button type="submit" disabled={isPending}>
+              {isUpdating ? (
+                <>
+                  <Spinner data-icon="inline-start" />
+                  Saving…
+                </>
+              ) : (
+                "Save"
+              )}
             </Button>
-          </>
-        ) : null}
-      </DialogFooter>
+          </div>
+        </DialogFooter>
+      </form>
     </DialogContent>
   )
 }
