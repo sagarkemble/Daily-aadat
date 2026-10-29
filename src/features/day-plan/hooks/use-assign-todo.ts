@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import type { NewDayPlanTodo } from "../types/day-plan"
 import { ensureDayPlan } from "./ensure-day-plan"
+import { nextSlotSortOrder } from "./next-slot-sort-order"
 
 async function assignTodo({
   date,
@@ -14,9 +15,11 @@ async function assignTodo({
   date: string
   todo: Todo
   slot: Slot
-  slotOrder: number
+  slotOrder?: number
 }) {
   const dayPlanId = await ensureDayPlan(date)
+  const sortOrder =
+    slotOrder ?? (await nextSlotSortOrder(dayPlanId, slot))
   const dayItem: NewDayPlanTodo = {
     day_plan_id: dayPlanId,
     kind: "todo",
@@ -27,7 +30,7 @@ async function assignTodo({
     type: null,
     note_snapshot: null,
     slot,
-    sort_order: slotOrder,
+    sort_order: sortOrder,
     state: "pending",
   }
   const { error } = await supabase.from("day_items").insert(dayItem)

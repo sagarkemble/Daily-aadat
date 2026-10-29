@@ -36,9 +36,11 @@ Same seam as activities: identity in one table, slot/order on the day in another
 | `name` | Title. Edit name / icon only from the Todos list |
 | `icon` | Required. Same **preset icon set** as activities (no photo). Default e.g. `list-todo` on quick add |
 | `state` | `pending` \| `done` \| `skipped` — one state for list and day. Check-style only (Done / Skip), never timed/count |
+| `priority` | `high` \| `medium` \| `low` — required; default `medium` |
+| `due_date` | Optional calendar **deadline** (`date`, no time). Not the day the todo is placed on |
 | timestamps | `created_at`, `updated_at` |
 
-No date on this row. Assignment is a placement, not a column here.
+Assignment is a placement on `day_items`, not a column on `todos`. **Due date** and **assigned on** are independent (a todo may be due before the day it is placed on).
 
 ### `day_items` (timeline placement only)
 
@@ -61,7 +63,7 @@ No date on this row. Assignment is a placement, not a column here.
 - Unplan = delete the plan → CASCADE placements; **todos remain**  
 - Thursday → Friday = move the placement; do not insert a second one  
 - Same-day Morning → Evening = **move** the placement (`slot` update), not a second row  
-- Day UI: icon + name like an activity; Done/Skip like a **check** item; join `todos` for live **state**  
+- Day UI: icon + name like an activity; Done/Skip like a **check** item; join `todos` for live **state**, **note**, **priority**, and **due_date** (not snapshotted on `day_items`)  
 - Done and Skip are mutually exclusive (same as check activities)  
 
 ### Final schema (locked — migration not applied until we say so)
@@ -75,6 +77,8 @@ No date on this row. Assignment is a placement, not a column here.
 | `name` | text | not null, `length(trim(name)) > 0` |
 | `icon` | text | not null (Lucide kebab-case, same as activities; no DB enum) |
 | `state` | text | not null default `'pending'`, check `pending \| done \| skipped` |
+| `priority` | text | not null default `'medium'`, check `high \| medium \| low` |
+| `due_date` | date | null — deadline only |
 | `created_at` | timestamptz | not null default `now()` |
 | `updated_at` | timestamptz | not null default `now()`, `set_updated_at` trigger |
 
@@ -99,14 +103,15 @@ Unchanged: `day_plan_id` not null + on delete cascade; no `user_id` on `day_item
 
 ### Todos list
 
-- Quick add (title + icon, icon may default) → insert `todos` (`pending`). No `day_items`  
-- Empty title blocked  
-- Default filter **Open** (`pending`); controls to show **Done** and **Skipped**  
-- Row: title, **Done / Skip / undo** (`todos.state`), badge when a placement exists (e.g. **Thu · Afternoon**)  
-- Badge is a **link**: tap opens **that calendar day** (no scroll-to-slot). No badge when unassigned  
-- Edit name and icon here only. Day is for Done / Skip / Unassign / moving  
-- Delete with confirm → delete `todos` (CASCADE off the day)  
-- List does **not** pick a date/slot (assign is day-driven)
+- Table on desktop (columns: done checkbox, Title + note, Priority, Due, Assigned on); two-line rows on phone  
+- Groups (sections of one table): **Unassigned** (open, no placement), **Assigned** (open, placed), **Done**, **Skipped**. Done and Skipped collapsed by default; header click only collapses/expands  
+- Toolbar: search (name + note), **Status** filter = the four groups (multi-select, all on), **Priority** filter (multi-select, all on). Filters and search live in the URL  
+- Leading checkbox = **Done** (no bulk select)  
+- **+ Day** on an unassigned row → popover: calendar + slot (default Day-wide) + **Assign**. Uses `ensure_day_plan` (existing template on that date is kept)  
+- **Mon · Morning** on an assigned row → same popover pre-filled to **move**, plus **Open day** link  
+- Row click → detail popup: priority, due date, note, **Skip / Unskip**, **Unassign** (if placed), **Delete**. No Skip or trash buttons on the row  
+- Create via the **Create** dialog (no quick-add row)  
+- Delete with confirm → delete `todos` (CASCADE off the day)
 
 ### Day — planned slot
 
@@ -129,7 +134,7 @@ Unchanged: `day_plan_id` not null + on delete cascade; no `user_id` on `day_item
 
 - **No recurrence** — one placement, one day at a time. Need it Friday too after Monday? New todo, or move the placement  
 - **Not** on templates; apply never creates todos  
-- **Assign only if the date is already planned.** Empty day stays “apply a template first”  
+- Assign onto any date, from the day (**+ Todo**) or from the Todos table (**+ Day**). First placement creates the day row with no template  
 - Done or Skip on the list with no placement is allowed. Those rows stay on the Todos page; **+ Todo** will not offer them until they are Open again  
 - **Done / Skip** on `todos`: list ↔ day, same box  
 - Skip means **decided not to do** (still tracked), not only “not this calendar day”  
@@ -157,7 +162,8 @@ Unchanged: `day_plan_id` not null + on delete cascade; no `user_id` on `day_item
 - [ ] Unassign on the day (not trash) → back in the Open pile, badge gone; `todos` row still there  
 - [ ] Delete in the list (confirm) removes the placement as well  
 - [ ] Rename in the list updates the day row; day has no rename  
-- [ ] Filter Open / Done / Skipped on the list  
+- [ ] Status filter (Unassigned / Assigned / Done / Skipped), Priority filter, and search; all kept in the URL  
+- [ ] + Day assigns an unassigned todo to any date and slot from the table; Mon · Morning moves it  
 - [ ] Applying a template does not create todos  
 - [ ] Overwrite apply keeps existing todo placements  
 - [ ] Unplan removes placements; todos are not deleted  
@@ -171,10 +177,11 @@ Unchanged: `day_plan_id` not null + on delete cascade; no `user_id` on `day_item
 ## Out of scope (this feature)
 
 - Recurring todos  
-- Notes, subtasks, priorities, due times  
+- Subtasks, due times  
+- Bulk select, quick-add row, inline cell editing, column-header sort, row menu  
+- Due-date shortcuts (Today / Tomorrow / Next week), Clear done / archive  
 - Todos on templates  
 - ~~Assigning onto an unplanned date (no auto-creating `day_plans`)~~ — superseded by `ensure_day_plan` (ADR 0003)  
-- Assign / date-picker from the Todos list (badge **opens** a day; it does not assign)  
 - Cross-slot **drag** as the way to move a todo (see Drag-drop; v1 path is **+ Todo** picker + confirm)  
 - Done / Skipped in the **+ Todo** picker (show them only after they are Open again)  
 - Ended-day locks specific to todos  

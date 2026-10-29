@@ -16,7 +16,11 @@ import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/toast"
 import { activityTypeLabels } from "@/features/activity/types/activity"
-import { useUpdateTodoNote } from "@/features/todos/hooks/use-update-todo-note"
+import { TodoDueDateField } from "@/features/todos/components/todo-due-date-field"
+import { TodoMeta } from "@/features/todos/components/todo-meta"
+import { TodoPriorityField } from "@/features/todos/components/todo-priority-field"
+import { useUpdateTodo } from "@/features/todos/hooks/use-update-todo"
+import type { TodoPriority, TodoState } from "@/features/todos/types/todo"
 import type { DayPlanActivity } from "../types/day-plan"
 import { useDeleteActivity } from "../hooks/use-delete-activity"
 import { useUpdateDayItemNote } from "../hooks/use-update-day-item-note"
@@ -48,6 +52,11 @@ function kindLabel(activity: DayPlanActivity) {
   return "Activity"
 }
 
+function todoStateFromActivity(state: DayPlanActivity["state"]): TodoState {
+  if (state === "running") return "pending"
+  return state
+}
+
 function DayActivityDetailDialog({
   activity,
   open,
@@ -55,34 +64,71 @@ function DayActivityDetailDialog({
   editing = false,
   onUnassign,
 }: DayActivityDetailDialogProps) {
-  const saved = activity.note_snapshot ?? ""
-  const [value, setValue] = useState(saved)
+  const isTodo = activity.kind === "todo"
+  const savedNote = activity.note_snapshot ?? ""
+  const savedPriority = activity.priority ?? "medium"
+  const savedDueDate = activity.due_date
+  const [note, setNote] = useState(savedNote)
+  const [priority, setPriority] = useState<TodoPriority>(savedPriority)
+  const [dueDate, setDueDate] = useState<string | null>(savedDueDate)
   const { mutateAsync: updateItemNote, isPending: isSavingItem } =
     useUpdateDayItemNote()
-  const { mutateAsync: updateTodoNote, isPending: isSavingTodo } =
-    useUpdateTodoNote()
+  const { mutateAsync: updateTodo, isPending: isSavingTodo } = useUpdateTodo()
   const { mutate: deleteActivity, isPending: isDeleting } = useDeleteActivity()
   const name = activity.name_snapshot
   const icon = activity.icon_snapshot
   const isPending = isSavingItem || isSavingTodo
 
   useEffect(() => {
-    if (open) setValue(saved)
-  }, [open, saved])
+    if (open) {
+      setNote(savedNote)
+      setPriority(savedPriority)
+      setDueDate(savedDueDate)
+    }
+  }, [open, savedNote, savedPriority, savedDueDate])
 
   function handleSave() {
-    const next = value.trim()
-    const nextNote = next === "" ? null : next
-    if ((nextNote ?? "") === saved) {
+    const nextNote = note.trim() === "" ? null : note.trim()
+    if (isTodo && activity.todo_id) {
+      const patch: {
+        id: string
+        note?: string | null
+        priority?: TodoPriority
+        due_date?: string | null
+      } = { id: activity.todo_id }
+
+      if (nextNote !== savedNote) patch.note = nextNote
+      if (priority !== savedPriority) patch.priority = priority
+      if (dueDate !== savedDueDate) patch.due_date = dueDate
+
+      if (
+        patch.note === undefined &&
+        patch.priority === undefined &&
+        patch.due_date === undefined
+      ) {
+        onOpenChange(false)
+        return
+      }
+
+      toast.promise(
+        updateTodo(patch).then(() => {
+          onOpenChange(false)
+        }),
+        {
+          loading: { title: "Saving…" },
+          success: { title: "Todo saved" },
+          error: { title: "Failed to save" },
+        }
+      )
+      return
+    }
+
+    if ((nextNote ?? "") === savedNote) {
       onOpenChange(false)
       return
     }
-    const save =
-      activity.kind === "todo" && activity.todo_id
-        ? updateTodoNote({ id: activity.todo_id, note: nextNote })
-        : updateItemNote({ id: activity.id, note_snapshot: nextNote })
     toast.promise(
-      save.then(() => {
+      updateItemNote({ id: activity.id, note_snapshot: nextNote }).then(() => {
         onOpenChange(false)
       }),
       {
@@ -92,6 +138,8 @@ function DayActivityDetailDialog({
       }
     )
   }
+
+  const todoMetaEditable = isTodo && editing
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -108,16 +156,37 @@ function DayActivityDetailDialog({
           </div>
         </DialogHeader>
         <FieldGroup>
+          {isTodo && !todoMetaEditable && activity.priority ? (
+            <TodoMeta
+              priority={activity.priority}
+              dueDate={activity.due_date}
+              state={todoStateFromActivity(activity.state)}
+            />
+          ) : null}
+          {todoMetaEditable ? (
+            <>
+              <TodoPriorityField
+                value={priority}
+                onChange={setPriority}
+                disabled={isPending}
+              />
+              <TodoDueDateField
+                value={dueDate}
+                onChange={setDueDate}
+                disabled={isPending}
+              />
+            </>
+          ) : null}
           <Field data-disabled={isPending || undefined}>
             <FieldLabel htmlFor={`${activity.id}-detail-note`}>
               Description
             </FieldLabel>
             <Textarea
               id={`${activity.id}-detail-note`}
-              value={value}
+              value={note}
               placeholder="Add note"
               disabled={isPending}
-              onChange={(event) => setValue(event.target.value)}
+              onChange={(event) => setNote(event.target.value)}
             />
           </Field>
         </FieldGroup>

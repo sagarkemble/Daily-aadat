@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/card"
 import { DynamicIcon } from "@/components/dynamic-icon"
 import { cn } from "@/lib/utils"
+import { TodoMeta } from "@/features/todos/components/todo-meta"
+import type { TodoState } from "@/features/todos/types/todo"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
 import {
@@ -54,6 +56,10 @@ function DayActivityCard({
   const [detailOpen, setDetailOpen] = useState(false)
   const note = activity.note_snapshot?.trim()
   const skipped = activity.state === "skipped"
+  const todoState = (): TodoState => {
+    if (activity.state === "running") return "pending"
+    return activity.state
+  }
   const controls = skipped ? null : activity.type === "timed" ? (
     <TimedControls
       activity={activity}
@@ -99,6 +105,15 @@ function DayActivityCard({
               <CardTitle className="w-full min-w-0 truncate">
                 {activity.name_snapshot}
               </CardTitle>
+              {activity.kind === "todo" && activity.priority ? (
+                <TodoMeta
+                  priority={activity.priority}
+                  dueDate={activity.due_date}
+                  state={todoState()}
+                  muted={skipped || activity.state === "done"}
+                  className="justify-center"
+                />
+              ) : null}
               {note ? (
                 <CardDescription className="w-full truncate">{note}</CardDescription>
               ) : null}

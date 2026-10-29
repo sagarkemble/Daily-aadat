@@ -16,8 +16,12 @@ async function createTodo(input: CreateTodoInput) {
       note: input.note,
       state: "pending",
       user_id: user.id,
+      ...(input.priority !== undefined ? { priority: input.priority } : {}),
+      ...(input.due_date !== undefined ? { due_date: input.due_date } : {}),
     })
-    .select("id, name, icon, note, state, created_at, updated_at")
+    .select(
+      "id, name, icon, note, state, priority, due_date, created_at, updated_at"
+    )
     .single()
 
   if (error) throw error

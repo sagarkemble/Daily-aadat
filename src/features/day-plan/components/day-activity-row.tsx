@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/item"
 import { DynamicIcon } from "@/components/dynamic-icon"
 import { cn } from "@/lib/utils"
+import { TodoMeta } from "@/features/todos/components/todo-meta"
+import type { TodoState } from "@/features/todos/types/todo"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
 import { CountControls, TimedControls } from "./day-activity-controls"
@@ -41,6 +43,11 @@ function formatCountProgress(activity: DayPlanActivity) {
 function formatTimedTarget(activity: DayPlanActivity) {
   if (activity.target == null) return null
   return [activity.target, activity.unit].filter(Boolean).join(" ")
+}
+
+function todoStateFromActivity(state: DayPlanActivity["state"]): TodoState {
+  if (state === "running") return "pending"
+  return state
 }
 
 export function DayActivityRow({
@@ -97,6 +104,14 @@ export function DayActivityRow({
             <ItemTitle className="w-full min-w-0">
               {activity.name_snapshot}
             </ItemTitle>
+            {activity.kind === "todo" && activity.priority ? (
+              <TodoMeta
+                priority={activity.priority}
+                dueDate={activity.due_date}
+                state={todoStateFromActivity(activity.state)}
+                muted={skipped || activity.state === "done"}
+              />
+            ) : null}
             {target ? <ItemDescription>{target}</ItemDescription> : null}
             {note ? <ItemDescription>{note}</ItemDescription> : null}
           </ItemContent>

@@ -1,5 +1,6 @@
 import type { ActivityType } from "@/features/activity/types/activity"
 import type { Slot } from "@/features/templates/types/slots"
+import type { TodoPriority } from "@/features/todos/types/todo"
 
 export type State = "pending" | "done" | "skipped" | "running"
 
@@ -32,6 +33,8 @@ export type DayPlanActivity = {
   created_at: string
   updated_at: string
   note_snapshot: string | null
+  priority: TodoPriority | null
+  due_date: string | null
 }
 
 export type DaySlotGroup = {

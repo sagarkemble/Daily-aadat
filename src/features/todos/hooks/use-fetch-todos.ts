@@ -15,6 +15,8 @@ type FetchedTodo = {
   icon: string
   note: string | null
   state: TodoState
+  priority: Todo["priority"]
+  due_date: string | null
   created_at: string
   updated_at: string
   day_items: FetchedPlacement | FetchedPlacement[] | null
@@ -46,6 +48,8 @@ function toTodo(row: FetchedTodo): Todo {
     icon: row.icon,
     note: row.note,
     state: row.state,
+    priority: row.priority,
+    due_date: row.due_date,
     created_at: row.created_at,
     updated_at: row.updated_at,
     assignment: assignmentFromRow(row),
@@ -62,6 +66,8 @@ async function fetchTodos() {
       icon,
       note,
       state,
+      priority,
+      due_date,
       created_at,
       updated_at,
       day_items (

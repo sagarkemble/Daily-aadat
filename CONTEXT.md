@@ -33,8 +33,16 @@ Longer text than the name. Explains which Zoom, which meeting, which todo. For a
 _Avoid_: description (fine in UI copy; template already has its own playlist blurb), comment, journal
 
 **Todo**:
-An undated pile item. Name, icon, note, and state live here. It is not part of a template. Placing it on a day makes a sticker in any of the six slots, including Day-wide.
+A pile item. Name, icon, note, state, priority, and optional due date live here. It is not part of a template. Placing it on a day makes a sticker in any of the six slots, including Day-wide.
 _Avoid_: task, unslotted
+
+**Due date**:
+The calendar day a todo should be finished by. A deadline only: it does not place the todo on that day, and the day it is placed on may be later. Overdue is a due date in the past on a todo that is not done.
+_Avoid_: deadline time, scheduled date, assigned on (that is the placement's day)
+
+**Priority**:
+How much a todo matters: high, medium, or low. Every todo has one; medium unless chosen.
+_Avoid_: urgency, importance, none
 
 **Unplan**:
 Clearing a date's activities, applied template, and slot times. Todos on that date either stay as stickers or go back to the pile; the person chooses. Pile todos and templates are never deleted.

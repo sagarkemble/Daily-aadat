@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase"
 import { SLOTS } from "@/features/templates/types/slots"
 import { useQuery } from "@tanstack/react-query"
-import type { TodoState } from "@/features/todos/types/todo"
+import type { TodoPriority, TodoState } from "@/features/todos/types/todo"
 import type {
   DayBoard,
   DayPlanActivity,
@@ -10,17 +10,24 @@ import type {
   FetchedDayPlan,
 } from "../types/day-plan"
 
-type FetchedDayItem = DayPlanActivity & {
-  todos: { state: TodoState; note: string | null } | null
+type FetchedDayItem = Omit<DayPlanActivity, "priority" | "due_date"> & {
+  todos: {
+    state: TodoState
+    note: string | null
+    priority: TodoPriority
+    due_date: string | null
+  } | null
 }
 
 function toDayPlanActivity(row: FetchedDayItem): DayPlanActivity {
   const { todos, ...item } = row
+  const isTodo = item.kind === "todo"
   return {
     ...item,
-    state: item.kind === "todo" && todos?.state ? todos.state : item.state,
-    note_snapshot:
-      item.kind === "todo" ? (todos?.note ?? null) : item.note_snapshot,
+    state: isTodo && todos?.state ? todos.state : item.state,
+    note_snapshot: isTodo ? (todos?.note ?? null) : item.note_snapshot,
+    priority: isTodo && todos ? todos.priority : null,
+    due_date: isTodo && todos ? todos.due_date : null,
   }
 }
 
@@ -97,7 +104,9 @@ async function fetchDayPlan(
         note_snapshot,
         todos (
           state,
-          note
+          note,
+          priority,
+          due_date
         )
       ),
       slot_times:day_plan_slot_times(

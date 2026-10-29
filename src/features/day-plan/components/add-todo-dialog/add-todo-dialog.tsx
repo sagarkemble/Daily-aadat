@@ -157,13 +157,13 @@ export function AddTodoDialog({
   }
 
   function handleConfirmMove() {
-    if (!todoToMove || !targetSlot || !dayPlanId) return
+    if (!todoToMove || !targetSlot) return
     const todo = todoToMove
     toast
       .promise(
         reassignTodo({
           todo,
-          dayPlanId,
+          date,
           slot: targetSlot,
           slotOrder: resolveOrder(targetSlot),
         }),

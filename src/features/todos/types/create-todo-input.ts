@@ -8,6 +8,13 @@ export const createTodoInputSchema = z.object({
     .trim()
     .optional()
     .transform((value) => (value ? value : null)),
+  priority: z.enum(["high", "medium", "low"]).optional(),
+  due_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable()
+    .optional(),
 })
 
 export type CreateTodoInput = z.infer<typeof createTodoInputSchema>
+export type CreateTodoFormInput = z.input<typeof createTodoInputSchema>

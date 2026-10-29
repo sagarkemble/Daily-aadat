@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { PlusIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -28,14 +28,19 @@ import IconPickerPopover from "@/components/icon-picker-popover"
 import {
   createTodoInputSchema,
   type CreateTodoInput,
+  type CreateTodoFormInput,
 } from "../types/create-todo-input"
+import { TodoDueDateField } from "./todo-due-date-field"
+import { TodoPriorityField } from "./todo-priority-field"
 
 const DEFAULT_TODO_ICON = "list-todo"
 
-const emptyValues = {
+const emptyValues: CreateTodoFormInput = {
   name: "",
   icon: DEFAULT_TODO_ICON,
   note: "",
+  priority: "medium",
+  due_date: null,
 }
 
 export function CreateTodoDialog() {
@@ -46,8 +51,9 @@ export function CreateTodoDialog() {
     handleSubmit,
     reset,
     setValue,
+    control,
     formState: { errors },
-  } = useForm({
+  } = useForm<CreateTodoFormInput, unknown, CreateTodoInput>({
     resolver: zodResolver(createTodoInputSchema),
     defaultValues: emptyValues,
   })
@@ -63,11 +69,18 @@ export function CreateTodoDialog() {
 
   function onSubmit(data: CreateTodoInput) {
     toast
-      .promise(createTodo(data), {
-        loading: "Creating todo...",
-        success: "Todo created",
-        error: "Failed to create todo",
-      })
+      .promise(
+        createTodo({
+          ...data,
+          priority: data.priority ?? "medium",
+          due_date: data.due_date ?? null,
+        }),
+        {
+          loading: "Creating todo...",
+          success: "Todo created",
+          error: "Failed to create todo",
+        }
+      )
       .then(() => {
         handleOpenChange(false)
       })
@@ -118,6 +131,30 @@ export function CreateTodoDialog() {
               />
               <FieldError errors={[errors.icon]} />
             </Field>
+            <Controller
+              name="priority"
+              control={control}
+              render={({ field }) => (
+                <TodoPriorityField
+                  id="todo-priority"
+                  value={field.value ?? "medium"}
+                  onChange={field.onChange}
+                  disabled={isPending}
+                />
+              )}
+            />
+            <Controller
+              name="due_date"
+              control={control}
+              render={({ field }) => (
+                <TodoDueDateField
+                  id="todo-due-date"
+                  value={field.value ?? null}
+                  onChange={field.onChange}
+                  disabled={isPending}
+                />
+              )}
+            />
             <Field data-disabled={isPending || undefined}>
               <FieldLabel htmlFor="todo-note">Note</FieldLabel>
               <Input
