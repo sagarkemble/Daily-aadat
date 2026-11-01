@@ -48,6 +48,7 @@ function TimedControls({ activity, disabled, onCommand }: ControlProps) {
       </span>
       <Button
         size="icon-sm"
+        variant="outline"
         className="rounded-full"
         disabled={disabled}
         aria-label={running ? "Pause" : "Play"}

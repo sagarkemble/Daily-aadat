@@ -128,7 +128,7 @@ const SelectTemplateDialog = ({
             />
           }
         >
-          <LayoutTemplateIcon className="text-primary" />
+          <LayoutTemplateIcon className="text-muted-foreground" />
           <span className="truncate">{triggerLabel}</span>
           <ChevronDownIcon data-icon="inline-end" />
         </DialogTrigger>
@@ -236,6 +236,7 @@ const SelectTemplateDialog = ({
               Merge with template
             </AlertDialogAction>
             <AlertDialogAction
+              variant="outline"
               disabled={isPending || !pendingTemplate}
               onClick={(event) => {
                 event.preventDefault()

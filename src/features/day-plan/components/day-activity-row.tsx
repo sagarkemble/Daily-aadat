@@ -12,6 +12,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import { DynamicIcon } from "@/components/dynamic-icon"
+import { DONE_CHECKBOX_CLASS } from "@/lib/done-checkbox-class"
 import { cn } from "@/lib/utils"
 import { TodoMeta } from "@/features/todos/components/todo-meta"
 import type { TodoState } from "@/features/todos/types/todo"
@@ -139,6 +140,7 @@ export function DayActivityRow({
                     onCheckedChange={() =>
                       onCommand(activity, { type: "update_todo" })
                     }
+                    className={DONE_CHECKBOX_CLASS}
                   />
                 ) : null}
                 {activity.type === "check" ? (
@@ -148,6 +150,7 @@ export function DayActivityRow({
                     onCheckedChange={() =>
                       onCommand(activity, { type: "toggle_check" })
                     }
+                    className={DONE_CHECKBOX_CLASS}
                   />
                 ) : null}
               </>

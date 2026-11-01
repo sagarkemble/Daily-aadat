@@ -124,7 +124,11 @@ function DaySlotTimeFields({
             >
               Cancel
             </DialogClose>
-            <Button disabled={isPending || incomplete} onClick={handleSave}>
+            <Button
+              variant="outline"
+              disabled={isPending || incomplete}
+              onClick={handleSave}
+            >
               {isPending ? (
                 <>
                   <Spinner data-icon="inline-start" />

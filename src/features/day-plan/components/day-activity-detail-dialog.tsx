@@ -139,7 +139,7 @@ function DayActivityDetailDialog({
           >
             Cancel
           </DialogClose>
-          <Button disabled={isPending} onClick={handleSave}>
+          <Button variant="outline" disabled={isPending} onClick={handleSave}>
             {isPending ? (
               <>
                 <Spinner data-icon="inline-start" />
