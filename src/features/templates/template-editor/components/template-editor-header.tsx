@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { FaceSlightlySmiling, ListIcon, PencilIcon } from "lucide-react"
+import { FaceSlightlySmiling, PlusIcon, PencilIcon } from "lucide-react"
 import { DynamicIcon } from "@/components/dynamic-icon"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -17,15 +17,15 @@ type TemplateEditorHeaderProps = {
 
 function TemplateEditorHeaderSkeleton() {
   return (
-    <div className="flex items-start justify-between gap-4">
-      <div className="flex min-w-0 items-start gap-4">
-        <Skeleton className="size-10 shrink-0 rounded-full" />
-        <div className="flex min-w-0 flex-col gap-2">
-          <Skeleton className="h-5 w-36" />
-          <Skeleton className="h-4 w-52" />
+    <div className="flex items-center justify-between gap-4">
+      <div className="flex min-w-0 items-center gap-3">
+        <Skeleton className="size-12 shrink-0 rounded-xl" />
+        <div className="flex min-w-0 flex-col gap-1">
+          <Skeleton className="h-6 w-36" />
+          <Skeleton className="h-4 w-52 max-w-full" />
         </div>
       </div>
-      <Skeleton className="h-7 w-16 shrink-0 rounded-lg" />
+      <Skeleton className="h-8 w-28 shrink-0 rounded-lg" />
     </div>
   )
 }
@@ -44,40 +44,50 @@ const TemplateEditorHeader = ({
   if (isLoading) return <TemplateEditorHeaderSkeleton />
 
   return (
-    <div className="flex items-start justify-between gap-4">
-      <div className="flex min-w-0 items-start gap-4">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
-          <DynamicIcon name={icon} fallback={() => <FaceSlightlySmiling />} />
+    <div className="flex items-center justify-between gap-4">
+      <div className="flex min-w-0 items-center gap-3">
+        <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground">
+          <DynamicIcon
+            name={icon}
+            className="size-6"
+            fallback={() => <FaceSlightlySmiling className="size-6" />}
+          />
         </span>
         <div className="flex min-w-0 flex-col gap-1">
-          <h1 className="truncate text-lg font-semibold">{name}</h1>
+          <div className="flex min-w-0 items-baseline gap-1">
+            <h1 className="truncate text-lg font-semibold leading-none">
+              {name}
+            </h1>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              className="size-6 shrink-0 translate-y-px text-muted-foreground"
+              aria-label="Edit template"
+              onClick={() => setEditOpen(true)}
+            >
+              <PencilIcon className="size-3.5 stroke-[1.75]" />
+            </Button>
+          </div>
           {description.trim() ? (
-            <p className="text-sm text-muted-foreground">{description}</p>
+            <p className="text-sm leading-snug text-muted-foreground">
+              {description}
+            </p>
           ) : null}
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2">
-        {onAddActivity ? (
-          <Button
-            size="sm"
-            variant="secondary"
-            disabled={isAddingActivity}
-            onClick={onAddActivity}
-          >
-            <ListIcon data-icon="inline-start" />
-            Add activity
-          </Button>
-        ) : null}
+      {onAddActivity ? (
         <Button
           size="sm"
-          variant="outline"
-          onClick={() => setEditOpen(true)}
+          className="shrink-0"
+          disabled={isAddingActivity}
+          onClick={onAddActivity}
         >
-          <PencilIcon data-icon="inline-start" />
-          Edit
+          <PlusIcon data-icon="inline-start" />
+          Add activity
         </Button>
-      </div>
+      ) : null}
       <EditTemplateDialog
         open={editOpen}
         onOpenChange={setEditOpen}
