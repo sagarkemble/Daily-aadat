@@ -48,7 +48,7 @@ function TemplateActivityCard({
       <Card
         ref={sourceRef}
         size="sm"
-        className="size-full cursor-pointer border border-border ring-0 [--card-spacing:--spacing(5)]"
+        className="size-full cursor-pointer border border-border ring-0 transition-colors hover:bg-surface-hover-card [--card-spacing:--spacing(5)]"
         onClick={() => {
           if (!isDragging) setDetailOpen(true)
         }}

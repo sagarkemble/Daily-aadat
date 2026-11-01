@@ -67,7 +67,7 @@ export function ActivityCard({ activity }: { activity: Activity }) {
         render={
           <button
             type="button"
-            className="flex w-full cursor-pointer items-center gap-3 rounded-xl border bg-card p-3 text-left shadow-xs transition-colors hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="flex w-full cursor-pointer items-center gap-3 rounded-xl border bg-card p-3 text-left shadow-xs transition-colors hover:bg-surface-hover-card focus-visible:ring-3 focus-visible:ring-ring/50"
           />
         }
       >
