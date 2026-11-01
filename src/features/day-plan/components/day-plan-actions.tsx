@@ -213,16 +213,13 @@ function DayPlanActions({
 
   return (
     <PageHeader actions={actions}>
-      <div className="flex min-w-0 flex-col gap-2">
-        <h1 className="text-pretty text-xl font-medium tracking-tight">Day</h1>
-        <div className="flex min-w-0 flex-wrap items-center gap-3">
-          <SelectTemplateDialog
-            date={date}
-            hasActivitiesOnDay={activityCountOnDay > 0}
-            appliedTemplateName={appliedTemplateName}
-          />
-          <p className="text-sm text-muted-foreground">{plannedLabel}</p>
-        </div>
+      <div className="flex min-w-0 flex-wrap items-center gap-3">
+        <SelectTemplateDialog
+          date={date}
+          hasActivitiesOnDay={activityCountOnDay > 0}
+          appliedTemplateName={appliedTemplateName}
+        />
+        <p className="text-sm text-muted-foreground">{plannedLabel}</p>
       </div>
     </PageHeader>
   )
