@@ -1,6 +1,6 @@
-import { useState } from "react"
-import { useNavigate } from "@tanstack/react-router"
-import { format } from "date-fns"
+import { useMemo, useState } from "react"
+import { useNavigate, useRouterState } from "@tanstack/react-router"
+import { format, isValid, parseISO } from "date-fns"
 import { CalendarIcon, ChevronDownIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -18,7 +18,21 @@ type AppDateMenuProps = {
 function AppDateMenu({ date }: AppDateMenuProps) {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
-  const selected = date ?? new Date()
+  const { pathname, searchDate } = useRouterState({
+    select: (state) => ({
+      pathname: state.location.pathname,
+      searchDate: (state.location.search as { date?: string }).date,
+    }),
+  })
+
+  const selected = useMemo(() => {
+    if (date) return date
+    if (pathname === "/" && searchDate) {
+      const parsed = parseISO(searchDate)
+      if (isValid(parsed)) return parsed
+    }
+    return new Date()
+  }, [date, pathname, searchDate])
 
   function handleDateChange(next: Date | undefined) {
     if (!next) {

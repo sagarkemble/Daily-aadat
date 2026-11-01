@@ -14,6 +14,5 @@ export const Route = createFileRoute("/_authenticated/")({
 function RouteComponent() {
   let { date } = Route.useSearch()
   if (!date) date = new Date().toISOString().split("T")[0]
-  console.log("date", date)
   return <DayPage date={date} />
 }
