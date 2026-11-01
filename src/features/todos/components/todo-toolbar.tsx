@@ -1,6 +1,12 @@
 import { useEffect, useId, useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
-import { ArrowUpDownIcon, ChevronDownIcon, SearchIcon } from "lucide-react"
+import {
+  ArrowUpDownIcon,
+  ChevronDownIcon,
+  FlagIcon,
+  ListFilterIcon,
+  SearchIcon,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -29,24 +35,23 @@ import {
   ALL_TODO_PRIORITIES,
   type TodoListFilters,
 } from "../lib/filter-todos"
-import {
-  TODO_GROUP_LABELS,
-  type TodoGroup,
-} from "../lib/todo-groups"
+import { TODO_GROUP_LABELS, type TodoGroup } from "../lib/todo-groups"
 import { TODO_PRIORITY_LABELS } from "../lib/todo-priority"
 import {
   DEFAULT_TODO_LIST_SORT,
   TODO_LIST_SORT_LABELS,
-  TODO_LIST_SORTS,
   type TodoListSort,
 } from "../lib/sort-todos"
 import type { TodoPriority } from "../types/todo"
 import { CreateTodoDialog } from "./create-todo-dialog"
 
-const sortSelectItems = TODO_LIST_SORTS.map((value) => ({
-  value,
-  label: TODO_LIST_SORT_LABELS[value],
-}))
+const sortSelectItems = [
+  { label: TODO_LIST_SORT_LABELS.newest, value: "newest" as const },
+  { label: TODO_LIST_SORT_LABELS.oldest, value: "oldest" as const },
+  { label: TODO_LIST_SORT_LABELS.name_asc, value: "name_asc" as const },
+  { label: TODO_LIST_SORT_LABELS.name_desc, value: "name_desc" as const },
+  { label: TODO_LIST_SORT_LABELS.priority, value: "priority" as const },
+] satisfies { label: string; value: TodoListSort }[]
 
 type TodoToolbarProps = {
   filters: TodoListFilters
@@ -149,11 +154,8 @@ function TodoToolbar({ filters }: TodoToolbarProps) {
         </InputGroup>
         <DropdownMenu>
           <DropdownMenuTrigger render={<Button variant="outline" />}>
-            {filterLabel(
-              ALL_TODO_GROUPS.length,
-              statusSet.size,
-              "Status"
-            )}
+            <ListFilterIcon data-icon="inline-start" />
+            {filterLabel(ALL_TODO_GROUPS.length, statusSet.size, "Status")}
             <ChevronDownIcon data-icon="inline-end" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -174,6 +176,7 @@ function TodoToolbar({ filters }: TodoToolbarProps) {
         </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger render={<Button variant="outline" />}>
+            <FlagIcon data-icon="inline-start" />
             {filterLabel(
               ALL_TODO_PRIORITIES.length,
               prioritySet.size,

@@ -2,7 +2,6 @@ import { useState } from "react"
 import { Link } from "@tanstack/react-router"
 import { CalendarIcon } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
@@ -67,19 +66,19 @@ function TodoAssignPopover({ todo, disabled }: TodoAssignPopoverProps) {
 
   const triggerLabel = isAssigned
     ? formatTodoAssignment(todo.assignment!)
-    : "+ Day"
+    : "Not Assigned"
+
+  const triggerClassName =
+    "h-auto p-0 text-xs font-normal text-muted-foreground hover:underline sm:text-sm"
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger
         disabled={disabled}
         onClick={(event) => event.stopPropagation()}
+        aria-label={isAssigned ? "Change assignment" : "Assign to day"}
         render={
-          isAssigned ? (
-            <Badge variant="secondary" className="cursor-pointer" />
-          ) : (
-            <Button variant="outline" size="sm" />
-          )
+          <Button variant="link" size="sm" className={triggerClassName} />
         }
       >
         {triggerLabel}

@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select"
 import {
   activityTypeItems,
+  activityTypeSelectValue,
   type ActivityType,
   type ActivityWithConfiguration,
 } from "@/features/activity/types/activity"
@@ -70,13 +71,14 @@ const ActivityPickerConfigureRow = ({
               onValueChange={handleTypeChange}
             >
               <SelectTrigger id={typeId} size="sm">
-                <SelectValue />
+                <SelectValue>{activityTypeSelectValue}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {activityTypeItems.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.label}
+                  {activityTypeItems.map(({ icon: Icon, label, value }) => (
+                    <SelectItem key={value} value={value}>
+                      <Icon />
+                      {label}
                     </SelectItem>
                   ))}
                 </SelectGroup>

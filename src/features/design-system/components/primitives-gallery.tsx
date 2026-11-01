@@ -113,20 +113,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import {
+  activityTypeItems,
+  activityTypeSelectValue,
+} from "@/features/activity/types/activity"
 
-const typeItems = [
-  { value: "check", label: "Check" },
-  { value: "timed", label: "Timed" },
-  { value: "count", label: "Count" },
-]
-
-function Block({
-  title,
-  children,
-}: {
-  title: string
-  children: ReactNode
-}) {
+function Block({ title, children }: { title: string; children: ReactNode }) {
   return (
     <Card size="sm">
       <CardHeader>
@@ -184,15 +176,16 @@ export function PrimitivesGallery() {
           </Field>
           <Field>
             <FieldLabel htmlFor="ds-type">Tracking type</FieldLabel>
-            <Select items={typeItems} defaultValue="check">
+            <Select items={activityTypeItems} defaultValue="check">
               <SelectTrigger id="ds-type" className="w-full">
-                <SelectValue />
+                <SelectValue>{activityTypeSelectValue}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {typeItems.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.label}
+                  {activityTypeItems.map(({ icon: Icon, label, value }) => (
+                    <SelectItem key={value} value={value}>
+                      <Icon />
+                      {label}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -293,7 +286,9 @@ export function PrimitivesGallery() {
             </AlertDialogContent>
           </AlertDialog>
           <Popover>
-            <PopoverTrigger render={<Button variant="outline">Calendar</Button>} />
+            <PopoverTrigger
+              render={<Button variant="outline">Calendar</Button>}
+            />
             <PopoverContent className="w-auto p-0">
               <Calendar
                 mode="single"

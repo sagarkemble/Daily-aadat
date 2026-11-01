@@ -109,7 +109,7 @@ function TodoTableRow({ todo, disabled }: TodoTableRowProps) {
           {todo.state === "pending" ? (
             <TodoAssignPopover todo={todo} disabled={rowDisabled} />
           ) : todo.assignment ? (
-            <span className="text-muted-foreground text-sm">
+            <span className="text-sm text-muted-foreground">
               {formatTodoAssignment(todo.assignment)}
             </span>
           ) : (

@@ -1,5 +1,5 @@
 import { useId } from "react"
-import { ListFilterIcon, SearchIcon } from "lucide-react"
+import { LayersIcon, SearchIcon } from "lucide-react"
 
 import {
   InputGroup,
@@ -14,18 +14,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { activityTypeItems } from "../types/activity"
 import {
   ACTIVITY_TYPE_FILTER_LABELS,
-  ACTIVITY_TYPE_FILTERS,
   isActivityTypeFilter,
   type ActivityTypeFilter,
 } from "../lib/filter-activities"
 import { AddActivityDialog } from "./add-activity-dialog"
 
-const typeFilterItems = ACTIVITY_TYPE_FILTERS.map((value) => ({
-  value,
-  label: ACTIVITY_TYPE_FILTER_LABELS[value],
-}))
+const typeFilterItems = [
+  {
+    icon: LayersIcon,
+    label: ACTIVITY_TYPE_FILTER_LABELS.all,
+    value: "all" as const,
+  },
+  ...activityTypeItems,
+]
+
+function selectedTypeFilterContent(value: ActivityTypeFilter | null) {
+  const selected = typeFilterItems.find((item) => item.value === value)
+  if (!selected) return null
+  const Icon = selected.icon
+  return (
+    <>
+      <Icon />
+      {selected.label}
+    </>
+  )
+}
 
 type ActivityToolbarProps = {
   query: string
@@ -67,8 +83,7 @@ function ActivityToolbar({
           }}
         >
           <SelectTrigger className="w-40" aria-label="Filter by type">
-            <ListFilterIcon />
-            <SelectValue />
+            <SelectValue>{selectedTypeFilterContent}</SelectValue>
           </SelectTrigger>
           <SelectContent
             side="bottom"
@@ -76,9 +91,10 @@ function ActivityToolbar({
             alignItemWithTrigger={false}
           >
             <SelectGroup>
-              {typeFilterItems.map((item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label}
+              {typeFilterItems.map(({ icon: Icon, label, value }) => (
+                <SelectItem key={value} value={value}>
+                  <Icon />
+                  {label}
                 </SelectItem>
               ))}
             </SelectGroup>

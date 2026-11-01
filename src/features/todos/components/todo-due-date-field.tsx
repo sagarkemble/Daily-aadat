@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { addDays, format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, CircleXIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -17,6 +17,8 @@ import {
   calendarDayFromDate,
 } from "@/features/day-plan/lib/calendar-day"
 import { formatDueDateLabel } from "../lib/format-due-date"
+
+const NO_DUE_DATE = "none" as const
 
 type TodoDueDateFieldProps = {
   id?: string
@@ -56,7 +58,11 @@ function TodoDueDateField({
 
   if (mode === "presets") {
     const toggleValue =
-      value != null && presetValues.includes(value) ? [value] : []
+      value == null
+        ? [NO_DUE_DATE]
+        : presetValues.includes(value)
+          ? [value]
+          : []
 
     const pickLabel =
       value != null && isCustomDate
@@ -72,7 +78,14 @@ function TodoDueDateField({
               value={toggleValue}
               onValueChange={(next) => {
                 const picked = next[0]
-                if (typeof picked === "string" && presetValues.includes(picked)) {
+                if (picked === NO_DUE_DATE) {
+                  onChange(null)
+                  return
+                }
+                if (
+                  typeof picked === "string" &&
+                  presetValues.includes(picked)
+                ) {
                   onChange(picked)
                 }
               }}
@@ -81,6 +94,9 @@ function TodoDueDateField({
               size="sm"
               className="flex-wrap"
             >
+              <ToggleGroupItem value={NO_DUE_DATE} aria-label="No due date">
+                <CircleXIcon />
+              </ToggleGroupItem>
               <ToggleGroupItem value={presetDays.today}>Today</ToggleGroupItem>
               <ToggleGroupItem value={presetDays.tomorrow}>
                 Tomorrow

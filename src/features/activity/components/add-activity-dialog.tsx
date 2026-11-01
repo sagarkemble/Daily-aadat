@@ -35,7 +35,7 @@ import {
 } from "../types/add-activity-input"
 import { useAddActivity } from "../hooks/use-add-activities"
 import { toast } from "@/components/ui/toast"
-import { activityTypeItems } from "../types/activity"
+import { activityTypeItems, activityTypeSelectValue } from "../types/activity"
 
 const emptyValues: AddActivityInput = {
   name: "",
@@ -168,15 +168,18 @@ export function AddActivityDialog() {
                       className="w-full"
                       aria-invalid={!!errors.suggested_type}
                     >
-                      <SelectValue />
+                      <SelectValue>{activityTypeSelectValue}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {activityTypeItems.map((item) => (
-                          <SelectItem key={item.value} value={item.value}>
-                            {item.label}
-                          </SelectItem>
-                        ))}
+                        {activityTypeItems.map(
+                          ({ icon: Icon, label, value }) => (
+                            <SelectItem key={value} value={value}>
+                              <Icon />
+                              {label}
+                            </SelectItem>
+                          )
+                        )}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
