@@ -1,4 +1,6 @@
 import { LayoutTemplateIcon } from "lucide-react"
+import { PageHeader } from "@/components/page-header"
+import { PageShell } from "@/components/page-shell"
 import { ItemGroup } from "@/components/ui/item"
 import { useFetchTemplates } from "../hooks/use-fetch-templates"
 import { CreateTemplateDialog } from "./create-template-dialog"
@@ -17,16 +19,12 @@ const TemplateIndexPage = () => {
   const showCreate = !isPending && templates.length > 0
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h1 className="text-lg font-semibold">Templates</h1>
-          <p className="text-sm text-muted-foreground">
-            Reusable day shapes like Home or College.
-          </p>
-        </div>
-        {showCreate ? <CreateTemplateDialog /> : null}
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Templates"
+        description="Reusable day shapes like Home or College."
+        actions={showCreate ? <CreateTemplateDialog /> : null}
+      />
 
       {isPending ? (
         <ItemGroup className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -49,7 +47,7 @@ const TemplateIndexPage = () => {
           ))}
         </ItemGroup>
       )}
-    </div>
+    </PageShell>
   )
 }
 

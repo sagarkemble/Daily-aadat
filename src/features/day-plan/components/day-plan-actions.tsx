@@ -27,6 +27,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { PageHeader } from "@/components/page-header"
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "@/components/ui/toast"
 import { useFetchTemplates } from "@/features/templates/hooks/use-fetch-templates"
@@ -88,17 +89,8 @@ function DayPlanActions({
     plannedCount === 1 ? "1 task planned" : `${plannedCount} tasks planned`
   const canAdd = Boolean(onAddActivity || onAddTodo)
 
-  return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex min-w-0 flex-wrap items-center gap-3">
-        <SelectTemplateDialog
-          date={date}
-          hasActivitiesOnDay={activityCountOnDay > 0}
-          appliedTemplateName={appliedTemplateName}
-        />
-        <p className="text-sm text-muted-foreground">{plannedLabel}</p>
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
+  const actions = (
+    <div className="flex flex-wrap items-center gap-2">
         {canAdd ? (
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -216,8 +208,23 @@ function DayPlanActions({
             </AlertDialogContent>
           </AlertDialog>
         ) : null}
-      </div>
     </div>
+  )
+
+  return (
+    <PageHeader actions={actions}>
+      <div className="flex min-w-0 flex-col gap-2">
+        <h1 className="text-pretty text-xl font-medium tracking-tight">Day</h1>
+        <div className="flex min-w-0 flex-wrap items-center gap-3">
+          <SelectTemplateDialog
+            date={date}
+            hasActivitiesOnDay={activityCountOnDay > 0}
+            appliedTemplateName={appliedTemplateName}
+          />
+          <p className="text-sm text-muted-foreground">{plannedLabel}</p>
+        </div>
+      </div>
+    </PageHeader>
   )
 }
 

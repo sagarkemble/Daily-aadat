@@ -59,17 +59,15 @@ function ActivityToolbar({
   const searchId = useId()
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-      <h1 className="text-lg font-medium">Activities</h1>
-      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-        <InputGroup className="sm:min-w-56 sm:flex-1">
+    <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+      <InputGroup className="sm:min-w-56 sm:flex-1">
           <InputGroupAddon align="inline-start">
             <SearchIcon />
           </InputGroupAddon>
           <InputGroupInput
             id={searchId}
             value={query}
-            placeholder="Search activities"
+            placeholder="Search activities…"
             onChange={(event) => onQueryChange(event.target.value)}
             aria-label="Search activities"
           />
@@ -101,7 +99,6 @@ function ActivityToolbar({
           </SelectContent>
         </Select>
         <AddActivityDialog />
-      </div>
     </div>
   )
 }

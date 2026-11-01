@@ -2,6 +2,8 @@ import { useMemo } from "react"
 import { ListTodoIcon } from "lucide-react"
 import { useNavigate } from "@tanstack/react-router"
 
+import { PageHeader } from "@/components/page-header"
+import { PageShell } from "@/components/page-shell"
 import { Button } from "@/components/ui/button"
 import {
   Empty,
@@ -48,8 +50,11 @@ const TodoPage = ({ filters }: TodoPageProps) => {
     !isPending && allTodos.length > 0 && filteredTodos.length === 0
 
   return (
-    <div className="flex flex-col gap-4">
-      <TodoToolbar filters={filters} />
+    <PageShell>
+      <PageHeader
+        title="Todos"
+        actions={<TodoToolbar filters={filters} />}
+      />
       {isPending ? (
         <TodoListSkeleton mobile={isMobile} />
       ) : allTodos.length === 0 ? (
@@ -82,7 +87,7 @@ const TodoPage = ({ filters }: TodoPageProps) => {
       ) : (
         <TodoTable todos={filteredTodos} sort={filters.sort} />
       )}
-    </div>
+    </PageShell>
   )
 }
 

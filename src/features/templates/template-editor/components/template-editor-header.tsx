@@ -55,7 +55,7 @@ const TemplateEditorHeader = ({
         </span>
         <div className="flex min-w-0 flex-col gap-1">
           <div className="flex min-w-0 items-baseline gap-1">
-            <h1 className="truncate text-lg font-semibold leading-none">
+            <h1 className="truncate text-pretty text-xl font-medium tracking-tight">
               {name}
             </h1>
             <Button

@@ -24,9 +24,13 @@ function PageHeader({
           {children ??
             (title ? (
               <div className="min-w-0">
-                <h1 className="text-lg font-semibold tracking-tight">{title}</h1>
+                <h1 className="text-pretty text-xl font-medium tracking-tight">
+                  {title}
+                </h1>
                 {description ? (
-                  <p className="text-sm text-muted-foreground">{description}</p>
+                  <p className="text-sm text-muted-foreground text-pretty">
+                    {description}
+                  </p>
                 ) : null}
               </div>
             ) : null)}

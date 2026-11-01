@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react"
 import { ClipboardListIcon } from "lucide-react"
 
+import { PageHeader } from "@/components/page-header"
+import { PageShell } from "@/components/page-shell"
 import { Button } from "@/components/ui/button"
 import {
   Empty,
@@ -69,12 +71,17 @@ const ActivityPage = () => {
   }
 
   return (
-    <div className="flex flex-col gap-8 p-4">
-      <ActivityToolbar
-        query={query}
-        type={type}
-        onQueryChange={setQuery}
-        onTypeChange={setType}
+    <PageShell>
+      <PageHeader
+        title="Activities"
+        actions={
+          <ActivityToolbar
+            query={query}
+            type={type}
+            onQueryChange={setQuery}
+            onTypeChange={setType}
+          />
+        }
       />
       {showFilteredEmpty ? (
         <Empty>
@@ -94,10 +101,10 @@ const ActivityPage = () => {
           </EmptyContent>
         </Empty>
       ) : (
-        <>
+        <div className="flex flex-col gap-8">
           {showCustomSection ? (
             <section className="flex flex-col gap-3">
-              <h2 className="font-medium text-muted-foreground">
+              <h2 className="text-sm font-medium text-muted-foreground">
                 Your activities
               </h2>
               <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
@@ -123,7 +130,9 @@ const ActivityPage = () => {
           ) : null}
           {isPending || filteredPredefined.length > 0 ? (
             <section className="flex flex-col gap-3">
-              <h2 className="font-medium text-muted-foreground">Predefined</h2>
+              <h2 className="text-sm font-medium text-muted-foreground">
+                Predefined
+              </h2>
               <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {isPending ? (
                   <SkeletonGrid count={PREDEFINED_SKELETON_COUNT} />
@@ -135,9 +144,9 @@ const ActivityPage = () => {
               </div>
             </section>
           ) : null}
-        </>
+        </div>
       )}
-    </div>
+    </PageShell>
   )
 }
 

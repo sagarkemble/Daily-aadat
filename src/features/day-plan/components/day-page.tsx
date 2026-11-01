@@ -26,6 +26,7 @@ import type {
   DayPlanActivity,
   NewDayPlanActivity,
 } from "../types/day-plan"
+import { PageShell } from "@/components/page-shell"
 import { AddTodoDialog } from "./add-todo-dialog/add-todo-dialog"
 import { DayPlanActions } from "./day-plan-actions"
 import { DayEmptyState } from "./day-empty-state"
@@ -156,7 +157,7 @@ const DayPage = ({ date }: DayPageProps) => {
   const showSlotBoard = hasPlacements
 
   return (
-    <div className="flex flex-col gap-8">
+    <PageShell>
       <DayPlanActions
           date={date}
           hasDayPlanRow={hasDayPlanRow}
@@ -181,6 +182,7 @@ const DayPage = ({ date }: DayPageProps) => {
           <DayEmptyState />
         ) : null}
         {showSlotBoard ? (
+        <div className="flex flex-col gap-8">
         <DragDropProvider
           onDragStart={() => {
             isDragging.current = true
@@ -261,6 +263,7 @@ const DayPage = ({ date }: DayPageProps) => {
             />
           ))}
         </DragDropProvider>
+        </div>
         ) : null}
       <AddTodoDialog
         date={date}
@@ -286,7 +289,7 @@ const DayPage = ({ date }: DayPageProps) => {
         onAdd={handleAddActivities}
         isPending={isAdding}
       />
-    </div>
+    </PageShell>
   )
 }
 

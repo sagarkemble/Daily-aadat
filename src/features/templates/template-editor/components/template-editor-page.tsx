@@ -6,6 +6,7 @@ import { isSortable } from "@dnd-kit/react/sortable"
 
 import { ActivityPickerDialog } from "@/features/activity/components/activity-picker/activity-picker-dialog"
 import type { ActivityWithConfiguration } from "@/features/activity/types/activity"
+import { PageShell } from "@/components/page-shell"
 import { toast } from "@/components/ui/toast"
 import { SLOT_LABELS, SLOTS, TIMED_SLOTS, type Slot } from "../../types/slots"
 import type { NewTemplateActivity, TemplateBoard } from "../../types/template"
@@ -66,7 +67,7 @@ const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <PageShell>
       <TemplateEditorHeader
         templateId={templateId}
         name={data?.name ?? ""}
@@ -170,7 +171,7 @@ const TemplateEditor = ({ templateId }: TemplateEditorProps) => {
           ))}
         </div>
       </DragDropProvider>
-    </div>
+    </PageShell>
   )
 }
 
