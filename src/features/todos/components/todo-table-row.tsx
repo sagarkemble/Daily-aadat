@@ -12,6 +12,7 @@ import {
   TODO_PRIORITY_LABELS,
 } from "../lib/todo-priority"
 import { useChangeTodoState } from "../hooks/use-change-todo-state"
+import { TODO_DONE_CHECKBOX_CLASS } from "../lib/todo-done-checkbox-class"
 import { formatTodoAssignment } from "../lib/format-todo-assignment"
 import type { Todo } from "../types/todo"
 import { TodoAssignPopover } from "./todo-assign-popover"
@@ -55,6 +56,7 @@ function TodoTableRow({ todo, disabled }: TodoTableRowProps) {
             disabled={rowDisabled}
             onCheckedChange={handleCheckedChange}
             aria-label={done ? "Mark as open" : "Mark as done"}
+            className={TODO_DONE_CHECKBOX_CLASS}
           />
         </TableCell>
         <TableCell className="max-w-0 whitespace-normal">

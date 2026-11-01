@@ -16,7 +16,7 @@ export type DueDateDisplay = {
 
 const DUE_DATE_TONE_CLASS: Record<DueDateTone, string> = {
   overdue: "text-destructive",
-  today: "text-primary",
+  today: "text-warning",
   normal: "text-muted-foreground",
 }
 

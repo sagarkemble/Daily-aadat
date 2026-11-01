@@ -12,11 +12,11 @@ const TODO_PRIORITY_ORDER: Record<TodoPriority, number> = {
   low: 2,
 }
 
-/** Semantic dot colours for priority (not raw palette). */
+/** Medium is the default priority; dot uses warning token. High/low are exceptions. */
 const TODO_PRIORITY_DOT_CLASS: Record<TodoPriority, string> = {
   high: "bg-destructive",
-  medium: "bg-chart-2",
-  low: "bg-muted-foreground",
+  medium: "bg-warning",
+  low: "bg-muted-foreground/50",
 }
 
 export {

@@ -10,6 +10,7 @@ import {
 import { toast } from "@/components/ui/toast"
 import { cn } from "@/lib/utils"
 import { useChangeTodoState } from "../hooks/use-change-todo-state"
+import { TODO_DONE_CHECKBOX_CLASS } from "../lib/todo-done-checkbox-class"
 import { sortTodos, type TodoListSort } from "../lib/sort-todos"
 import type { Todo } from "../types/todo"
 import { TodoAssignPopover } from "./todo-assign-popover"
@@ -54,6 +55,7 @@ function TodoMobileRow({ todo }: { todo: Todo }) {
               onClick={(event) => event.stopPropagation()}
               onCheckedChange={handleCheckedChange}
               aria-label={done ? "Mark as open" : "Mark as done"}
+              className={TODO_DONE_CHECKBOX_CLASS}
             />
             <ItemTitle
               className={cn(
