@@ -29,7 +29,6 @@ import type {
 import { AddTodoDialog } from "./add-todo-dialog/add-todo-dialog"
 import { DayPlanActions } from "./day-plan-actions"
 import { DayEmptyState } from "./day-empty-state"
-import { DayRail } from "./day-rail"
 import DaySlot from "./day-slot"
 import { DayWide } from "./day-wide"
 
@@ -157,9 +156,8 @@ const DayPage = ({ date }: DayPageProps) => {
   const showSlotBoard = hasPlacements
 
   return (
-    <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
-      <div className="flex min-w-0 flex-1 flex-col gap-8">
-        <DayPlanActions
+    <div className="flex flex-col gap-8">
+      <DayPlanActions
           date={date}
           hasDayPlanRow={hasDayPlanRow}
           templateId={data?.template_id ?? null}
@@ -264,8 +262,6 @@ const DayPage = ({ date }: DayPageProps) => {
           ))}
         </DragDropProvider>
         ) : null}
-      </div>
-      <DayRail date={date} board={board} isLoading={isLoading} />
       <AddTodoDialog
         date={date}
         dayPlanId={dayPlanId || undefined}
