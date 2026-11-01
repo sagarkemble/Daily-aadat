@@ -21,7 +21,7 @@ import { DayActivityCard } from "./day-activity-card"
 type DayWideProps = {
   items: DayPlanActivity[]
   isLoading?: boolean
-  disabled?: boolean
+  isActivityPending?: (activityId: string) => boolean
   onAddActivity?: () => void
   onCommand: (activity: DayPlanActivity, command: DayItemCommand) => void
 }
@@ -82,7 +82,7 @@ function DayCarouselControls() {
 function DayWide({
   items,
   isLoading = false,
-  disabled,
+  isActivityPending,
   onAddActivity,
   onCommand,
 }: DayWideProps) {
@@ -156,7 +156,7 @@ function DayWide({
                     index={index}
                     group="day_wide"
                     activity={item}
-                    disabled={disabled}
+                    disabled={isActivityPending?.(item.id) ?? false}
                     onCommand={onCommand}
                   />
                 </CarouselItem>
