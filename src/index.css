@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -71,6 +72,11 @@
     var(--foreground) 7%,
     var(--popover)
   );
+  --motion-duration-fast: 150ms;
+  --motion-duration-overlay: 180ms;
+  --motion-duration-sheet: 200ms;
+  --motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-ease-out: cubic-bezier(0.4, 0, 1, 1);
 }
 
 .dark {
@@ -140,6 +146,11 @@
     var(--foreground) 9%,
     var(--popover)
   );
+  --motion-duration-fast: 150ms;
+  --motion-duration-overlay: 180ms;
+  --motion-duration-sheet: 200ms;
+  --motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-ease-out: cubic-bezier(0.4, 0, 1, 1);
 }
 
 @theme inline {
@@ -201,6 +212,25 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+
+  --duration-fast: var(--motion-duration-fast);
+  --duration-overlay: var(--motion-duration-overlay);
+  --duration-sheet: var(--motion-duration-sheet);
+  --ease-motion: var(--motion-ease);
+  --ease-motion-out: var(--motion-ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root,
+  .dark {
+    --motion-duration-fast: 0.01ms;
+    --motion-duration-overlay: 0.01ms;
+    --motion-duration-sheet: 0.01ms;
+  }
+}
+
+[data-slot="select-trigger"][data-popup-open] [data-slot="select-icon"] {
+  transform: rotate(180deg);
 }
 
 /* Keep semantic colour utilities in the CSS output even if a scan miss occurs. */

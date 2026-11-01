@@ -180,7 +180,7 @@ export function PrimitivesGallery() {
               <SelectTrigger id="ds-type" className="w-full">
                 <SelectValue>{activityTypeSelectValue}</SelectValue>
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent alignItemWithTrigger={false}>
                 <SelectGroup>
                   {activityTypeItems.map(({ icon: Icon, label, value }) => (
                     <SelectItem key={value} value={value}>
