@@ -15,7 +15,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   DialogClose,
@@ -46,7 +45,6 @@ import { DynamicIcon } from "@/components/dynamic-icon"
 import { cn } from "@/lib/utils"
 import {
   activityTypeItems,
-  activityTypeLabels,
   type Activity,
 } from "../types/activity"
 import {
@@ -134,7 +132,6 @@ export function ActivityDetailDialog({
   open: boolean
   onClose: () => void
 }) {
-  const isCustom = activity.source === "custom"
   const [selectedIcon, setSelectedIcon] = useState(activity.icon)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const { mutate: updateActivity, isPending: isUpdating } =
@@ -221,31 +218,6 @@ export function ActivityDetailDialog({
         onClose()
       },
     })
-  }
-
-  if (!isCustom) {
-    return (
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Activity</DialogTitle>
-          <DialogDescription>Predefined — view only.</DialogDescription>
-        </DialogHeader>
-
-        <div className="flex items-center gap-3">
-          <ActivityIconDisplay icon={activity.icon} />
-          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-            <p className="text-sm leading-snug">{activity.name}</p>
-            <Badge variant="outline" className="w-fit">
-              {activityTypeLabels[activity.suggested_type]}
-            </Badge>
-          </div>
-        </div>
-
-        <DialogFooter>
-          <DialogClose render={<Button variant="outline" />}>Close</DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    )
   }
 
   return (
