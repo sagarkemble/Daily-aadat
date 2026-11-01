@@ -123,8 +123,7 @@ const SelectTemplateDialog = ({
           render={
             <Button
               variant="outline"
-              size="lg"
-              className="max-w-48 rounded-full font-normal"
+              className="max-w-48 font-normal"
             />
           }
         >

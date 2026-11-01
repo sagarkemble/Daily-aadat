@@ -33,9 +33,9 @@ function AppNavTabs({ variant }: AppNavTabsProps) {
       <TabsList
         className={cn(
           variant === "phone" &&
-            "h-auto w-fit gap-1 rounded-full bg-card p-1.5 shadow-lg ring-1 ring-foreground/10 group-data-horizontal/tabs:h-auto",
+            "h-auto w-fit gap-1 rounded-lg bg-card p-1 shadow-lg ring-1 ring-foreground/10 group-data-horizontal/tabs:h-auto",
           variant === "desktop" &&
-            "h-auto items-center gap-0 rounded-full p-0 group-data-horizontal/tabs:h-auto"
+            "h-auto w-fit gap-1 group-data-horizontal/tabs:h-auto"
         )}
       >
         {items.map((item) => {
@@ -49,9 +49,9 @@ function AppNavTabs({ variant }: AppNavTabsProps) {
               render={<Link to={item.url} />}
               className={cn(
                 variant === "desktop" &&
-                  "h-11 flex-none items-center justify-center gap-2 rounded-full px-5 text-sm leading-none data-active:bg-primary data-active:text-primary-foreground dark:data-active:bg-primary dark:data-active:text-primary-foreground",
+                  "h-8 flex-none gap-1.5 rounded-lg px-2.5 py-0 text-sm font-medium leading-none data-active:bg-primary data-active:text-primary-foreground dark:data-active:bg-primary dark:data-active:text-primary-foreground",
                 variant === "phone" &&
-                  "size-10 flex-none rounded-full p-0 data-active:bg-primary data-active:text-primary-foreground dark:data-active:bg-primary dark:data-active:text-primary-foreground"
+                  "size-8 flex-none rounded-lg p-0 data-active:bg-primary data-active:text-primary-foreground dark:data-active:bg-primary dark:data-active:text-primary-foreground"
               )}
             >
               <Icon />

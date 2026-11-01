@@ -1,4 +1,4 @@
-import { ChevronDownIcon, LogOutIcon } from "lucide-react"
+import { LogOutIcon } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -52,18 +52,17 @@ function NavUser() {
       <DropdownMenuTrigger
         render={
           <Button
-            variant="outline"
-            size="lg"
+            variant="ghost"
+            size="icon"
             aria-label="Account menu"
-            className="rounded-full pl-1.5 pr-3"
+            className="rounded-full"
           />
         }
       >
-        <Avatar size="sm">
+        <Avatar>
           <AvatarImage src={avatar} alt={name} />
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
-        <ChevronDownIcon data-icon="inline-end" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" sideOffset={4}>
         <DropdownMenuGroup>

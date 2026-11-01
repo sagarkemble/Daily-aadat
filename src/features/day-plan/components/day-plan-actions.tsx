@@ -96,8 +96,6 @@ function DayPlanActions({
             <DropdownMenuTrigger
               render={
                 <Button
-                  size="lg"
-                  className="rounded-full"
                   disabled={isAddingActivity}
                 />
               }
@@ -133,8 +131,6 @@ function DayPlanActions({
               render={
                 <Button
                   variant="outline"
-                  size="lg"
-                  className="rounded-full"
                   disabled={isPending}
                 />
               }
