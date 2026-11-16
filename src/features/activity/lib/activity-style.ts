@@ -1,10 +1,10 @@
 /** Soft icon wells — coral · sage · mustard · sky · lavender */
 const ICON_WELLS = [
-  "bg-chart-1 text-foreground",
-  "bg-chart-2 text-foreground",
-  "bg-chart-3 text-foreground",
-  "bg-chart-4 text-foreground",
-  "bg-chart-5 text-foreground",
+  "bg-chart-1/20 text-foreground",
+  "bg-chart-2/20 text-foreground",
+  "bg-chart-3/20 text-foreground",
+  "bg-chart-4/20 text-foreground",
+  "bg-chart-5/20 text-foreground",
 ] as const
 
 function stableIndex(seed: string, modulo: number) {

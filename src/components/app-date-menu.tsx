@@ -10,12 +10,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
 type AppDateMenuProps = {
   date?: Date
+  size?: "default" | "compact"
 }
 
-function AppDateMenu({ date }: AppDateMenuProps) {
+function AppDateMenu({ date, size = "default" }: AppDateMenuProps) {
+  const compact = size === "compact"
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const { pathname, searchDate } = useRouterState({
@@ -51,15 +54,28 @@ function AppDateMenu({ date }: AppDateMenuProps) {
         render={
           <Button
             variant="ghost"
-            className="h-12 gap-2 rounded-full px-1 pr-3"
+            className={cn(
+              "gap-2 rounded-full px-1 pr-3",
+              compact ? "h-10 -ml-1" : "h-12"
+            )}
           />
         }
       >
-        <span className="flex size-10 items-center justify-center rounded-full border bg-card">
+        <span
+          className={cn(
+            "flex items-center justify-center rounded-full border bg-card",
+            compact ? "size-8" : "size-10"
+          )}
+        >
           <CalendarIcon />
         </span>
-        <span className="font-heading text-xl font-medium tracking-tight">
-          {format(selected, "EEEE, MMMM d, yyyy")}
+        <span
+          className={cn(
+            "font-heading font-medium tracking-tight",
+            compact ? "text-lg" : "text-xl"
+          )}
+        >
+          {format(selected, compact ? "EEE, MMM d" : "EEEE, MMMM d, yyyy")}
         </span>
         <ChevronDownIcon data-icon="inline-end" />
       </PopoverTrigger>

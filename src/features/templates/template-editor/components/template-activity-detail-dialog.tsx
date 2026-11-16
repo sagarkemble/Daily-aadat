@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 
 import { DynamicIcon } from "@/components/dynamic-icon"
+import { activityIconWellClass } from "@/features/activity/lib/activity-style"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -107,7 +108,12 @@ function TemplateActivityDetailDialog({
         <DialogHeader>
           <div className="flex items-center gap-3">
             {icon ? (
-              <DynamicIcon name={icon} size="md" variant="muted" />
+              <DynamicIcon
+                name={icon}
+                size="md"
+                variant="muted"
+                className={activityIconWellClass(activity.activity_id)}
+              />
             ) : null}
             <DialogTitle>{name}</DialogTitle>
           </div>

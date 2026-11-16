@@ -1,5 +1,7 @@
 import { useId } from "react"
 import { DynamicIcon } from "@/components/dynamic-icon"
+import { activityIconWellClass } from "@/features/activity/lib/activity-style"
+import { cn } from "@/lib/utils"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
@@ -54,7 +56,12 @@ const ActivityPickerConfigureRow = ({
   return (
     <Item variant="outline" size="sm">
       <ItemMedia variant="icon">
-        <span className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
+        <span
+          className={cn(
+            "flex size-8 items-center justify-center rounded-md",
+            activityIconWellClass(activity.id)
+          )}
+        >
           <DynamicIcon name={activity.icon} />
         </span>
       </ItemMedia>

@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { DynamicIcon } from "@/components/dynamic-icon"
+import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { TodoMeta } from "@/features/todos/components/todo-meta"
 import type { TodoState } from "@/features/todos/types/todo"
@@ -21,7 +22,12 @@ import {
   CountControls,
   TimedControls,
 } from "./day-activity-controls"
+import { activityIconWellClass } from "@/features/activity/lib/activity-style"
 import { DayActivityDetailDialog } from "./day-activity-detail-dialog"
+import {
+  PLACEMENT_STATUS_BADGE_CLASS,
+  PLACEMENT_STATUS_LABELS,
+} from "../lib/placement-status"
 
 type DayActivityCardProps = {
   id: string
@@ -56,7 +62,11 @@ function DayActivityCard({
   const skipped = activity.state === "skipped"
   const iconName = placementIconName(activity)
   const todoState = (): TodoState => todoStateFromDayActivity(activity.state)
-  const controls = skipped ? null : activity.type === "timed" ? (
+  const controls = skipped ? (
+    <Badge variant="outline" className={PLACEMENT_STATUS_BADGE_CLASS.skipped}>
+      {PLACEMENT_STATUS_LABELS.skipped}
+    </Badge>
+  ) : activity.type === "timed" ? (
     <TimedControls
       activity={activity}
       disabled={disabled}
@@ -83,7 +93,7 @@ function DayActivityCard({
       <Card
         ref={sourceRef}
         size="sm"
-        className="size-full cursor-pointer border border-border ring-0 transition-colors hover:bg-surface-hover-card [--card-spacing:--spacing(5)]"
+        className="size-full cursor-pointer border border-border ring-0 transition-colors [--card-spacing:--spacing(5)] hover:bg-surface-hover-card"
         onClick={() => {
           if (!isDragging) setDetailOpen(true)
         }}
@@ -95,10 +105,20 @@ function DayActivityCard({
                 name={iconName}
                 size="md"
                 variant="muted"
+                className={cn(
+                  activity.kind === "activity" &&
+                    activityIconWellClass(activity.activity_id ?? activity.id),
+                  skipped && "opacity-50 grayscale"
+                )}
               />
             ) : null}
             <div className="flex w-full flex-col items-center gap-0.5">
-              <CardTitle className="w-full min-w-0 truncate">
+              <CardTitle
+                className={cn(
+                  "w-full min-w-0 truncate",
+                  skipped && "text-muted-foreground line-through"
+                )}
+              >
                 {activity.name_snapshot}
               </CardTitle>
               {activity.kind === "todo" && activity.priority ? (
@@ -111,7 +131,9 @@ function DayActivityCard({
                 />
               ) : null}
               {note ? (
-                <CardDescription className="w-full truncate">{note}</CardDescription>
+                <CardDescription className="w-full truncate">
+                  {note}
+                </CardDescription>
               ) : null}
             </div>
           </div>
@@ -126,6 +148,8 @@ function DayActivityCard({
       <DayActivityDetailDialog
         activity={activity}
         open={detailOpen}
+        disabled={disabled}
+        onCommand={onCommand}
         onOpenChange={setDetailOpen}
       />
     </div>

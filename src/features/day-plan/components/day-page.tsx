@@ -6,6 +6,17 @@ import { isSortable } from "@dnd-kit/react/sortable"
 
 import { ActivityPickerDialog } from "@/features/activity/components/activity-picker/activity-picker-dialog"
 import type { ActivityWithConfiguration } from "@/features/activity/types/activity"
+import { CloudOffIcon, RotateCcwIcon } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
 import { toast } from "@/components/ui/toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { SLOTS, TIMED_SLOTS, type Slot } from "@/features/templates/types/slots"
@@ -29,6 +40,7 @@ import type {
 import { PageShell } from "@/components/page-shell"
 import { AddTodoDialog } from "./add-todo-dialog/add-todo-dialog"
 import { DayPlanActions } from "./day-plan-actions"
+import { DayPlanContext } from "../lib/day-plan-context"
 import { DayEmptyState } from "./day-empty-state"
 import DaySlot from "./day-slot"
 import { DayWide } from "./day-wide"
@@ -67,13 +79,23 @@ function countActivitiesOnBoard(board: DayBoard | undefined) {
 function countPlannedOnBoard(board: DayBoard | undefined) {
   if (!board) return 0
   return Object.values(board).reduce(
-    (total, slot) => total + slot.activities.length,
+    (total, slot) =>
+      total + slot.activities.filter((item) => item.state !== "skipped").length,
+    0
+  )
+}
+
+function countDoneOnBoard(board: DayBoard | undefined) {
+  if (!board) return 0
+  return Object.values(board).reduce(
+    (total, slot) =>
+      total + slot.activities.filter((item) => item.state === "done").length,
     0
   )
 }
 
 const DayPage = ({ date }: DayPageProps) => {
-  const { data, isLoading, error } = useFetchDayPlan(date)
+  const { data, isLoading, error, refetch } = useFetchDayPlan(date)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [pickerSlot, setPickerSlot] = useState<Slot | undefined>()
   const [todoOpen, setTodoOpen] = useState(false)
@@ -94,6 +116,7 @@ const DayPage = ({ date }: DayPageProps) => {
   const todoCountOnDay = countTodosOnBoard(board)
   const activityCountOnDay = countActivitiesOnBoard(board)
   const plannedCount = countPlannedOnBoard(board)
+  const doneCount = countDoneOnBoard(board)
   const dayPlanId = data?.id ?? ""
 
   useEffect(() => {
@@ -105,7 +128,27 @@ const DayPage = ({ date }: DayPageProps) => {
     }
   }, [data])
 
-  if (error) return <div>Error: {error.message}</div>
+  if (error) {
+    return (
+      <PageShell>
+        <Empty className="border">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <CloudOffIcon />
+            </EmptyMedia>
+            <EmptyTitle>Couldn't load this day</EmptyTitle>
+            <EmptyDescription>{error.message}</EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button variant="outline" onClick={() => void refetch()}>
+              <RotateCcwIcon data-icon="inline-start" />
+              Try again
+            </Button>
+          </EmptyContent>
+        </Empty>
+      </PageShell>
+    )
+  }
 
   function markActivityPending(activityId: string) {
     setPendingActivityIds((current) => new Set(current).add(activityId))
@@ -184,12 +227,14 @@ const DayPage = ({ date }: DayPageProps) => {
   const showSlotBoard = hasPlacements
 
   return (
-    <PageShell>
-      <DayPlanActions
+    <DayPlanContext.Provider value={{ date, board }}>
+      <PageShell>
+        <DayPlanActions
           date={date}
           hasDayPlanRow={hasDayPlanRow}
           templateId={data?.template_id ?? null}
           plannedCount={plannedCount}
+          doneCount={doneCount}
           todoCountOnDay={todoCountOnDay}
           activityCountOnDay={activityCountOnDay}
           onAddActivity={() => {
@@ -198,6 +243,7 @@ const DayPage = ({ date }: DayPageProps) => {
           }}
           isAddingActivity={isAdding}
           onAddTodo={() => setTodoOpen(true)}
+          isLoading={isLoading}
         />
         {isLoading && !hasPlacements ? (
           <div className="flex min-h-72 flex-col items-center justify-center gap-3 rounded-xl border border-dashed px-6 py-12">
@@ -209,114 +255,115 @@ const DayPage = ({ date }: DayPageProps) => {
           <DayEmptyState />
         ) : null}
         {showSlotBoard ? (
-        <div className="flex flex-col gap-8">
-        <DragDropProvider
-          onDragStart={() => {
-            isDragging.current = true
-            snapshot.current = boardRef.current
-          }}
-          onDragOver={(event) => {
-            setBoard((current) => {
-              if (!current) return current
-              const lists = Object.fromEntries(
-                SLOTS.map((slot) => [slot, current[slot].activities])
-              )
-              const nextLists = move(lists, event)
-              return Object.fromEntries(
-                SLOTS.map((slot) => [
-                  slot,
-                  {
-                    ...current[slot],
-                    activities: nextLists[slot] ?? current[slot].activities,
-                  },
-                ])
-              ) as DayBoard
-            })
-          }}
-          onDragEnd={(event) => {
-            isDragging.current = false
-            if (event.canceled) {
-              setBoard(snapshot.current)
-              return
-            }
-
-            const { source } = event.operation
-            if (!isSortable(source)) return
-
-            const next = boardRef.current
-            if (!next || !dayPlanId) return
-
-            const payload = SLOTS.flatMap((slot) =>
-              (next[slot]?.activities ?? []).map((item, index) => ({
-                ...item,
-                slot,
-                sort_order: index,
-              }))
-            )
-
-            toast.promise(reorderActivities(payload), {
-              loading: { title: "Reordering activities…" },
-              success: { title: "Activities reordered" },
-              error: { title: "Failed to reorder activities" },
-            })
-          }}
-        >
-          <DayWide
-            items={board?.day_wide?.activities ?? []}
-            isLoading={isLoading}
-            isActivityPending={isActivityPending}
-            onAddActivity={() => {
-              setPickerSlot("day_wide")
-              setPickerOpen(true)
-            }}
-            onCommand={onCommand}
-          />
-          {TIMED_SLOTS.map((slot, index) => (
-            <DaySlot
-              key={slot}
-              slot={slot}
-              activities={board?.[slot]?.activities ?? []}
-              startTime={board?.[slot]?.start_time ?? null}
-              endTime={board?.[slot]?.end_time ?? null}
-              dayPlanId={dayPlanId}
-              isLoading={isLoading}
-              showConnector={index < TIMED_SLOTS.length - 1}
-              isActivityPending={isActivityPending}
-              onAddActivity={() => {
-                setPickerSlot(slot)
-                setPickerOpen(true)
+          <div className="flex flex-col gap-8">
+            <DragDropProvider
+              onDragStart={() => {
+                isDragging.current = true
+                snapshot.current = boardRef.current
               }}
-              onCommand={onCommand}
-            />
-          ))}
-        </DragDropProvider>
-        </div>
+              onDragOver={(event) => {
+                setBoard((current) => {
+                  if (!current) return current
+                  const lists = Object.fromEntries(
+                    SLOTS.map((slot) => [slot, current[slot].activities])
+                  )
+                  const nextLists = move(lists, event)
+                  return Object.fromEntries(
+                    SLOTS.map((slot) => [
+                      slot,
+                      {
+                        ...current[slot],
+                        activities: nextLists[slot] ?? current[slot].activities,
+                      },
+                    ])
+                  ) as DayBoard
+                })
+              }}
+              onDragEnd={(event) => {
+                isDragging.current = false
+                if (event.canceled) {
+                  setBoard(snapshot.current)
+                  return
+                }
+
+                const { source } = event.operation
+                if (!isSortable(source)) return
+
+                const next = boardRef.current
+                if (!next || !dayPlanId) return
+
+                const payload = SLOTS.flatMap((slot) =>
+                  (next[slot]?.activities ?? []).map((item, index) => ({
+                    ...item,
+                    slot,
+                    sort_order: index,
+                  }))
+                )
+
+                toast.promise(reorderActivities(payload), {
+                  loading: { title: "Reordering activities…" },
+                  success: { title: "Activities reordered" },
+                  error: { title: "Failed to reorder activities" },
+                })
+              }}
+            >
+              <DayWide
+                items={board?.day_wide?.activities ?? []}
+                isLoading={isLoading}
+                isActivityPending={isActivityPending}
+                onAddActivity={() => {
+                  setPickerSlot("day_wide")
+                  setPickerOpen(true)
+                }}
+                onCommand={onCommand}
+              />
+              {TIMED_SLOTS.map((slot, index) => (
+                <DaySlot
+                  key={slot}
+                  slot={slot}
+                  activities={board?.[slot]?.activities ?? []}
+                  startTime={board?.[slot]?.start_time ?? null}
+                  endTime={board?.[slot]?.end_time ?? null}
+                  dayPlanId={dayPlanId}
+                  isLoading={isLoading}
+                  showConnector={index < TIMED_SLOTS.length - 1}
+                  isActivityPending={isActivityPending}
+                  onAddActivity={() => {
+                    setPickerSlot(slot)
+                    setPickerOpen(true)
+                  }}
+                  onCommand={onCommand}
+                />
+              ))}
+            </DragDropProvider>
+          </div>
         ) : null}
-      <AddTodoDialog
-        date={date}
-        dayPlanId={dayPlanId || undefined}
-        nextSlotOrder={(slot) =>
-          nextSortOrder(
-            (board?.[slot]?.activities ?? []).map(
-              (activity) => activity.slot_order
+        <AddTodoDialog
+          date={date}
+          dayPlanId={dayPlanId || undefined}
+          nextSlotOrder={(slot) =>
+            nextSortOrder(
+              (board?.[slot]?.activities ?? []).map(
+                (activity) => activity.slot_order
+              )
             )
-          )
-        }
-        open={todoOpen}
-        onOpenChange={setTodoOpen}
-      />
-      <ActivityPickerDialog
-        requireSlot
-        initialSlot={pickerSlot}
-        open={pickerOpen}
-        onOpenChange={(open) => {
-          setPickerOpen(open)
-          if (!open) setPickerSlot(undefined)
-        }}
-        onAdd={handleAddActivities}
-        isPending={isAdding}
-      />
-    </PageShell>
+          }
+          open={todoOpen}
+          onOpenChange={setTodoOpen}
+        />
+        <ActivityPickerDialog
+          requireSlot
+          initialSlot={pickerSlot}
+          open={pickerOpen}
+          onOpenChange={(open) => {
+            setPickerOpen(open)
+            if (!open) setPickerSlot(undefined)
+          }}
+          onAdd={handleAddActivities}
+          isPending={isAdding}
+        />
+      </PageShell>
+    </DayPlanContext.Provider>
   )
 }
 

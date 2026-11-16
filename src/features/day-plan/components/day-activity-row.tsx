@@ -12,6 +12,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import { DynamicIcon } from "@/components/dynamic-icon"
+import { Badge } from "@/components/ui/badge"
 import { DONE_CHECKBOX_CLASS } from "@/lib/done-checkbox-class"
 import { cn } from "@/lib/utils"
 import { TodoMeta } from "@/features/todos/components/todo-meta"
@@ -21,7 +22,12 @@ import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
 import { placementIconName } from "../lib/placement-icon"
 import { CountControls, TimedControls } from "./day-activity-controls"
+import { activityIconWellClass } from "@/features/activity/lib/activity-style"
 import { DayActivityDetailDialog } from "./day-activity-detail-dialog"
+import {
+  PLACEMENT_STATUS_BADGE_CLASS,
+  PLACEMENT_STATUS_LABELS,
+} from "../lib/placement-status"
 
 type DayActivityRowProps = {
   id: string
@@ -95,11 +101,21 @@ export function DayActivityRow({
                 name={iconName}
                 size="md"
                 variant="muted"
+                className={cn(
+                  activity.kind === "activity" &&
+                    activityIconWellClass(activity.activity_id ?? activity.id),
+                  skipped && "opacity-50 grayscale"
+                )}
               />
             ) : null}
           </ItemMedia>
           <ItemContent className="min-w-0">
-            <ItemTitle className="w-full min-w-0">
+            <ItemTitle
+              className={cn(
+                "w-full min-w-0",
+                skipped && "text-muted-foreground line-through"
+              )}
+            >
               {activity.name_snapshot}
             </ItemTitle>
             {activity.kind === "todo" && activity.priority ? (
@@ -117,7 +133,14 @@ export function DayActivityRow({
             className="shrink-0"
             onClick={(event) => event.stopPropagation()}
           >
-            {skipped ? null : (
+            {skipped ? (
+              <Badge
+                variant="outline"
+                className={PLACEMENT_STATUS_BADGE_CLASS.skipped}
+              >
+                {PLACEMENT_STATUS_LABELS.skipped}
+              </Badge>
+            ) : (
               <>
                 {activity.type === "timed" ? (
                   <TimedControls
@@ -161,6 +184,8 @@ export function DayActivityRow({
       <DayActivityDetailDialog
         activity={activity}
         open={detailOpen}
+        disabled={disabled}
+        onCommand={onCommand}
         onOpenChange={setDetailOpen}
       />
     </div>

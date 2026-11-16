@@ -7,7 +7,11 @@ import { Empty } from "@/components/ui/empty"
 import { ItemGroup } from "@/components/ui/item"
 import { cn } from "@/lib/utils"
 import { SLOT_COPY } from "@/features/day-plan/lib/slot-copy"
-import { isTimedSlot, SLOT_LABELS, type Slot } from "@/features/templates/types/slots"
+import {
+  isTimedSlot,
+  SLOT_LABELS,
+  type Slot,
+} from "@/features/templates/types/slots"
 import { TemplateSlotMarker } from "@/features/templates/template-editor/components/template-slot-marker"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
@@ -48,23 +52,25 @@ const DaySlot = ({
   const title = SLOT_LABELS[slot]
 
   return (
-    <section className="flex items-start gap-4">
-      <TemplateSlotMarker slot={slot} showConnector={showConnector} />
-      <div className="flex min-h-20 w-36 shrink-0 flex-col justify-center gap-0.5">
-        <h2 className="text-sm font-semibold leading-tight">{title}</h2>
-        <p className="text-sm leading-snug text-muted-foreground">
-          {SLOT_COPY[slot].description}
-        </p>
-        {isTimedSlot(slot) && dayPlanId !== "" ? (
-          <DaySlotTimeFields
-            dayPlanId={dayPlanId}
-            slot={slot}
-            title={title}
-            startTime={startTime}
-            endTime={endTime}
-            disabled={isLoading}
-          />
-        ) : null}
+    <section className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
+      <div className="flex items-center gap-3 sm:contents">
+        <TemplateSlotMarker slot={slot} showConnector={showConnector} />
+        <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 sm:min-h-20 sm:w-36 sm:flex-none sm:shrink-0">
+          <h2 className="text-sm leading-tight font-semibold">{title}</h2>
+          <p className="text-sm leading-snug text-muted-foreground">
+            {SLOT_COPY[slot].description}
+          </p>
+          {isTimedSlot(slot) && dayPlanId !== "" ? (
+            <DaySlotTimeFields
+              dayPlanId={dayPlanId}
+              slot={slot}
+              title={title}
+              startTime={startTime}
+              endTime={endTime}
+              disabled={isLoading}
+            />
+          ) : null}
+        </div>
       </div>
       <div
         ref={ref}

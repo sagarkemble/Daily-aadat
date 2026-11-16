@@ -12,23 +12,31 @@ import { Skeleton } from "@/components/ui/skeleton"
 import type { Todo } from "@/features/todos/types/todo"
 import { AddTodoPickerRow } from "./add-todo-picker-row"
 
-type AddTodoPickerListProps = {
+export type AddTodoPickerSection = {
+  id: string
+  label: string
   todos: Todo[]
-  isLoading: boolean
-  emptyTitle: string
-  emptyDescription: string
   assignmentLabel?: (todo: Todo) => string | undefined
   onSelect: (todo: Todo) => void
 }
 
+type AddTodoPickerListProps = {
+  sections: AddTodoPickerSection[]
+  isLoading: boolean
+  disabled?: boolean
+  emptyTitle: string
+  emptyDescription: string
+}
+
 export function AddTodoPickerList({
-  todos,
+  sections,
   isLoading,
+  disabled,
   emptyTitle,
   emptyDescription,
-  assignmentLabel,
-  onSelect,
 }: AddTodoPickerListProps) {
+  const visibleSections = sections.filter((section) => section.todos.length > 0)
+
   return (
     <ScrollArea className="h-72">
       {isLoading ? (
@@ -38,7 +46,7 @@ export function AddTodoPickerList({
           <Skeleton className="h-12 w-full" />
           <Skeleton className="h-12 w-full" />
         </div>
-      ) : todos.length === 0 ? (
+      ) : visibleSections.length === 0 ? (
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -49,16 +57,31 @@ export function AddTodoPickerList({
           </EmptyHeader>
         </Empty>
       ) : (
-        <ItemGroup>
-          {todos.map((todo) => (
-            <AddTodoPickerRow
-              key={todo.id}
-              todo={todo}
-              assignmentLabel={assignmentLabel?.(todo)}
-              onSelect={onSelect}
-            />
+        <div className="flex flex-col gap-4">
+          {visibleSections.map((section) => (
+            <section
+              key={section.id}
+              aria-label={section.label}
+              className="flex flex-col gap-2"
+            >
+              <h3 className="text-xs font-medium text-muted-foreground">
+                {section.label} · {section.todos.length}
+              </h3>
+              <ItemGroup>
+                {section.todos.map((todo) => (
+                  <div key={todo.id} role="listitem">
+                    <AddTodoPickerRow
+                      todo={todo}
+                      disabled={disabled}
+                      assignmentLabel={section.assignmentLabel?.(todo)}
+                      onSelect={section.onSelect}
+                    />
+                  </div>
+                ))}
+              </ItemGroup>
+            </section>
           ))}
-        </ItemGroup>
+        </div>
       )}
     </ScrollArea>
   )

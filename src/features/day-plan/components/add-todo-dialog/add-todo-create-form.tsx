@@ -28,13 +28,16 @@ const emptyValues: CreateTodoFormInput = {
 
 type AddTodoCreateFormProps = {
   isPending?: boolean
+  disabled?: boolean
   onCreate: (input: CreateTodoInput) => Promise<void>
 }
 
 export function AddTodoCreateForm({
   isPending,
+  disabled,
   onCreate,
 }: AddTodoCreateFormProps) {
+  const isLocked = isPending || disabled
   const nameId = useId()
   const noteId = useId()
   const priorityId = useId()
@@ -61,34 +64,21 @@ export function AddTodoCreateForm({
   }
 
   return (
-    <form
-      className="flex flex-col gap-3"
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <form className="flex flex-col gap-3" onSubmit={handleSubmit(onSubmit)}>
       <FieldGroup>
         <Field
           data-invalid={!!errors.name || undefined}
           data-disabled={isPending || undefined}
         >
-          <FieldLabel htmlFor={nameId}>New todo</FieldLabel>
-          <div className="flex items-end gap-2">
-            <Input
-              id={nameId}
-              placeholder="Name"
-              aria-invalid={!!errors.name}
-              disabled={isPending}
-              className="min-w-0 flex-1"
-              {...register("name")}
-            />
-            <Button type="submit" size="sm" disabled={isPending}>
-              {isPending ? (
-                <Spinner data-icon="inline-start" />
-              ) : (
-                <PlusIcon data-icon="inline-start" />
-              )}
-              Create
-            </Button>
-          </div>
+          <FieldLabel htmlFor={nameId}>Name</FieldLabel>
+          <Input
+            id={nameId}
+            placeholder="What needs doing?"
+            aria-invalid={!!errors.name}
+            disabled={isPending}
+            autoComplete="off"
+            {...register("name")}
+          />
           <FieldError errors={[errors.name]} />
         </Field>
         <Controller
@@ -100,7 +90,6 @@ export function AddTodoCreateForm({
               value={field.value ?? "medium"}
               onChange={field.onChange}
               disabled={isPending}
-              showLegend={false}
             />
           )}
         />
@@ -126,6 +115,14 @@ export function AddTodoCreateForm({
           />
         </Field>
       </FieldGroup>
+      <Button type="submit" className="w-full" disabled={isLocked}>
+        {isPending ? (
+          <Spinner data-icon="inline-start" />
+        ) : (
+          <PlusIcon data-icon="inline-start" />
+        )}
+        Create and add
+      </Button>
     </form>
   )
 }

@@ -12,6 +12,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import { DynamicIcon } from "@/components/dynamic-icon"
+import { activityIconWellClass } from "@/features/activity/lib/activity-style"
 import { cn } from "@/lib/utils"
 import { activityTypeLabels } from "@/features/activity/types/activity"
 import type { TemplateActivity } from "../../types/template"
@@ -65,7 +66,12 @@ const TemplateActivityRow = ({
         >
           <ItemMedia variant="icon">
             {icon ? (
-              <DynamicIcon name={icon} size="md" variant="muted" />
+              <DynamicIcon
+                name={icon}
+                size="md"
+                variant="muted"
+                className={activityIconWellClass(activity.activity_id)}
+              />
             ) : null}
           </ItemMedia>
           <ItemContent>

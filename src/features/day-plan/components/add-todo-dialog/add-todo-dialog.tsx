@@ -13,11 +13,17 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Field, FieldLegend, FieldSet } from "@/components/ui/field"
+import {
+  Field,
+  FieldDescription,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field"
 import { toast } from "@/components/ui/toast"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { SLOT_LABELS, SLOTS, type Slot } from "@/features/templates/types/slots"
@@ -30,6 +36,7 @@ import { useDebounce } from "@/hooks/use-debounce"
 import { useAssignTodo } from "@/features/day-plan/hooks/use-assign-todo"
 import { useReassignTodo } from "@/features/day-plan/hooks/use-reassign-todo"
 import { AddTodoCreateForm } from "./add-todo-create-form"
+import { AddTodoPickerList } from "./add-todo-picker-list"
 import { AddTodoTabs } from "./add-todo-tabs"
 import { AddTodoToolbar } from "./add-todo-toolbar"
 
@@ -198,11 +205,14 @@ export function AddTodoDialog({
                 ? `Add todo · ${SLOT_LABELS[targetSlot]}`
                 : "Add todo"}
             </DialogTitle>
+            <DialogDescription>
+              Pick one from your pile or create a new one.
+            </DialogDescription>
           </DialogHeader>
           {slot == null ? (
             <FieldSet>
               <FieldLegend variant="label">Slot</FieldLegend>
-              <Field>
+              <Field data-invalid={!targetSlot || undefined}>
                 <ToggleGroup
                   value={pickedSlot ? [pickedSlot] : []}
                   onValueChange={(value) => {
@@ -212,6 +222,7 @@ export function AddTodoDialog({
                     )
                   }}
                   className="flex-wrap"
+                  variant="outline"
                   size="sm"
                 >
                   {SLOTS.map((name) => (
@@ -220,29 +231,60 @@ export function AddTodoDialog({
                     </ToggleGroupItem>
                   ))}
                 </ToggleGroup>
+                {targetSlot ? null : (
+                  <FieldDescription>
+                    Pick a slot before adding a todo.
+                  </FieldDescription>
+                )}
               </Field>
             </FieldSet>
           ) : null}
-          <AddTodoCreateForm
-            isPending={isMutating || !targetSlot}
-            onCreate={handleCreate}
-          />
-          <AddTodoToolbar
-            searchId={searchId}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-          />
           <AddTodoTabs
-            unassigned={unassignedTodos}
-            assigned={assignedTodos}
-            isLoading={isLoading}
-            assignmentLabel={(todo) =>
-              todo.assignment
-                ? formatTodoAssignment(todo.assignment)
-                : undefined
+            pileCount={unassignedTodos.length + assignedTodos.length}
+            pile={
+              <>
+                <AddTodoToolbar
+                  searchId={searchId}
+                  searchQuery={searchQuery}
+                  onSearchChange={setSearchQuery}
+                />
+                <AddTodoPickerList
+                  isLoading={isLoading}
+                  disabled={isMutating || !targetSlot}
+                  emptyTitle={query ? "No matches" : "Your pile is empty"}
+                  emptyDescription={
+                    query
+                      ? "Try a different search, or create a new todo."
+                      : "Create a todo, or check the ones already on this slot."
+                  }
+                  sections={[
+                    {
+                      id: "unassigned",
+                      label: "Not on a day",
+                      todos: unassignedTodos,
+                      onSelect: handleSelectUnassigned,
+                    },
+                    {
+                      id: "assigned",
+                      label: "On another day",
+                      todos: assignedTodos,
+                      assignmentLabel: (todo) =>
+                        todo.assignment
+                          ? formatTodoAssignment(todo.assignment)
+                          : undefined,
+                      onSelect: handleSelectAssigned,
+                    },
+                  ]}
+                />
+              </>
             }
-            onSelectUnassigned={handleSelectUnassigned}
-            onSelectAssigned={handleSelectAssigned}
+            create={
+              <AddTodoCreateForm
+                isPending={isMutating}
+                disabled={!targetSlot}
+                onCreate={handleCreate}
+              />
+            }
           />
         </DialogContent>
       </Dialog>

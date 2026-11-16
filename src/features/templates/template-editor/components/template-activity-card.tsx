@@ -3,6 +3,7 @@ import { Feedback } from "@dnd-kit/dom"
 import { useSortable } from "@dnd-kit/react/sortable"
 
 import { DynamicIcon } from "@/components/dynamic-icon"
+import { activityIconWellClass } from "@/features/activity/lib/activity-style"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -48,7 +49,7 @@ function TemplateActivityCard({
       <Card
         ref={sourceRef}
         size="sm"
-        className="size-full cursor-pointer border border-border ring-0 transition-colors hover:bg-surface-hover-card [--card-spacing:--spacing(5)]"
+        className="size-full cursor-pointer border border-border ring-0 transition-colors [--card-spacing:--spacing(5)] hover:bg-surface-hover-card"
         onClick={() => {
           if (!isDragging) setDetailOpen(true)
         }}
@@ -56,14 +57,21 @@ function TemplateActivityCard({
         <CardHeader className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
           <div className="flex w-full flex-col items-center gap-2">
             {icon ? (
-              <DynamicIcon name={icon} size="md" variant="muted" />
+              <DynamicIcon
+                name={icon}
+                size="md"
+                variant="muted"
+                className={activityIconWellClass(activity.activity_id)}
+              />
             ) : null}
             <div className="flex w-full flex-col items-center gap-0.5">
               <CardTitle className="w-full min-w-0 truncate">
                 {activity.activity?.name}
               </CardTitle>
               {note ? (
-                <CardDescription className="w-full truncate">{note}</CardDescription>
+                <CardDescription className="w-full truncate">
+                  {note}
+                </CardDescription>
               ) : null}
             </div>
           </div>

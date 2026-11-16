@@ -1,7 +1,17 @@
 import { DynamicIcon } from "@/components/dynamic-icon"
-import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item"
-import { Badge } from "@/components/ui/badge"
-import type { Activity } from "@/features/activity/types/activity"
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item"
+import { activityIconWellClass } from "@/features/activity/lib/activity-style"
+import {
+  activityTypeLabels,
+  type Activity,
+} from "@/features/activity/types/activity"
+import { cn } from "@/lib/utils"
 
 type ActivityPickerRowProps = {
   activity: Activity
@@ -17,20 +27,45 @@ const ActivityPickerRow = ({
   order,
 }: ActivityPickerRowProps) => {
   return (
-    <Item variant="outline" size="sm" onClick={() => onSelect(activity)}>
+    <Item
+      variant="outline"
+      size="sm"
+      render={<button type="button" aria-pressed={selected} />}
+      onClick={() => onSelect(activity)}
+      className={cn(
+        "w-full text-left",
+        selected && "border-primary/50 bg-accent hover:bg-accent"
+      )}
+    >
       <ItemMedia variant="icon">
-        <span className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
+        <span
+          className={cn(
+            "flex size-8 items-center justify-center rounded-md",
+            activityIconWellClass(activity.id)
+          )}
+        >
           <DynamicIcon name={activity.icon} />
         </span>
       </ItemMedia>
       <ItemContent>
-        <ItemTitle>{activity.name}</ItemTitle>
+        <ItemTitle className={cn(selected && "text-accent-foreground")}>
+          {activity.name}
+        </ItemTitle>
+        <ItemDescription>
+          {activityTypeLabels[activity.suggested_type]}
+        </ItemDescription>
       </ItemContent>
-      {selected && (
-        <Badge variant="outline" className="size-6">
-          {order}
-        </Badge>
-      )}
+      <span
+        aria-hidden
+        className={cn(
+          "flex size-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold tabular-nums",
+          selected
+            ? "border-primary bg-primary text-primary-foreground"
+            : "border-input"
+        )}
+      >
+        {selected ? order : null}
+      </span>
     </Item>
   )
 }

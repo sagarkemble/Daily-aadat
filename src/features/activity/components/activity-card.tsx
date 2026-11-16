@@ -4,6 +4,7 @@ import { DynamicIcon } from "@/components/dynamic-icon"
 import { activityTypeLabels, type Activity } from "../types/activity"
 import { ActivityDetailDialog } from "./activity-detail-dialog"
 import { cn } from "@/lib/utils"
+import { activityIconWellClass } from "../lib/activity-style"
 
 function activityCardSubtitle(activity: Activity): string {
   const typeLabel = activityTypeLabels[activity.suggested_type]
@@ -12,8 +13,8 @@ function activityCardSubtitle(activity: Activity): string {
     activity.suggested_target != null
   ) {
     const unit = activity.suggested_unit?.trim()
-    if (unit) return `${typeLabel}, ${activity.suggested_target} ${unit}`
-    return `${typeLabel}, ${activity.suggested_target}`
+    if (unit) return `${typeLabel} · ${activity.suggested_target} ${unit}`
+    return `${typeLabel} · ${activity.suggested_target}`
   }
   return typeLabel
 }
@@ -21,7 +22,12 @@ function activityCardSubtitle(activity: Activity): string {
 function ActivityCardBody({ activity }: { activity: Activity }) {
   return (
     <>
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground">
+      <span
+        className={cn(
+          "flex size-9 shrink-0 items-center justify-center rounded-lg",
+          activityIconWellClass(activity.id)
+        )}
+      >
         <DynamicIcon
           name={activity.icon}
           className="size-4"

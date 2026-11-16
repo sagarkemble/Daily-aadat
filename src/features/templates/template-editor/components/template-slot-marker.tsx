@@ -26,17 +26,17 @@ function TemplateSlotMarker({
   showConnector = true,
 }: TemplateSlotMarkerProps) {
   return (
-    <div className="pointer-events-none relative flex w-20 shrink-0 flex-col items-center self-stretch">
+    <div className="pointer-events-none relative flex w-11 shrink-0 flex-col items-center self-stretch sm:w-20">
       <img
         src={SLOT_ART[slot]}
         alt=""
         aria-hidden
         draggable={false}
-        className="relative z-10 size-20 shrink-0 rounded-full object-cover object-bottom"
+        className="relative z-10 size-11 shrink-0 rounded-full object-cover object-bottom sm:size-20"
       />
       {showConnector ? (
         <div
-          className="absolute top-[calc(5rem-2px)] -bottom-8 left-1/2 z-0 w-0 -translate-x-1/2 border-l-2 border-dashed border-border"
+          className="absolute top-[calc(5rem-2px)] -bottom-8 left-1/2 z-0 hidden w-0 -translate-x-1/2 border-l-2 border-dashed border-border sm:block"
           aria-hidden
         />
       ) : null}

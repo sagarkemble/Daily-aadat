@@ -43,9 +43,9 @@ function AppNavTabs({ variant }: AppNavTabsProps) {
         <TabsList
           className={cn(
             variant === "phone" &&
-              "h-auto w-fit gap-1 rounded-lg bg-card p-1 shadow-lg ring-1 ring-foreground/10 group-data-horizontal/tabs:h-auto",
+              "h-auto w-fit gap-1 rounded-lg bg-card p-1 shadow-lg ring-1 ring-foreground/10 group-data-[orientation=horizontal]/tabs:h-auto",
             variant === "desktop" &&
-              "h-auto w-fit gap-1 group-data-horizontal/tabs:h-auto"
+              "h-auto w-fit gap-1 group-data-[orientation=horizontal]/tabs:h-auto"
           )}
         >
           {items.map((item) => {

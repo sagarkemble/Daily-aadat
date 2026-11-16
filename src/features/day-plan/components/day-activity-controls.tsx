@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import {
   AlarmClockIcon,
   MinusIcon,
@@ -13,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
+import { formatElapsed, useTimedElapsedMs } from "../hooks/use-timed-elapsed"
 
 type ControlProps = {
   activity: DayPlanActivity
@@ -22,23 +22,7 @@ type ControlProps = {
 
 function TimedControls({ activity, disabled, onCommand }: ControlProps) {
   const running = activity.state === "running"
-  const [, setTick] = useState(0)
-  useEffect(() => {
-    if (!running) return
-    const id = setInterval(() => setTick((n) => n + 1), 1000)
-    return () => clearInterval(id)
-  }, [running])
-  const banked = activity.duration ?? 0
-  const session =
-    running && activity.started_at
-      ? Date.now() - new Date(activity.started_at).getTime()
-      : 0
-  const displayedMs = banked + Math.max(0, session)
-
-  const totalSec = Math.max(0, Math.floor(displayedMs / 1000))
-  const m = Math.floor(totalSec / 60)
-  const s = totalSec % 60
-  const label = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
+  const label = formatElapsed(useTimedElapsedMs(activity))
 
   return (
     <div className="flex items-center gap-2">
@@ -126,14 +110,12 @@ function CountControls({
   )
 }
 
-function CheckControl({
-  activity,
-  disabled,
-  onCommand,
-}: ControlProps) {
+function CheckControl({ activity, disabled, onCommand }: ControlProps) {
   const done = activity.state === "done"
   const command: DayItemCommand =
-    activity.kind === "todo" ? { type: "update_todo" } : { type: "toggle_check" }
+    activity.kind === "todo"
+      ? { type: "update_todo" }
+      : { type: "toggle_check" }
 
   return (
     <Button
