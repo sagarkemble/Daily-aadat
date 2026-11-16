@@ -61,9 +61,9 @@ function AppNavTabs({ variant }: AppNavTabsProps) {
                 className={cn(
                   "data-active:bg-transparent dark:data-active:bg-transparent",
                   variant === "desktop" &&
-                    "h-8 flex-none gap-1.5 rounded-lg px-2.5 py-0 text-sm font-medium leading-none data-active:text-primary-foreground dark:data-active:text-primary-foreground",
+                    "h-8 flex-none gap-1.5 rounded-lg px-2.5 py-0 text-sm font-medium leading-none data-active:text-foreground",
                   variant === "phone" &&
-                    "size-8 flex-none rounded-lg p-0 data-active:text-primary-foreground dark:data-active:text-primary-foreground"
+                    "size-8 flex-none rounded-lg p-0 data-active:text-foreground"
                 )}
               >
                 {isActive ? (
@@ -71,7 +71,7 @@ function AppNavTabs({ variant }: AppNavTabsProps) {
                     layoutId={pillLayoutId}
                     initial={false}
                     aria-hidden
-                    className="absolute inset-0 rounded-lg bg-primary"
+                    className="absolute inset-0 rounded-lg bg-background shadow-sm ring-1 ring-border dark:bg-input/30"
                     transition={
                       shouldReduceMotion ? { duration: 0 } : pillTransition
                     }

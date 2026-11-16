@@ -1,8 +1,8 @@
 import { cn } from "cn"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { GalleryVerticalEndIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
+import { AadatLogoLink } from "@/components/aadat-wordmark"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -52,15 +52,7 @@ export function ForgotPasswordForm({
       <form onSubmit={handleSubmit(onSubmit)}>
         <FieldGroup>
           <div className="flex flex-col items-center gap-2 text-center">
-            <a
-              href="#"
-              className="flex flex-col items-center gap-2 font-medium"
-            >
-              <div className="flex size-8 items-center justify-center rounded-md">
-                <GalleryVerticalEndIcon className="size-6" />
-              </div>
-              <span className="sr-only">Daily Aadat</span>
-            </a>
+            <AadatLogoLink />
             <h1 className="text-xl font-bold">Forgot password</h1>
             <FieldDescription>
               Remember your password? <Link to="/sign-in">Sign in</Link>

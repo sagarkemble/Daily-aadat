@@ -48,7 +48,7 @@ const ActivityPickerRow = ({
         </span>
       </ItemMedia>
       <ItemContent>
-        <ItemTitle className={cn(selected && "text-accent-foreground")}>
+        <ItemTitle className={cn(selected && "text-foreground")}>
           {activity.name}
         </ItemTitle>
         <ItemDescription>
@@ -60,8 +60,8 @@ const ActivityPickerRow = ({
         className={cn(
           "flex size-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold tabular-nums",
           selected
-            ? "border-primary bg-primary text-primary-foreground"
-            : "border-input"
+            ? "border-foreground bg-foreground text-background"
+            : "border-input text-muted-foreground"
         )}
       >
         {selected ? order : null}

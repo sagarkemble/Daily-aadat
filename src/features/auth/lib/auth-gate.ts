@@ -11,6 +11,18 @@ export function requireAuth() {
   if (isPasswordRecovery) throw redirect({ to: "/reset-password" })
 }
 
+// For the authenticated layout — guests on "/" see the landing page instead
+export function requireAuthOrLanding({
+  location,
+}: {
+  location: { pathname: string }
+}) {
+  const { user, isPasswordRecovery } = getAuth()
+
+  if (!user && !isPasswordRecovery && location.pathname === "/") return
+  requireAuth()
+}
+
 // For /sign-in, /sign-up
 export function requireGuest() {
   const { user, isPasswordRecovery } = getAuth()

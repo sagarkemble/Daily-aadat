@@ -37,19 +37,17 @@ function SlotArt({ slot, clockLabel, children }: SlotArtProps) {
         src={SLOT_ART[slot]}
         alt=""
         aria-hidden
-        className="absolute inset-x-0 bottom-0 w-full max-h-52 object-cover object-bottom"
+        className="absolute inset-x-0 bottom-0 max-h-52 w-full object-cover object-bottom"
       />
       <div className="relative flex flex-1 flex-col p-4 text-primary-foreground">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 flex-col gap-1">
-            <p className="font-heading text-xl font-semibold leading-tight">
+            <p className="font-heading text-xl leading-tight font-semibold">
               {clockLabel
                 ? `${SLOT_LABELS[slot]} · ${clockLabel}`
                 : SLOT_LABELS[slot]}
             </p>
-            <p className="text-sm text-primary-foreground/80">
-              {copy.description}
-            </p>
+            <p className="text-sm text-white/80">{copy.description}</p>
           </div>
           <span
             className="flex size-10 shrink-0 items-center justify-center rounded-full bg-black"

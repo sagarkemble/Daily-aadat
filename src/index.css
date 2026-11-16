@@ -93,7 +93,7 @@
   --muted: oklch(0.2686 0 0);
   --muted-foreground: oklch(0.683 0 0);
   --accent: oklch(0.2746 0.0633 61.8063);
-  --accent-foreground: oklch(0.7204 0.1833 52.8311);
+  --accent-foreground: oklch(0.9401 0 0);
   --destructive: oklch(0.6453 0.2404 27.3106);
   --destructive-foreground: oklch(1 0 0);
   --success: oklch(0.62 0.11 150);
@@ -234,7 +234,9 @@
 }
 
 /* Keep semantic colour utilities in the CSS output even if a scan miss occurs. */
-@source inline("bg-warning text-warning bg-warning-foreground text-warning-foreground bg-success text-success bg-success-foreground text-success-foreground bg-surface-hover bg-surface-hover-strong bg-surface-hover-card bg-surface-hover-popover");
+@source inline(
+  "bg-warning text-warning bg-warning-foreground text-warning-foreground bg-success text-success bg-success-foreground text-success-foreground bg-surface-hover bg-surface-hover-strong bg-surface-hover-card bg-surface-hover-popover"
+);
 
 @layer base {
   * {

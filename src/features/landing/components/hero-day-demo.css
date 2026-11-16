@@ -1,0 +1,68 @@
+/* Fade crop: the window sits a gutter in from the top and sides of a
+   transparent stage and dissolves at its foot, over the later slots. */
+.hero-day-demo {
+  & .ss-stage {
+    --gutter: 40px;
+    overflow: hidden;
+  }
+
+  /* Mask the shot, not just the window, so chrome, radius and shadow
+     dissolve together instead of leaving a hard foot. */
+  .hdd-shot {
+    position: absolute;
+    top: 24px;
+    left: var(--gutter);
+    width: calc(100% - var(--gutter) * 2);
+    height: calc(100% - 24px);
+    --hdd-fade: linear-gradient(
+      to bottom,
+      #000 0%,
+      #000 64%,
+      rgb(0 0 0 / 0.7) 78%,
+      rgb(0 0 0 / 0.22) 90%,
+      transparent 100%
+    );
+    mask-image: var(--hdd-fade);
+    -webkit-mask-image: var(--hdd-fade);
+    mask-size: 100% 100%;
+    -webkit-mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+  }
+
+  .hdd-window {
+    width: 100%;
+    height: 100%;
+    border: 1px solid color-mix(in oklch, var(--foreground) 22%, transparent);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.06),
+      0 12px 24px -8px rgb(0 0 0 / 0.12),
+      0 32px 64px -20px rgb(0 0 0 / 0.18);
+  }
+
+  & .ss-stage[data-theme="dark"] .hdd-window {
+    border-color: color-mix(in oklch, var(--foreground) 28%, transparent);
+    box-shadow:
+      0 8px 16px -6px rgb(0 0 0 / 0.55),
+      0 28px 56px -16px rgb(0 0 0 / 0.7);
+  }
+
+  & .ss-stage[data-layout="compact"] {
+    --gutter: 16px;
+
+    .hdd-shot {
+      top: 16px;
+      height: calc(100% - 16px);
+    }
+  }
+
+  .hdd-menu {
+    position: absolute;
+    width: 232px;
+    padding: 4px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--popover-foreground);
+    --ss-popover-bg: var(--popover);
+  }
+}

@@ -26,7 +26,7 @@ const IconItem = React.memo(
         className={cn(
           "flex size-7 cursor-pointer items-center justify-center rounded-md text-popover-foreground/70 transition-colors hover:bg-muted hover:text-popover-foreground",
           selectedIcon === iconName &&
-            "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+            "bg-foreground text-background hover:bg-foreground hover:text-background"
         )}
         onClick={handleClick}
         title={iconName}
