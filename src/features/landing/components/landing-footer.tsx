@@ -9,7 +9,7 @@ import { AadatWordmark } from "@/components/aadat-wordmark"
 function ClosingCta() {
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-24 md:px-6 md:py-32 lg:px-8">
-      <div className="flex flex-col items-center text-center">
+      <div className="flex flex-col items-center text-center brand-glow">
         <div aria-hidden className="flex -space-x-2">
           {TIMED_SLOTS.map((slot) => (
             <span
@@ -30,7 +30,7 @@ function ClosingCta() {
           to="/sign-up"
           className={buttonVariants({
             size: "lg",
-            className: "mt-8 h-11 px-5 text-base",
+            className: "mt-8 h-11 px-5 text-base brand-ring",
           })}
         >
           Plan your first day

@@ -34,7 +34,7 @@ function HeroSection() {
             to="/sign-up"
             className={buttonVariants({
               size: "lg",
-              className: "h-11 px-5 text-base",
+              className: "h-11 px-5 text-base brand-ring",
             })}
           >
             Plan your first day
