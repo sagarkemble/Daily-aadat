@@ -20,17 +20,17 @@ function TodoTable({ todos, sort }: TodoTableProps) {
   const sorted = useMemo(() => sortTodos(todos, sort), [todos, sort])
 
   return (
-    <div className="overflow-hidden rounded-xl border px-4">
+    <div className="overflow-hidden rounded-xl border">
       <Table className="table-fixed">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-10">
+            <TableHead className="w-14 px-4">
               <span className="sr-only">Complete</span>
             </TableHead>
-            <TableHead>Title</TableHead>
-            <TableHead className="w-28">Priority</TableHead>
-            <TableHead className="w-28">Due</TableHead>
-            <TableHead className="w-36">Assigned on</TableHead>
+            <TableHead className="px-4">Title</TableHead>
+            <TableHead className="w-28 px-4">Priority</TableHead>
+            <TableHead className="w-28 px-4">Due</TableHead>
+            <TableHead className="w-36 px-4">Assigned on</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

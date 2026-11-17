@@ -50,7 +50,10 @@ function TodoTableRow({ todo, disabled }: TodoTableRowProps) {
         className="cursor-pointer"
         onClick={() => setDetailOpen(true)}
       >
-        <TableCell onClick={(event) => event.stopPropagation()}>
+        <TableCell
+          className="px-4 py-2.5"
+          onClick={(event) => event.stopPropagation()}
+        >
           <Checkbox
             checked={done}
             disabled={rowDisabled}
@@ -59,7 +62,7 @@ function TodoTableRow({ todo, disabled }: TodoTableRowProps) {
             className={TODO_DONE_CHECKBOX_CLASS}
           />
         </TableCell>
-        <TableCell className="max-w-0 whitespace-normal">
+        <TableCell className="max-w-0 px-4 py-2.5 whitespace-normal">
           <div className="flex min-w-0 flex-col gap-0.5">
             <span
               className={cn(
@@ -76,7 +79,7 @@ function TodoTableRow({ todo, disabled }: TodoTableRowProps) {
             ) : null}
           </div>
         </TableCell>
-        <TableCell>
+        <TableCell className="px-4 py-2.5">
           <span className="inline-flex items-center gap-1.5">
             <span
               className={cn(
@@ -92,7 +95,7 @@ function TodoTableRow({ todo, disabled }: TodoTableRowProps) {
             </span>
           </span>
         </TableCell>
-        <TableCell>
+        <TableCell className="px-4 py-2.5">
           {due ? (
             <span
               className={cn(
@@ -105,7 +108,10 @@ function TodoTableRow({ todo, disabled }: TodoTableRowProps) {
             <span className="text-muted-foreground">—</span>
           )}
         </TableCell>
-        <TableCell onClick={(event) => event.stopPropagation()}>
+        <TableCell
+          className="px-4 py-2.5"
+          onClick={(event) => event.stopPropagation()}
+        >
           {todo.state === "pending" ? (
             <TodoAssignPopover todo={todo} disabled={rowDisabled} />
           ) : todo.assignment ? (

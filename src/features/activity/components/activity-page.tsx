@@ -12,7 +12,13 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import { ItemGroup } from "@/components/ui/item"
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { useDebounce } from "@/hooks/use-debounce"
 import { useFetchActivities } from "../hooks/use-fetch-activities"
 import {
@@ -20,8 +26,8 @@ import {
   type ActivityTypeFilter,
 } from "../lib/filter-activities"
 import type { Activity } from "../types/activity"
-import { ActivityCard } from "./activity-card"
-import { ActivityCardSkeleton } from "./activity-card-skeleton"
+import { ActivityTableRow } from "./activity-table-row"
+import { ActivityTableRowSkeleton } from "./activity-table-row-skeleton"
 import { ActivityToolbar } from "./activity-toolbar"
 import { AddActivityDialog } from "./add-activity-dialog"
 import { EmptyActivity } from "./empty-activity"
@@ -153,24 +159,40 @@ function ActivitySection({
 
 function ActivityList({ activities }: { activities: Activity[] }) {
   return (
-    <div className="overflow-hidden rounded-xl border px-4">
-      <ItemGroup className="gap-0 has-data-[size=sm]:gap-0 [&>:last-child]:border-b-0 [&>:last-child_[data-slot=item]]:border-b-0">
-        {activities.map((activity) => (
-          <ActivityCard key={activity.id} activity={activity} />
-        ))}
-      </ItemGroup>
+    <div className="overflow-hidden rounded-xl border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="px-4">Activity</TableHead>
+            <TableHead className="w-36 px-4 text-right">Type</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {activities.map((activity) => (
+            <ActivityTableRow key={activity.id} activity={activity} />
+          ))}
+        </TableBody>
+      </Table>
     </div>
   )
 }
 
 function ActivityListSkeleton({ count }: { count: number }) {
   return (
-    <div className="overflow-hidden rounded-xl border px-4">
-      <ItemGroup className="gap-0 has-data-[size=sm]:gap-0 [&>:last-child]:border-b-0 [&>:last-child_[data-slot=item]]:border-b-0">
-        {Array.from({ length: count }).map((_, index) => (
-          <ActivityCardSkeleton key={index} />
-        ))}
-      </ItemGroup>
+    <div className="overflow-hidden rounded-xl border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="px-4">Activity</TableHead>
+            <TableHead className="w-36 px-4 text-right">Type</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Array.from({ length: count }).map((_, index) => (
+            <ActivityTableRowSkeleton key={index} />
+          ))}
+        </TableBody>
+      </Table>
     </div>
   )
 }

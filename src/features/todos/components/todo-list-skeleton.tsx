@@ -36,37 +36,39 @@ export function TodoListSkeleton({ mobile }: TodoListSkeletonProps) {
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-10" />
-          <TableHead>Title</TableHead>
-          <TableHead className="w-28">Priority</TableHead>
-          <TableHead className="w-28">Due</TableHead>
-          <TableHead className="w-36">Assigned on</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
-          <TableRow key={index}>
-            <TableCell>
-              <Skeleton className="size-4 rounded-sm" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-4 w-2/3" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-4 w-16" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-4 w-14" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-8 w-20 rounded-md" />
-            </TableCell>
+    <div className="overflow-hidden rounded-xl border">
+      <Table className="table-fixed">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-14 px-4" />
+            <TableHead className="px-4">Title</TableHead>
+            <TableHead className="w-28 px-4">Priority</TableHead>
+            <TableHead className="w-28 px-4">Due</TableHead>
+            <TableHead className="w-36 px-4">Assigned on</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+            <TableRow key={index}>
+              <TableCell className="px-4 py-2.5">
+                <Skeleton className="size-4 rounded-sm" />
+              </TableCell>
+              <TableCell className="px-4 py-2.5">
+                <Skeleton className="h-4 w-2/3" />
+              </TableCell>
+              <TableCell className="px-4 py-2.5">
+                <Skeleton className="h-4 w-16" />
+              </TableCell>
+              <TableCell className="px-4 py-2.5">
+                <Skeleton className="h-4 w-14" />
+              </TableCell>
+              <TableCell className="px-4 py-2.5">
+                <Skeleton className="h-8 w-20 rounded-md" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   )
 }
