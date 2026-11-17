@@ -11,6 +11,10 @@ export type Template = {
   updated_at: string
 }
 
+export type TemplateSummary = Template & {
+  slot_counts: Record<Slot, number>
+}
+
 export type TemplateActivity = {
   id: string
   template_id: string

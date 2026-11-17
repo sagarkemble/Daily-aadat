@@ -1,14 +1,13 @@
 import { LayoutTemplateIcon } from "lucide-react"
 import { PageHeader } from "@/components/page-header"
 import { PageShell } from "@/components/page-shell"
-import { ItemGroup } from "@/components/ui/item"
 import { useFetchTemplates } from "../hooks/use-fetch-templates"
 import { CreateTemplateDialog } from "./create-template-dialog"
 import { EmptyTemplate } from "./empty-template"
 import { TemplateCard } from "./template-card"
 import { TemplateCardSkeleton } from "./template-card-skeleton"
 
-const SKELETON_COUNT = 6
+const SKELETON_COUNT = 4
 
 const TemplateIndexPage = () => {
   const { data, isPending, isError, error } = useFetchTemplates()
@@ -27,11 +26,11 @@ const TemplateIndexPage = () => {
       />
 
       {isPending ? (
-        <ItemGroup className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid items-start gap-3">
           {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
             <TemplateCardSkeleton key={index} />
           ))}
-        </ItemGroup>
+        </div>
       ) : templates.length === 0 ? (
         <EmptyTemplate
           title="No templates yet"
@@ -41,11 +40,11 @@ const TemplateIndexPage = () => {
           <CreateTemplateDialog />
         </EmptyTemplate>
       ) : (
-        <ItemGroup className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid items-start gap-3">
           {templates.map((template) => (
             <TemplateCard key={template.id} template={template} />
           ))}
-        </ItemGroup>
+        </div>
       )}
     </PageShell>
   )
