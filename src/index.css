@@ -75,18 +75,10 @@
   --shadow-2xl: 0 1px 0px 0px hsl(0 0% 0% / 0);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
-  --surface-hover: color-mix(in oklch, var(--foreground) 5%, var(--background));
-  --surface-hover-strong: color-mix(
-    in oklch,
-    var(--foreground) 9%,
-    var(--background)
-  );
-  --surface-hover-card: color-mix(in oklch, var(--foreground) 6%, var(--card));
-  --surface-hover-popover: color-mix(
-    in oklch,
-    var(--foreground) 7%,
-    var(--popover)
-  );
+  --surface-hover: color-mix(in srgb, black 2%, var(--background));
+  --surface-hover-strong: color-mix(in srgb, black 4%, var(--background));
+  --surface-hover-card: color-mix(in srgb, black 2%, var(--card));
+  --surface-hover-popover: color-mix(in srgb, black 2%, var(--popover));
   --motion-duration-fast: 150ms;
   --motion-duration-overlay: 180ms;
   --motion-duration-sheet: 200ms;
@@ -140,18 +132,10 @@
   --shadow-lg: 0 1px 0px 0px hsl(0 0% 0% / 0), 0 4px 6px -1px hsl(0 0% 0% / 0);
   --shadow-xl: 0 1px 0px 0px hsl(0 0% 0% / 0), 0 8px 10px -1px hsl(0 0% 0% / 0);
   --shadow-2xl: 0 1px 0px 0px hsl(0 0% 0% / 0);
-  --surface-hover: color-mix(in oklch, var(--foreground) 6%, var(--background));
-  --surface-hover-strong: color-mix(
-    in oklch,
-    var(--foreground) 10%,
-    var(--background)
-  );
-  --surface-hover-card: color-mix(in oklch, var(--foreground) 8%, var(--card));
-  --surface-hover-popover: color-mix(
-    in oklch,
-    var(--foreground) 9%,
-    var(--popover)
-  );
+  --surface-hover: color-mix(in srgb, white 2%, var(--background));
+  --surface-hover-strong: color-mix(in srgb, white 4%, var(--background));
+  --surface-hover-card: color-mix(in srgb, white 2%, var(--card));
+  --surface-hover-popover: color-mix(in srgb, white 2%, var(--popover));
   --motion-duration-fast: 150ms;
   --motion-duration-overlay: 180ms;
   --motion-duration-sheet: 200ms;

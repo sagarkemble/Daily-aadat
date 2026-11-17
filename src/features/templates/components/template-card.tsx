@@ -30,7 +30,7 @@ export function TemplateCard({ template }: { template: TemplateSummary }) {
       params={{ templateId: template.id }}
       className="min-w-0 rounded-xl outline-none transition-transform duration-150 ease-out focus-visible:ring-[3px] focus-visible:ring-ring/50 active:scale-[0.99]"
     >
-      <Card className="hover:ring-foreground/20">
+      <Card className="transition-colors duration-100 ease-out hover:bg-surface-hover-card">
         <CardHeader>
           <div className="flex min-w-0 items-start gap-3">
             <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground">
