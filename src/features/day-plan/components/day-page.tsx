@@ -32,6 +32,7 @@ import {
   type DayItemCommand,
 } from "../lib/day-item-command"
 import { dayHasPlacements } from "../lib/day-has-placements"
+import { mapDayBoardItems } from "../lib/map-day-board-items"
 import type {
   DayBoard,
   DayPlanActivity,
@@ -103,9 +104,6 @@ const DayPage = ({ date }: DayPageProps) => {
   const { mutate: applyCommand } = useApplyActivityCommand()
   const { mutate: changeTodoState } = useChangeTodoState()
   const { mutateAsync: reorderActivities } = useReorderDayPlanActivities()
-  const [pendingActivityIds, setPendingActivityIds] = useState<Set<string>>(
-    () => new Set()
-  )
   const hasDayPlanRow = data != null
   const [board, setBoard] = useState<DayBoard | undefined>(data?.activities)
   const boardRef = useRef(board)
@@ -150,47 +148,26 @@ const DayPage = ({ date }: DayPageProps) => {
     )
   }
 
-  function markActivityPending(activityId: string) {
-    setPendingActivityIds((current) => new Set(current).add(activityId))
-  }
-
-  function clearActivityPending(activityId: string) {
-    setPendingActivityIds((current) => {
-      const next = new Set(current)
-      next.delete(activityId)
-      return next
-    })
-  }
-
-  function isActivityPending(activityId: string) {
-    return pendingActivityIds.has(activityId)
-  }
-
   function onCommand(activity: DayPlanActivity, command: DayItemCommand) {
     const next = applyDayItemCommand(activity, command)
-    markActivityPending(activity.id)
+    setBoard((current) =>
+      current
+        ? mapDayBoardItems(current, (item) =>
+            item.id === next.id ? next : item
+          )
+        : current
+    )
     if (activity.kind === "todo") {
       if (!activity.todo_id) {
-        clearActivityPending(activity.id)
         throw new Error("Todo placement is missing todo_id")
       }
-      changeTodoState(
-        {
-          id: activity.todo_id,
-          state: todoStateFromDayItem(next.state),
-        },
-        {
-          onSettled: () => clearActivityPending(activity.id),
-        }
-      )
+      changeTodoState({
+        id: activity.todo_id,
+        state: todoStateFromDayItem(next.state),
+      })
       return
     }
-    applyCommand(
-      { activityId: activity.id, activity: next },
-      {
-        onSettled: () => clearActivityPending(activity.id),
-      }
-    )
+    applyCommand({ activityId: activity.id, activity: next })
   }
 
   function handleAddActivities(
@@ -310,7 +287,6 @@ const DayPage = ({ date }: DayPageProps) => {
               <DayWide
                 items={board?.day_wide?.activities ?? []}
                 isLoading={isLoading}
-                isActivityPending={isActivityPending}
                 onAddActivity={() => {
                   setPickerSlot("day_wide")
                   setPickerOpen(true)
@@ -327,7 +303,6 @@ const DayPage = ({ date }: DayPageProps) => {
                   dayPlanId={dayPlanId}
                   isLoading={isLoading}
                   showConnector={index < TIMED_SLOTS.length - 1}
-                  isActivityPending={isActivityPending}
                   onAddActivity={() => {
                     setPickerSlot(slot)
                     setPickerOpen(true)

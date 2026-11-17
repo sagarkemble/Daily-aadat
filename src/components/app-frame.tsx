@@ -3,7 +3,7 @@ import { Outlet } from "@tanstack/react-router"
 import { AppDateMenu } from "@/components/app-date-menu"
 import { AppNavTabs } from "@/components/app-nav-tabs"
 import { NavUser } from "@/components/nav-user"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { SyncStatus } from "@/features/sync/components/sync-status"
 
 function AppFrame() {
   return (
@@ -15,12 +15,15 @@ function AppFrame() {
             <AppNavTabs variant="desktop" />
           </div>
           <div className="flex items-center gap-2">
-            <ThemeToggle />
+            <SyncStatus />
             <NavUser />
           </div>
         </div>
       </header>
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-4 pb-24 md:px-6 md:pb-4 lg:px-8">
+        <div className="flex justify-end md:hidden">
+          <SyncStatus />
+        </div>
         <Outlet />
       </main>
       <nav

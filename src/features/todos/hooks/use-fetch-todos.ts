@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import type { Slot } from "@/features/templates/types/slots"
+import { todosQueryKey } from "@/lib/query-keys"
 import { supabase } from "@/lib/supabase"
 import type { Todo, TodoAssignment, TodoState } from "../types/todo"
 
@@ -86,7 +87,7 @@ async function fetchTodos() {
 
 export function useFetchTodos() {
   return useQuery({
-    queryKey: ["todos"],
+    queryKey: todosQueryKey,
     queryFn: fetchTodos,
   })
 }

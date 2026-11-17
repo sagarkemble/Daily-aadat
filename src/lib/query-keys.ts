@@ -1,0 +1,13 @@
+export const todosQueryKey = ["todos"] as const
+
+export const dayPlanQueryKey = ["day-plan"] as const
+
+export function dayPlanByDateQueryKey(date: string) {
+  return ["day-plan", date] as const
+}
+
+export const syncMutationKey = ["sync"] as const
+
+export const todoStateMutationKey = ["sync", "todo-state"] as const
+
+export const dayItemCommandMutationKey = ["sync", "day-item"] as const

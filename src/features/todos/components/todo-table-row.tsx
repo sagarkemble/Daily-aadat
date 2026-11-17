@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { TableCell, TableRow } from "@/components/ui/table"
-import { toast } from "@/components/ui/toast"
 import { cn } from "@/lib/utils"
 import {
   DUE_DATE_TONE_CLASS,
@@ -25,23 +24,17 @@ type TodoTableRowProps = {
 
 function TodoTableRow({ todo, disabled }: TodoTableRowProps) {
   const [detailOpen, setDetailOpen] = useState(false)
-  const { mutateAsync: changeTodoState, isPending: isChanging } =
-    useChangeTodoState()
+  const { mutate: changeTodoState } = useChangeTodoState()
   const muted = todo.state === "done"
   const done = todo.state === "done"
   const note = todo.note?.trim()
   const due = formatDueDate(todo.due_date, todo.state)
-  const rowDisabled = disabled || isChanging
 
   function handleCheckedChange(checked: boolean) {
-    toast.promise(
-      changeTodoState({ id: todo.id, state: checked ? "done" : "pending" }),
-      {
-        loading: { title: "Updating…" },
-        success: { title: "Todo updated" },
-        error: { title: "Failed to update" },
-      }
-    )
+    changeTodoState({
+      id: todo.id,
+      state: checked ? "done" : "pending",
+    })
   }
 
   return (
@@ -56,7 +49,7 @@ function TodoTableRow({ todo, disabled }: TodoTableRowProps) {
         >
           <Checkbox
             checked={done}
-            disabled={rowDisabled}
+            disabled={disabled}
             onCheckedChange={handleCheckedChange}
             aria-label={done ? "Mark as open" : "Mark as done"}
             className={TODO_DONE_CHECKBOX_CLASS}
@@ -113,7 +106,7 @@ function TodoTableRow({ todo, disabled }: TodoTableRowProps) {
           onClick={(event) => event.stopPropagation()}
         >
           {todo.state === "pending" ? (
-            <TodoAssignPopover todo={todo} disabled={rowDisabled} />
+            <TodoAssignPopover todo={todo} disabled={disabled} />
           ) : todo.assignment ? (
             <span className="text-sm text-muted-foreground">
               {formatTodoAssignment(todo.assignment)}

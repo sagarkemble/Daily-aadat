@@ -27,7 +27,6 @@ type DaySlotProps = {
   endTime?: string | null
   isLoading: boolean
   showConnector?: boolean
-  isActivityPending?: (activityId: string) => boolean
   onAddActivity?: () => void
   onCommand: (activity: DayPlanActivity, command: DayItemCommand) => void
 }
@@ -40,7 +39,6 @@ const DaySlot = ({
   endTime = null,
   isLoading,
   showConnector = true,
-  isActivityPending,
   onAddActivity,
   onCommand,
 }: DaySlotProps) => {
@@ -107,7 +105,6 @@ const DaySlot = ({
                 index={index}
                 group={slot}
                 activity={item}
-                disabled={isActivityPending?.(item.id) ?? false}
                 onCommand={onCommand}
               />
             ))}

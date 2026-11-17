@@ -1,3 +1,4 @@
+import { dayPlanByDateQueryKey } from "@/lib/query-keys"
 import { supabase } from "@/lib/supabase"
 import { SLOTS } from "@/features/templates/types/slots"
 import { useQuery } from "@tanstack/react-query"
@@ -142,7 +143,7 @@ async function fetchDayPlan(
 
 function useFetchDayPlan(date: string) {
   return useQuery({
-    queryKey: ["day-plan", date],
+    queryKey: dayPlanByDateQueryKey(date),
     queryFn: () => fetchDayPlan(date),
   })
 }

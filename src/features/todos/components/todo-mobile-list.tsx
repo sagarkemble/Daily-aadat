@@ -7,7 +7,6 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item"
-import { toast } from "@/components/ui/toast"
 import { cn } from "@/lib/utils"
 import { useChangeTodoState } from "../hooks/use-change-todo-state"
 import { TODO_DONE_CHECKBOX_CLASS } from "../lib/todo-done-checkbox-class"
@@ -24,19 +23,15 @@ type TodoMobileListProps = {
 
 function TodoMobileRow({ todo }: { todo: Todo }) {
   const [detailOpen, setDetailOpen] = useState(false)
-  const { mutateAsync: changeTodoState, isPending } = useChangeTodoState()
+  const { mutate: changeTodoState } = useChangeTodoState()
   const muted = todo.state === "done"
   const done = todo.state === "done"
 
   function handleCheckedChange(checked: boolean) {
-    toast.promise(
-      changeTodoState({ id: todo.id, state: checked ? "done" : "pending" }),
-      {
-        loading: { title: "Updating…" },
-        success: { title: "Todo updated" },
-        error: { title: "Failed to update" },
-      }
-    )
+    changeTodoState({
+      id: todo.id,
+      state: checked ? "done" : "pending",
+    })
   }
 
   return (
@@ -51,7 +46,6 @@ function TodoMobileRow({ todo }: { todo: Todo }) {
           <div className="flex min-w-0 items-start gap-2">
             <Checkbox
               checked={done}
-              disabled={isPending}
               onClick={(event) => event.stopPropagation()}
               onCheckedChange={handleCheckedChange}
               aria-label={done ? "Mark as open" : "Mark as done"}
@@ -77,7 +71,7 @@ function TodoMobileRow({ todo }: { todo: Todo }) {
               muted={muted}
             />
             {todo.state === "pending" ? (
-              <TodoAssignPopover todo={todo} disabled={isPending} />
+              <TodoAssignPopover todo={todo} />
             ) : null}
           </div>
         </ItemContent>

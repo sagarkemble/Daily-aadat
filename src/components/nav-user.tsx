@@ -1,4 +1,4 @@
-import { LogOutIcon } from "lucide-react"
+import { LogOutIcon, MoonIcon, SunIcon } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -8,9 +8,12 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useTheme } from "@/components/theme-provider"
 import { useSignOut } from "@/features/auth/hooks/use-sign-out"
 import { useAuthStore } from "@/features/auth/stores/auth-store"
 
@@ -39,6 +42,11 @@ function initialsFromName(name: string) {
 function NavUser() {
   const user = useAuthStore((state) => state.user)
   const { mutate: signOut } = useSignOut()
+  const { theme, setTheme } = useTheme()
+  const isDark =
+    theme === "dark" ||
+    (theme === "system" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches)
   const email = user?.email ?? ""
   const name = displayNameFromUser(email, user?.user_metadata)
   const avatar =
@@ -79,6 +87,25 @@ function NavUser() {
               </div>
             </div>
           </DropdownMenuLabel>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Appearance</DropdownMenuLabel>
+          <DropdownMenuRadioGroup
+            value={isDark ? "dark" : "light"}
+            onValueChange={(value) => {
+              setTheme(value === "dark" ? "dark" : "light")
+            }}
+          >
+            <DropdownMenuRadioItem value="light">
+              <SunIcon />
+              Light
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="dark">
+              <MoonIcon />
+              Dark
+            </DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
