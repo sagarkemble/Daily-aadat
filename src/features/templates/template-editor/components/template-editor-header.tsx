@@ -46,7 +46,7 @@ const TemplateEditorHeader = ({
   return (
     <div className="flex items-center justify-between gap-4">
       <div className="flex min-w-0 items-center gap-3">
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-md bg-icon-well text-foreground">
+        <span className="flex size-12 shrink-0 items-center justify-center rounded-md bg-input/30 text-foreground">
           <DynamicIcon
             name={icon}
             className="size-6"

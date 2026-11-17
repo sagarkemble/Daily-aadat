@@ -26,7 +26,7 @@ export function AddTodoPickerRow({
       onClick={() => onSelect(todo)}
     >
       <ItemMedia variant="icon">
-        <span className="flex size-8 items-center justify-center rounded-md bg-icon-well text-foreground">
+        <span className="flex size-8 items-center justify-center rounded-md bg-input/30 text-foreground">
           <DynamicIcon name={TODO_ICON} />
         </span>
       </ItemMedia>

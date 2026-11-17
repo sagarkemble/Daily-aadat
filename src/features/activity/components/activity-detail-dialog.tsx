@@ -69,7 +69,7 @@ function toFormValues(activity: Activity): AddActivityInput {
 function ActivityIconDisplay({ icon }: { icon: string }) {
   return (
     <div className="relative w-fit shrink-0 self-start">
-      <span className="flex size-12 items-center justify-center rounded-md bg-icon-well text-foreground">
+      <span className="flex size-12 items-center justify-center rounded-md bg-input/30 text-foreground">
         <DynamicIcon name={icon} size="md" />
       </span>
     </div>

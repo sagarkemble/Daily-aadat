@@ -33,7 +33,7 @@ export function TemplateCard({ template }: { template: TemplateSummary }) {
       <Card className="transition-colors duration-100 ease-out hover:bg-surface-hover-card">
         <CardHeader>
           <div className="flex min-w-0 items-start gap-3">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-icon-well text-foreground">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-input/30 text-foreground">
               <DynamicIcon name={template.icon} size="lg" />
             </span>
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -64,7 +64,7 @@ export function TemplateCard({ template }: { template: TemplateSummary }) {
           >
             {counts.map(({ slot, count }) => (
               <div key={slot} className="flex min-w-0 flex-col gap-1.5">
-                <div className="flex h-8 items-end gap-0.5 rounded-md bg-muted p-1">
+                <div className="flex h-8 items-end gap-0.5 rounded-md bg-input/30 p-1">
                   {Array.from({
                     length: Math.min(count, MAX_BARS),
                   }).map((_, index) => (

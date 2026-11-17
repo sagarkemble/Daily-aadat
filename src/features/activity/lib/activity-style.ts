@@ -1,4 +1,4 @@
 /** Shared well for catalog and placement icons. */
 export function activityIconWellClass(_seed?: string) {
-  return "bg-icon-well text-foreground"
+  return "bg-input/30 text-foreground"
 }

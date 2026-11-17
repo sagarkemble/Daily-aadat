@@ -23,7 +23,7 @@ const dynamicIconVariants = cva("shrink-0", {
 })
 
 const dynamicIconWellVariants = cva(
-  "inline-flex shrink-0 items-center justify-center rounded-md bg-icon-well text-foreground",
+  "inline-flex shrink-0 items-center justify-center rounded-md bg-input/30 text-foreground",
   {
     variants: {
       size: {

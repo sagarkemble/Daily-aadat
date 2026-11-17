@@ -79,7 +79,6 @@
   --surface-hover-strong: color-mix(in srgb, black 4%, var(--background));
   --surface-hover-card: color-mix(in srgb, black 2%, var(--card));
   --surface-hover-popover: color-mix(in srgb, black 2%, var(--popover));
-  --icon-well: color-mix(in srgb, black 10%, var(--card));
   --motion-duration-fast: 150ms;
   --motion-duration-overlay: 180ms;
   --motion-duration-sheet: 200ms;
@@ -137,7 +136,6 @@
   --surface-hover-strong: color-mix(in srgb, white 4%, var(--background));
   --surface-hover-card: color-mix(in srgb, white 2%, var(--card));
   --surface-hover-popover: color-mix(in srgb, white 2%, var(--popover));
-  --icon-well: color-mix(in srgb, white 14%, var(--card));
   --motion-duration-fast: 150ms;
   --motion-duration-overlay: 180ms;
   --motion-duration-sheet: 200ms;
@@ -186,7 +184,6 @@
   --color-surface-hover-strong: var(--surface-hover-strong);
   --color-surface-hover-card: var(--surface-hover-card);
   --color-surface-hover-popover: var(--surface-hover-popover);
-  --color-icon-well: var(--icon-well);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
@@ -241,7 +238,7 @@
 
 /* Keep semantic colour utilities in the CSS output even if a scan miss occurs. */
 @source inline(
-  "bg-warning text-warning bg-warning-foreground text-warning-foreground bg-success text-success bg-success-foreground text-success-foreground bg-surface-hover bg-surface-hover-strong bg-surface-hover-card bg-surface-hover-popover bg-icon-well"
+  "bg-warning text-warning bg-warning-foreground text-warning-foreground bg-success text-success bg-success-foreground text-success-foreground bg-surface-hover bg-surface-hover-strong bg-surface-hover-card bg-surface-hover-popover"
 );
 
 @layer base {
