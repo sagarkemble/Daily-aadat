@@ -35,7 +35,7 @@ export function ActivityCard({ activity }: { activity: Activity }) {
         variant="default"
         size="sm"
         render={<button type="button" />}
-        className="cursor-pointer rounded-none border-0 border-b border-border px-0 text-left"
+        className="cursor-pointer rounded-none border-0 border-b border-border px-2 text-left"
         onClick={() => setOpen(true)}
       >
         <ItemMedia variant="icon">

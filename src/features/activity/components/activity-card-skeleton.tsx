@@ -11,7 +11,7 @@ export function ActivityCardSkeleton() {
     <Item
       variant="default"
       size="sm"
-      className="rounded-none border-0 border-b border-border px-0"
+      className="rounded-none border-0 border-b border-border px-2"
     >
       <ItemMedia variant="icon">
         <Skeleton className="size-8 rounded-md" />
