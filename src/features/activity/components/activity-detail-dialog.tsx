@@ -153,7 +153,9 @@ export function ActivityDetailDialog({
   })
 
   const suggestedType = watch("suggested_type")
+  const isCustom = activity.source === "custom"
   const isPending = isUpdating || isDeleting
+  const fieldsDisabled = !isCustom || isPending
 
   useEffect(() => {
     if (!open) return
@@ -163,6 +165,7 @@ export function ActivityDetailDialog({
   }, [open, activity, reset])
 
   function onSave(data: AddActivityInput) {
+    if (!isCustom) return
     updateActivity(
       {
         ...activity,
@@ -224,9 +227,13 @@ export function ActivityDetailDialog({
     <DialogContent>
       <form className="contents" onSubmit={handleSubmit(onSave)}>
         <DialogHeader>
-          <DialogTitle>Edit activity</DialogTitle>
+          <DialogTitle>
+            {isCustom ? "Edit activity" : activity.name}
+          </DialogTitle>
           <DialogDescription>
-            Updates catalog and templates. Past days stay unchanged.
+            {isCustom
+              ? "Updates catalog and templates. Past days stay unchanged."
+              : "Suggested tracking type for new days and templates."}
           </DialogDescription>
         </DialogHeader>
 
@@ -238,12 +245,12 @@ export function ActivityDetailDialog({
                 setSelectedIcon(icon)
                 setValue("icon", icon, { shouldValidate: true })
               }}
-              disabled={isPending}
+              disabled={fieldsDisabled}
             />
             <Field
               className="min-w-0"
               data-invalid={!!errors.name || undefined}
-              data-disabled={isPending || undefined}
+              data-disabled={fieldsDisabled || undefined}
             >
               <FieldLabel htmlFor="edit-activity-name">Name</FieldLabel>
               <Input
@@ -251,7 +258,7 @@ export function ActivityDetailDialog({
                 placeholder="Activity name"
                 aria-invalid={!!errors.name}
                 {...register("name")}
-                disabled={isPending}
+                disabled={fieldsDisabled}
               />
               <FieldError errors={[errors.name]} />
             </Field>
@@ -261,7 +268,7 @@ export function ActivityDetailDialog({
             <FieldLegend variant="label">Type</FieldLegend>
             <Field
               data-invalid={!!errors.suggested_type || undefined}
-              data-disabled={isPending || undefined}
+              data-disabled={fieldsDisabled || undefined}
             >
               <Controller
                 name="suggested_type"
@@ -280,7 +287,7 @@ export function ActivityDetailDialog({
                         field.onChange(picked)
                       }
                     }}
-                    disabled={isPending}
+                    disabled={fieldsDisabled}
                     variant="outline"
                     size="sm"
                     className="flex-wrap"
@@ -302,7 +309,7 @@ export function ActivityDetailDialog({
               <Field
                 className="min-w-0 flex-1"
                 data-invalid={!!errors.suggested_target || undefined}
-                data-disabled={isPending || undefined}
+                data-disabled={fieldsDisabled || undefined}
               >
                 <FieldLabel htmlFor="edit-activity-target">Target</FieldLabel>
                 <Input
@@ -312,14 +319,14 @@ export function ActivityDetailDialog({
                   placeholder="10"
                   aria-invalid={!!errors.suggested_target}
                   {...register("suggested_target")}
-                  disabled={isPending}
+                  disabled={fieldsDisabled}
                 />
                 <FieldError errors={[errors.suggested_target]} />
               </Field>
               <Field
                 className="min-w-0 flex-1"
                 data-invalid={!!errors.suggested_unit || undefined}
-                data-disabled={isPending || undefined}
+                data-disabled={fieldsDisabled || undefined}
               >
                 <FieldLabel htmlFor="edit-activity-unit">Unit</FieldLabel>
                 <Input
@@ -327,7 +334,7 @@ export function ActivityDetailDialog({
                   placeholder="glasses"
                   aria-invalid={!!errors.suggested_unit}
                   {...register("suggested_unit")}
-                  disabled={isPending}
+                  disabled={fieldsDisabled}
                 />
                 <FieldError errors={[errors.suggested_unit]} />
               </Field>
@@ -335,7 +342,9 @@ export function ActivityDetailDialog({
           ) : null}
         </FieldGroup>
 
-        <DialogFooter className="sm:justify-between">
+        <DialogFooter className={isCustom ? "sm:justify-between" : undefined}>
+          {isCustom ? (
+          <>
           <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
             <AlertDialogTrigger
               render={
@@ -408,6 +417,14 @@ export function ActivityDetailDialog({
               )}
             </Button>
           </div>
+          </>
+          ) : (
+            <DialogClose
+              render={<Button type="button" variant="outline" />}
+            >
+              Close
+            </DialogClose>
+          )}
         </DialogFooter>
       </form>
     </DialogContent>

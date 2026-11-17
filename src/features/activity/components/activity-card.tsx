@@ -1,12 +1,19 @@
 import { useState } from "react"
-import { Dialog, DialogTrigger } from "@/components/ui/dialog"
+
 import { DynamicIcon } from "@/components/dynamic-icon"
+import { Badge } from "@/components/ui/badge"
+import { Dialog } from "@/components/ui/dialog"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item"
 import { activityTypeLabels, type Activity } from "../types/activity"
 import { ActivityDetailDialog } from "./activity-detail-dialog"
-import { cn } from "@/lib/utils"
-import { activityIconWellClass } from "../lib/activity-style"
 
-function activityCardSubtitle(activity: Activity): string {
+function activityTypeChip(activity: Activity): string {
   const typeLabel = activityTypeLabels[activity.suggested_type]
   if (
     activity.suggested_type === "count" &&
@@ -19,66 +26,35 @@ function activityCardSubtitle(activity: Activity): string {
   return typeLabel
 }
 
-function ActivityCardBody({ activity }: { activity: Activity }) {
-  return (
-    <>
-      <span
-        className={cn(
-          "flex size-9 shrink-0 items-center justify-center rounded-md",
-          activityIconWellClass(activity.id)
-        )}
-      >
-        <DynamicIcon
-          name={activity.icon}
-          className="size-4"
-          aria-hidden={true}
-        />
-      </span>
-      <span className="min-w-0">
-        <span className="block truncate text-sm font-medium">
-          {activity.name}
-        </span>
-        <span className="block text-xs text-muted-foreground">
-          {activityCardSubtitle(activity)}
-        </span>
-      </span>
-    </>
-  )
-}
-
 export function ActivityCard({ activity }: { activity: Activity }) {
   const [open, setOpen] = useState(false)
-  const isCustom = activity.source === "custom"
-
-  if (!isCustom) {
-    return (
-      <div
-        className={cn(
-          "flex w-full items-center gap-3 rounded-xl border bg-card p-3 text-left shadow-xs"
-        )}
-      >
-        <ActivityCardBody activity={activity} />
-      </div>
-    )
-  }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        setOpen(nextOpen)
-      }}
-    >
-      <DialogTrigger
-        render={
-          <button
-            type="button"
-            className="flex w-full cursor-pointer items-center gap-3 rounded-xl border bg-card p-3 text-left shadow-xs transition-colors hover:bg-surface-hover-card focus-visible:ring-3 focus-visible:ring-ring/50"
-          />
-        }
+    <Dialog open={open} onOpenChange={setOpen}>
+      <Item
+        variant="default"
+        size="sm"
+        render={<button type="button" />}
+        className="cursor-pointer rounded-none border-0 border-b border-border px-0 text-left"
+        onClick={() => setOpen(true)}
       >
-        <ActivityCardBody activity={activity} />
-      </DialogTrigger>
+        <ItemMedia variant="icon">
+          <DynamicIcon
+            name={activity.icon}
+            size="sm"
+            variant="muted"
+            aria-hidden={true}
+          />
+        </ItemMedia>
+        <ItemContent className="min-w-0">
+          <ItemTitle className="w-full min-w-0 truncate">
+            {activity.name}
+          </ItemTitle>
+        </ItemContent>
+        <ItemActions>
+          <Badge variant="outline">{activityTypeChip(activity)}</Badge>
+        </ItemActions>
+      </Item>
       <ActivityDetailDialog
         activity={activity}
         open={open}

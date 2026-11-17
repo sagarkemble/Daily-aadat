@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo, useState, type ReactNode } from "react"
 import { ClipboardListIcon } from "lucide-react"
 
 import { PageHeader } from "@/components/page-header"
@@ -12,20 +12,22 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { ItemGroup } from "@/components/ui/item"
 import { useDebounce } from "@/hooks/use-debounce"
 import { useFetchActivities } from "../hooks/use-fetch-activities"
 import {
   filterActivities,
   type ActivityTypeFilter,
 } from "../lib/filter-activities"
+import type { Activity } from "../types/activity"
 import { ActivityCard } from "./activity-card"
 import { ActivityCardSkeleton } from "./activity-card-skeleton"
 import { ActivityToolbar } from "./activity-toolbar"
 import { AddActivityDialog } from "./add-activity-dialog"
 import { EmptyActivity } from "./empty-activity"
 
-const CUSTOM_SKELETON_COUNT = 10
-const PREDEFINED_SKELETON_COUNT = 50
+const CUSTOM_SKELETON_COUNT = 4
+const PREDEFINED_SKELETON_COUNT = 8
 
 const ActivityPage = () => {
   const { data, isPending, isError, error } = useFetchActivities()
@@ -103,46 +105,30 @@ const ActivityPage = () => {
       ) : (
         <div className="flex flex-col gap-8">
           {showCustomSection ? (
-            <section className="flex flex-col gap-3">
-              <h2 className="text-sm font-medium text-muted-foreground">
-                Your activities
-              </h2>
-              <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {isPending ? (
-                  <SkeletonGrid count={CUSTOM_SKELETON_COUNT} />
-                ) : showCustomEmpty ? (
-                  <div className="col-span-full">
-                    <EmptyActivity
-                      title="No custom activities yet"
-                      description="Add your own, or use a predefined activity below."
-                      icon={<ClipboardListIcon />}
-                    >
-                      <AddActivityDialog />
-                    </EmptyActivity>
-                  </div>
-                ) : (
-                  filteredCustom.map((activity) => (
-                    <ActivityCard key={activity.id} activity={activity} />
-                  ))
-                )}
-              </div>
-            </section>
+            <ActivitySection title="Your activities">
+              {isPending ? (
+                <ActivityListSkeleton count={CUSTOM_SKELETON_COUNT} />
+              ) : showCustomEmpty ? (
+                <EmptyActivity
+                  title="No custom activities yet"
+                  description="Add your own, or use a predefined activity below."
+                  icon={<ClipboardListIcon />}
+                >
+                  <AddActivityDialog />
+                </EmptyActivity>
+              ) : (
+                <ActivityList activities={filteredCustom} />
+              )}
+            </ActivitySection>
           ) : null}
           {isPending || filteredPredefined.length > 0 ? (
-            <section className="flex flex-col gap-3">
-              <h2 className="text-sm font-medium text-muted-foreground">
-                Predefined
-              </h2>
-              <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {isPending ? (
-                  <SkeletonGrid count={PREDEFINED_SKELETON_COUNT} />
-                ) : (
-                  filteredPredefined.map((activity) => (
-                    <ActivityCard key={activity.id} activity={activity} />
-                  ))
-                )}
-              </div>
-            </section>
+            <ActivitySection title="Predefined">
+              {isPending ? (
+                <ActivityListSkeleton count={PREDEFINED_SKELETON_COUNT} />
+              ) : (
+                <ActivityList activities={filteredPredefined} />
+              )}
+            </ActivitySection>
           ) : null}
         </div>
       )}
@@ -150,10 +136,43 @@ const ActivityPage = () => {
   )
 }
 
-function SkeletonGrid({ count }: { count: number }) {
-  return Array.from({ length: count }).map((_, index) => (
-    <ActivityCardSkeleton key={index} />
-  ))
+function ActivitySection({
+  title,
+  children,
+}: {
+  title: string
+  children: ReactNode
+}) {
+  return (
+    <section className="flex flex-col gap-3">
+      <h2 className="text-sm font-medium text-muted-foreground">{title}</h2>
+      {children}
+    </section>
+  )
+}
+
+function ActivityList({ activities }: { activities: Activity[] }) {
+  return (
+    <div className="overflow-hidden rounded-xl border px-4">
+      <ItemGroup className="gap-0 has-data-[size=sm]:gap-0 [&>:last-child]:border-b-0 [&>:last-child_[data-slot=item]]:border-b-0">
+        {activities.map((activity) => (
+          <ActivityCard key={activity.id} activity={activity} />
+        ))}
+      </ItemGroup>
+    </div>
+  )
+}
+
+function ActivityListSkeleton({ count }: { count: number }) {
+  return (
+    <div className="overflow-hidden rounded-xl border px-4">
+      <ItemGroup className="gap-0 has-data-[size=sm]:gap-0 [&>:last-child]:border-b-0 [&>:last-child_[data-slot=item]]:border-b-0">
+        {Array.from({ length: count }).map((_, index) => (
+          <ActivityCardSkeleton key={index} />
+        ))}
+      </ItemGroup>
+    </div>
+  )
 }
 
 export default ActivityPage

@@ -1,13 +1,27 @@
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemMedia,
+} from "@/components/ui/item"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export function ActivityCardSkeleton() {
   return (
-    <div className="flex w-full items-center gap-3 rounded-xl border bg-card p-3 shadow-xs">
-      <Skeleton className="size-9 shrink-0 rounded-md" />
-      <div className="min-w-0 flex-1 space-y-2">
+    <Item
+      variant="default"
+      size="sm"
+      className="rounded-none border-0 border-b border-border px-0"
+    >
+      <ItemMedia variant="icon">
+        <Skeleton className="size-8 rounded-md" />
+      </ItemMedia>
+      <ItemContent>
         <Skeleton className="h-4 w-2/3" />
-        <Skeleton className="h-3 w-1/3" />
-      </div>
-    </div>
+      </ItemContent>
+      <ItemActions>
+        <Skeleton className="h-5 w-14 rounded-md" />
+      </ItemActions>
+    </Item>
   )
 }
