@@ -19,13 +19,13 @@ function TemplateEditorHeaderSkeleton() {
   return (
     <div className="flex items-center justify-between gap-4">
       <div className="flex min-w-0 items-center gap-3">
-        <Skeleton className="size-12 shrink-0 rounded-xl" />
+        <Skeleton className="size-12 shrink-0 rounded-md" />
         <div className="flex min-w-0 flex-col gap-1">
           <Skeleton className="h-6 w-36" />
           <Skeleton className="h-4 w-52 max-w-full" />
         </div>
       </div>
-      <Skeleton className="h-8 w-28 shrink-0 rounded-lg" />
+      <Skeleton className="h-8 w-28 shrink-0 rounded-md" />
     </div>
   )
 }
@@ -46,7 +46,7 @@ const TemplateEditorHeader = ({
   return (
     <div className="flex items-center justify-between gap-4">
       <div className="flex min-w-0 items-center gap-3">
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground">
+        <span className="flex size-12 shrink-0 items-center justify-center rounded-md bg-muted text-foreground">
           <DynamicIcon
             name={icon}
             className="size-6"

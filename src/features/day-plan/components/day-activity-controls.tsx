@@ -33,7 +33,6 @@ function TimedControls({ activity, disabled, onCommand }: ControlProps) {
       <Button
         size="icon-sm"
         variant="outline"
-        className="rounded-full"
         disabled={disabled}
         aria-label={running ? "Pause" : "Play"}
         onClick={() =>
@@ -73,7 +72,7 @@ function CountControls({
       <Button
         variant="ghost"
         size="icon-sm"
-        className={cn(round && "rounded-full p-0")}
+        className={cn(round && "p-0")}
         disabled={disabled}
         aria-label="Decrease"
         onClick={() => onCommand(activity, { type: "decrement" })}
@@ -95,7 +94,7 @@ function CountControls({
       <Button
         variant="ghost"
         size="icon-sm"
-        className={cn(round && "rounded-full p-0")}
+        className={cn(round && "p-0")}
         disabled={disabled}
         aria-label="Increase"
         onClick={() => onCommand(activity, { type: "increment" })}

@@ -14,7 +14,6 @@ function ThemeToggle() {
     <Button
       variant="outline"
       size="icon-lg"
-      className="rounded-full"
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
       onClick={() => {
         setTheme(isDark ? "light" : "dark")

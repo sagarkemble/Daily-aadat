@@ -271,7 +271,7 @@ function DayActivityDetailDialog({
               {icon ? (
                 <span
                   className={cn(
-                    "flex size-11 shrink-0 items-center justify-center rounded-xl",
+                    "flex size-11 shrink-0 items-center justify-center rounded-md",
                     activityIconWellClass(activity.activity_id ?? activity.id)
                   )}
                 >

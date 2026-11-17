@@ -89,7 +89,7 @@ function SelectedChips({
       <ul className="flex max-h-24 flex-wrap gap-1.5 overflow-y-auto">
         {activities.map((activity, index) => (
           <li key={activity.id}>
-            <span className="inline-flex h-7 items-center gap-1.5 rounded-full border border-border bg-background pr-1 pl-1 text-xs font-medium text-foreground">
+            <span className="inline-flex h-7 items-center gap-1.5 rounded-md border border-border bg-background pr-1 pl-1 text-xs font-medium text-foreground">
               <span className="flex size-5 items-center justify-center rounded-full bg-muted text-[0.65rem] font-semibold text-foreground tabular-nums">
                 {index + 1}
               </span>
@@ -97,7 +97,7 @@ function SelectedChips({
               <span className="max-w-32 truncate">{activity.name}</span>
               <button
                 type="button"
-                className="flex size-5 items-center justify-center rounded-full hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                className="flex size-5 items-center justify-center rounded-md hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 aria-label={`Remove ${activity.name}`}
                 onClick={() => onRemove(activity)}
               >

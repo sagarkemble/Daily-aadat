@@ -55,7 +55,7 @@ function AppDateMenu({ date, size = "default" }: AppDateMenuProps) {
           <Button
             variant="ghost"
             className={cn(
-              "gap-2 rounded-full px-1 pr-3",
+              "gap-2 px-1 pr-3",
               compact ? "h-10 -ml-1" : "h-12"
             )}
           />

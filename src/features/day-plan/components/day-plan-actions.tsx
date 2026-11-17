@@ -213,7 +213,7 @@ function DayPlanActions({
         <div className="flex min-w-0 flex-wrap items-center gap-3">
           {isLoading || (templateId && isLoadingTemplates) ? (
             <>
-              <Skeleton className="h-9 w-40 rounded-lg" />
+              <Skeleton className="h-9 w-40 rounded-md" />
               <Skeleton className="h-4 w-20" />
             </>
           ) : (

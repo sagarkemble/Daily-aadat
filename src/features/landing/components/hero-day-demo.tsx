@@ -424,7 +424,7 @@ function EmptyDay({ layout }: { layout: Layout }) {
           layout === "wide" ? "h-72" : "h-64 px-6"
         )}
       >
-        <span className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
+        <span className="mb-1 flex size-10 items-center justify-center rounded-md bg-muted">
           <CalendarDaysIcon className="size-5" />
         </span>
         <div className="text-sm font-medium tracking-tight">
@@ -528,7 +528,7 @@ function ActivityRow({ row, state }: { row: Row; state: S }) {
             data-cursor="pointer"
             data-checked={checked || undefined}
             className={cn(
-              "mr-1 flex size-4 items-center justify-center rounded-[4px] border border-input transition-colors dark:bg-input/30",
+              "mr-1 flex size-4 items-center justify-center rounded-sm border border-input transition-colors dark:bg-input/30",
               DONE_CHECKBOX_CLASS
             )}
           >
@@ -590,7 +590,6 @@ function TimedControls({ row, state }: { row: Row; state: S }) {
             variant: running ? "default" : "outline",
             size: "icon-sm",
           }),
-          "rounded-full",
           running ? "data-hover:bg-primary/80" : "data-hover:bg-muted"
         )}
       >

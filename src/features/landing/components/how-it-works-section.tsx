@@ -165,7 +165,7 @@ function LiveVisual() {
           <AlarmClockIcon className="size-3.5" />
           12:34
         </span>
-        <Button size="icon-sm" className="rounded-full">
+        <Button size="icon-sm">
           <PauseIcon />
         </Button>
       </LiveRow>

@@ -55,7 +55,6 @@ function NavUser() {
             variant="ghost"
             size="icon"
             aria-label="Account menu"
-            className="rounded-full"
           />
         }
       >

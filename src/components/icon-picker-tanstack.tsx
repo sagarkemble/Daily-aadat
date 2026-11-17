@@ -83,7 +83,7 @@ const IconPicker = React.memo(
 
     return (
       <div
-        className={cn("w-72 rounded-lg border bg-popover shadow-md", className)}
+        className={cn("w-72 rounded-popup border bg-popover shadow-md", className)}
         aria-label="Icon Picker"
         {...props}
       >

@@ -102,7 +102,7 @@ function DayWide({
           <div className="flex gap-4 overflow-hidden">
             <Card size="sm" className="size-48 shrink-0">
               <CardHeader className="flex flex-1 flex-col items-center gap-2">
-                <Skeleton className="size-10 rounded-full" />
+                <Skeleton className="size-10 rounded-md" />
                 <Skeleton className="h-4 w-24" />
                 <Skeleton className="h-4 w-32" />
                 <Skeleton className="mt-auto h-7 w-24" />
@@ -110,7 +110,7 @@ function DayWide({
             </Card>
             <Card size="sm" className="size-48 shrink-0">
               <CardHeader className="flex flex-1 flex-col items-center gap-2">
-                <Skeleton className="size-10 rounded-full" />
+                <Skeleton className="size-10 rounded-md" />
                 <Skeleton className="h-4 w-24" />
                 <Skeleton className="h-4 w-32" />
                 <Skeleton className="mt-auto h-7 w-24" />
@@ -118,7 +118,7 @@ function DayWide({
             </Card>
             <Card size="sm" className="size-48 shrink-0">
               <CardHeader className="flex flex-1 flex-col items-center gap-2">
-                <Skeleton className="size-10 rounded-full" />
+                <Skeleton className="size-10 rounded-md" />
                 <Skeleton className="h-4 w-24" />
                 <Skeleton className="h-4 w-32" />
                 <Skeleton className="mt-auto h-7 w-24" />

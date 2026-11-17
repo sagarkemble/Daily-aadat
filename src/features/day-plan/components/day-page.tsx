@@ -247,7 +247,7 @@ const DayPage = ({ date }: DayPageProps) => {
         />
         {isLoading && !hasPlacements ? (
           <div className="flex min-h-72 flex-col items-center justify-center gap-3 rounded-xl border border-dashed px-6 py-12">
-            <Skeleton className="size-12 rounded-full" />
+            <Skeleton className="size-12 rounded-md" />
             <Skeleton className="h-5 w-52" />
             <Skeleton className="h-4 w-72 max-w-full" />
           </div>

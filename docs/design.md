@@ -42,7 +42,7 @@ Hue is warm (~80–95). Charts / slots are the same in light and dark.
 | `--accent` | `oklch(0.94 0.012 90)` | Quiet hover |
 | `--sidebar` | `oklch(0.96 0.01 90)` | Nav well |
 | `--ink` | `oklch(0.16 0.02 80)` | Type on slot fills |
-| `--radius` | `1rem` | |
+| `--radius` | `1rem` | Surfaces (`lg`/`xl`/dialog). Controls (`sm`/`md`/field) are a fraction so `h-8` bars are not pills. |
 
 ### Dark
 

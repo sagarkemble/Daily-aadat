@@ -61,7 +61,7 @@
     width: 232px;
     padding: 4px;
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius-popup);
     color: var(--popover-foreground);
     --ss-popover-bg: var(--popover);
   }

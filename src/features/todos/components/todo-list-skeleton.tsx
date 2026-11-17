@@ -62,7 +62,7 @@ export function TodoListSkeleton({ mobile }: TodoListSkeletonProps) {
               <Skeleton className="h-4 w-14" />
             </TableCell>
             <TableCell>
-              <Skeleton className="h-8 w-20 rounded-lg" />
+              <Skeleton className="h-8 w-20 rounded-md" />
             </TableCell>
           </TableRow>
         ))}

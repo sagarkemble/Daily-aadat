@@ -21,7 +21,7 @@ export function TemplateCard({ template }: { template: Template }) {
       }
     >
       <ItemMedia variant="icon">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-foreground">
           <DynamicIcon name={template.icon} className="size-4" />
         </span>
       </ItemMedia>

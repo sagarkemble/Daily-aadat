@@ -43,7 +43,7 @@ function AppNavTabs({ variant }: AppNavTabsProps) {
         <TabsList
           className={cn(
             variant === "phone" &&
-              "h-auto w-fit gap-1 rounded-lg bg-card p-1 shadow-lg ring-1 ring-foreground/10 group-data-[orientation=horizontal]/tabs:h-auto",
+              "h-auto w-fit gap-1 rounded-md bg-card p-1 shadow-lg ring-1 ring-foreground/10 group-data-[orientation=horizontal]/tabs:h-auto",
             variant === "desktop" &&
               "h-auto w-fit gap-1 group-data-[orientation=horizontal]/tabs:h-auto"
           )}
@@ -61,9 +61,9 @@ function AppNavTabs({ variant }: AppNavTabsProps) {
                 className={cn(
                   "data-active:bg-transparent dark:data-active:bg-transparent",
                   variant === "desktop" &&
-                    "h-8 flex-none gap-1.5 rounded-lg px-2.5 py-0 text-sm font-medium leading-none data-active:text-foreground",
+                    "h-8 flex-none gap-1.5 rounded-md px-2.5 py-0 text-sm font-medium leading-none data-active:text-foreground",
                   variant === "phone" &&
-                    "size-8 flex-none rounded-lg p-0 data-active:text-foreground"
+                    "size-8 flex-none rounded-md p-0 data-active:text-foreground"
                 )}
               >
                 {isActive ? (
@@ -71,7 +71,7 @@ function AppNavTabs({ variant }: AppNavTabsProps) {
                     layoutId={pillLayoutId}
                     initial={false}
                     aria-hidden
-                    className="absolute inset-0 rounded-lg bg-background shadow-sm ring-1 ring-border dark:bg-input/30"
+                    className="absolute inset-0 rounded-md bg-background shadow-sm ring-1 ring-border dark:bg-input/30"
                     transition={
                       shouldReduceMotion ? { duration: 0 } : pillTransition
                     }
