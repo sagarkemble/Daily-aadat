@@ -33,7 +33,7 @@ export function TemplateCard({ template }: { template: TemplateSummary }) {
       <Card className="transition-colors duration-100 ease-out hover:bg-surface-hover-card">
         <CardHeader>
           <div className="flex min-w-0 items-start gap-3">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-icon-well text-foreground">
               <DynamicIcon name={template.icon} size="lg" />
             </span>
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">

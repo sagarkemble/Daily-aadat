@@ -180,7 +180,7 @@ const SelectTemplateDialog = ({
                       onClick={() => handleSelectTemplate(template)}
                     >
                       <ItemMedia variant="icon">
-                        <span className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
+                        <span className="flex size-8 items-center justify-center rounded-md bg-icon-well text-foreground">
                           <DynamicIcon name={template.icon} />
                         </span>
                       </ItemMedia>
