@@ -3,6 +3,7 @@ import { Outlet } from "@tanstack/react-router"
 import { AppDateMenu } from "@/components/app-date-menu"
 import { AppNavTabs } from "@/components/app-nav-tabs"
 import { NavUser } from "@/components/nav-user"
+import { SettingsDialog } from "@/features/settings/components/settings-dialog"
 import { SyncStatus } from "@/features/sync/components/sync-status"
 
 function AppFrame() {
@@ -34,6 +35,7 @@ function AppFrame() {
           <AppNavTabs variant="phone" />
         </div>
       </nav>
+      <SettingsDialog />
     </div>
   )
 }

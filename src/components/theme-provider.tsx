@@ -1,8 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from "react"
 
+import { readStoredLook } from "@/features/settings/lib/looks"
+
 type Theme = "dark" | "light" | "system"
 type ResolvedTheme = "dark" | "light"
+
+export type { Theme }
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -112,6 +116,7 @@ export function ThemeProvider({
 
       root.classList.remove("light", "dark")
       root.classList.add(resolvedTheme)
+      root.dataset.look = readStoredLook()
 
       if (restoreTransitions) {
         restoreTransitions()

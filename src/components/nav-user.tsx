@@ -1,4 +1,4 @@
-import { LogOutIcon, MoonIcon, SunIcon } from "lucide-react"
+import { LogOutIcon, SettingsIcon } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -8,51 +8,30 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useTheme } from "@/components/theme-provider"
 import { useSignOut } from "@/features/auth/hooks/use-sign-out"
 import { useAuthStore } from "@/features/auth/stores/auth-store"
-
-function displayNameFromUser(
-  email: string | undefined,
-  metadata: Record<string, unknown> | undefined
-) {
-  const fullName = metadata?.full_name
-  if (typeof fullName === "string" && fullName.trim() !== "") {
-    return fullName
-  }
-  if (email) {
-    return email.split("@")[0] ?? "Account"
-  }
-  return "Account"
-}
-
-function initialsFromName(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean)
-  if (parts.length >= 2) {
-    return `${parts[0]?.[0] ?? ""}${parts[1]?.[0] ?? ""}`.toUpperCase()
-  }
-  return name.slice(0, 2).toUpperCase()
-}
+import { useFetchProfile } from "@/features/settings/hooks/use-fetch-profile"
+import { AVATAR_PRESETS } from "@/features/settings/lib/looks"
+import {
+  avatarPresetFromUser,
+  displayNameFromUser,
+  initialsFromName,
+} from "@/features/settings/lib/profile-display"
+import { useSettingsDialogStore } from "@/features/settings/stores/settings-dialog-store"
 
 function NavUser() {
   const user = useAuthStore((state) => state.user)
+  const { data: profile } = useFetchProfile()
   const { mutate: signOut } = useSignOut()
-  const { theme, setTheme } = useTheme()
-  const isDark =
-    theme === "dark" ||
-    (theme === "system" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches)
-  const email = user?.email ?? ""
-  const name = displayNameFromUser(email, user?.user_metadata)
-  const avatar =
-    typeof user?.user_metadata?.avatar_url === "string"
-      ? user.user_metadata.avatar_url
-      : ""
+  const setOpen = useSettingsDialogStore((state) => state.setOpen)
+  const email = profile?.email ?? user?.email ?? ""
+  const name = displayNameFromUser(user, profile ?? undefined)
+  const avatar = profile?.avatar_url ?? ""
+  const preset = avatarPresetFromUser(user)
+  const presetBg = AVATAR_PRESETS.find((item) => item.id === preset)?.bg
   const initials = initialsFromName(name)
 
   return (
@@ -66,8 +45,8 @@ function NavUser() {
           />
         }
       >
-        <Avatar>
-          <AvatarImage src={avatar} alt={name} />
+        <Avatar style={presetBg && !avatar ? { background: presetBg } : undefined}>
+          {avatar ? <AvatarImage src={avatar} alt={name} /> : null}
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -76,7 +55,7 @@ function NavUser() {
           <DropdownMenuLabel className="p-0 font-normal">
             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar>
-                <AvatarImage src={avatar} alt={name} />
+                {avatar ? <AvatarImage src={avatar} alt={name} /> : null}
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
@@ -90,25 +69,14 @@ function NavUser() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Appearance</DropdownMenuLabel>
-          <DropdownMenuRadioGroup
-            value={isDark ? "dark" : "light"}
-            onValueChange={(value) => {
-              setTheme(value === "dark" ? "dark" : "light")
+          <DropdownMenuItem
+            onClick={() => {
+              setOpen(true)
             }}
           >
-            <DropdownMenuRadioItem value="light">
-              <SunIcon />
-              Light
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="dark">
-              <MoonIcon />
-              Dark
-            </DropdownMenuRadioItem>
-          </DropdownMenuRadioGroup>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
+            <SettingsIcon />
+            Settings
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => signOut()}>
             <LogOutIcon />
             Log out

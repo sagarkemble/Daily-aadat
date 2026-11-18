@@ -17,3 +17,5 @@ export const progressQueryKey = ["progress"] as const
 export function progressByRangeQueryKey(start: string, end: string) {
   return ["progress", start, end] as const
 }
+
+export const profileQueryKey = ["profile"] as const
