@@ -18,8 +18,8 @@ import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
 import { placementIconName } from "../lib/placement-icon"
 import {
-  CheckControl,
   CountControls,
+  DoneCheckbox,
   TimedControls,
 } from "./day-activity-controls"
 import { activityIconWellClass } from "@/features/activity/lib/activity-style"
@@ -66,27 +66,31 @@ function DayActivityCard({
     <Badge variant="outline" className={PLACEMENT_STATUS_BADGE_CLASS.skipped}>
       {PLACEMENT_STATUS_LABELS.skipped}
     </Badge>
-  ) : activity.type === "timed" ? (
-    <TimedControls
-      activity={activity}
-      disabled={disabled}
-      onCommand={onCommand}
-    />
-  ) : activity.type === "count" ? (
-    <CountControls
-      activity={activity}
-      disabled={disabled}
-      onCommand={onCommand}
-      showTarget
-      round
-    />
-  ) : activity.kind === "todo" || activity.type === "check" ? (
-    <CheckControl
-      activity={activity}
-      disabled={disabled}
-      onCommand={onCommand}
-    />
-  ) : null
+  ) : (
+    <div className="flex items-center justify-center gap-2">
+      {activity.type === "timed" ? (
+        <TimedControls
+          activity={activity}
+          disabled={disabled}
+          onCommand={onCommand}
+        />
+      ) : null}
+      {activity.type === "count" ? (
+        <CountControls
+          activity={activity}
+          disabled={disabled}
+          onCommand={onCommand}
+          showTarget
+          round
+        />
+      ) : null}
+      <DoneCheckbox
+        activity={activity}
+        disabled={disabled}
+        onCommand={onCommand}
+      />
+    </div>
+  )
 
   return (
     <div ref={ref} className={cn("aspect-square", isDragging && "opacity-50")}>

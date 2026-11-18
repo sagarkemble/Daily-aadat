@@ -22,7 +22,7 @@ export function applyDayItemCommand(
 
   switch (command.type) {
     case "toggle_check":
-      return toggleCheck(item)
+      return toggleCheck(item, now)
     case "update_todo":
       return toggleTodo(item)
     case "start":
@@ -42,10 +42,18 @@ export function applyDayItemCommand(
   }
 }
 
-function toggleCheck(item: DayPlanActivity): DayPlanActivity {
-  assertType(item, "check")
-  const next: State = item.state === "done" ? "pending" : "done"
-  return { ...item, state: next }
+function toggleCheck(item: DayPlanActivity, now: Date): DayPlanActivity {
+  if (item.kind !== "activity") {
+    throw new Error("toggle_check command on a non-activity item")
+  }
+  if (item.state === "done") {
+    return { ...item, state: "pending" }
+  }
+  const stopped =
+    item.type === "timed" && item.state === "running"
+      ? stopTimed(item, now)
+      : item
+  return { ...stopped, state: "done" }
 }
 
 function toggleTodo(item: DayPlanActivity): DayPlanActivity {
@@ -93,12 +101,9 @@ function resetTimed(item: DayPlanActivity): DayPlanActivity {
 
 function bumpCount(item: DayPlanActivity, delta: number): DayPlanActivity {
   assertType(item, "count")
-  const nextValue = Math.max(0, (item.count_value ?? 0) + delta)
-  const reachedTarget = item.target != null && nextValue >= item.target
   return {
     ...item,
-    count_value: nextValue,
-    state: reachedTarget ? "done" : "pending",
+    count_value: Math.max(0, (item.count_value ?? 0) + delta),
   }
 }
 

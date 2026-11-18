@@ -56,6 +56,10 @@ _Avoid_: overwrite, replace, sync
 A named day shape: placements in the six slots (Day-wide first) and optional slot times on the time-of-day bands. Applying it copies that shape onto a date. A date can hold placements with no template applied.
 _Avoid_: routine, schedule, unplanned day (that is a date with no template, not a status)
 
+**Done**:
+The checkbox on an activity placement. Check, timed, and count all tick the same way. Timer and count are progress on the row; they never set Done. Skip is not a tick.
+_Avoid_: complete (as auto from stop or hitting a count target)
+
 **Day completion**:
 For one date: ticked activity placements divided by activity placements that are not skipped. Todos are never in this number. A date with no activity placements has no Day completion (an empty calendar square, not 0%).
 _Avoid_: consistency (for a single day), score, progress (that is the timer or count on a row)

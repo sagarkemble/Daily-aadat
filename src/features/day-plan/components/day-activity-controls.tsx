@@ -9,6 +9,8 @@ import {
 
 import { DynamicIcon } from "@/components/dynamic-icon"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { DONE_CHECKBOX_CLASS } from "@/lib/done-checkbox-class"
 import { cn } from "@/lib/utils"
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
@@ -109,25 +111,21 @@ function CountControls({
   )
 }
 
-function CheckControl({ activity, disabled, onCommand }: ControlProps) {
-  const done = activity.state === "done"
+function DoneCheckbox({ activity, disabled, onCommand }: ControlProps) {
   const command: DayItemCommand =
     activity.kind === "todo"
       ? { type: "update_todo" }
       : { type: "toggle_check" }
 
   return (
-    <Button
-      type="button"
-      variant={done ? "secondary" : "outline"}
-      size="sm"
+    <Checkbox
+      checked={activity.state === "done"}
       disabled={disabled}
-      aria-pressed={done}
-      onClick={() => onCommand(activity, command)}
-    >
-      {done ? "Undo" : "Done"}
-    </Button>
+      onCheckedChange={() => onCommand(activity, command)}
+      className={DONE_CHECKBOX_CLASS}
+      aria-label="Done"
+    />
   )
 }
 
-export { CheckControl, CountControls, TimedControls }
+export { CountControls, DoneCheckbox, TimedControls }

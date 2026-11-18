@@ -2,7 +2,6 @@ import { useState } from "react"
 import { Feedback } from "@dnd-kit/dom"
 import { useSortable } from "@dnd-kit/react/sortable"
 
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   Item,
   ItemActions,
@@ -13,7 +12,6 @@ import {
 } from "@/components/ui/item"
 import { DynamicIcon } from "@/components/dynamic-icon"
 import { Badge } from "@/components/ui/badge"
-import { DONE_CHECKBOX_CLASS } from "@/lib/done-checkbox-class"
 import { cn } from "@/lib/utils"
 import { TodoMeta } from "@/features/todos/components/todo-meta"
 import type { TodoState } from "@/features/todos/types/todo"
@@ -21,7 +19,11 @@ import { todoStateFromDayActivity } from "@/features/todos/lib/todo-state-from-d
 import type { DayPlanActivity } from "../types/day-plan"
 import type { DayItemCommand } from "../lib/day-item-command"
 import { placementIconName } from "../lib/placement-icon"
-import { CountControls, TimedControls } from "./day-activity-controls"
+import {
+  CountControls,
+  DoneCheckbox,
+  TimedControls,
+} from "./day-activity-controls"
 import { activityIconWellClass } from "@/features/activity/lib/activity-style"
 import { DayActivityDetailDialog } from "./day-activity-detail-dialog"
 import {
@@ -156,26 +158,11 @@ export function DayActivityRow({
                     onCommand={onCommand}
                   />
                 ) : null}
-                {activity.kind === "todo" ? (
-                  <Checkbox
-                    checked={activity.state === "done"}
-                    disabled={disabled}
-                    onCheckedChange={() =>
-                      onCommand(activity, { type: "update_todo" })
-                    }
-                    className={DONE_CHECKBOX_CLASS}
-                  />
-                ) : null}
-                {activity.type === "check" ? (
-                  <Checkbox
-                    checked={activity.state === "done"}
-                    disabled={disabled}
-                    onCheckedChange={() =>
-                      onCommand(activity, { type: "toggle_check" })
-                    }
-                    className={DONE_CHECKBOX_CLASS}
-                  />
-                ) : null}
+                <DoneCheckbox
+                  activity={activity}
+                  disabled={disabled}
+                  onCommand={onCommand}
+                />
               </>
             )}
           </ItemActions>

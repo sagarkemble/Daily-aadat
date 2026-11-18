@@ -1,5 +1,4 @@
 import {
-  CheckIcon,
   MinusIcon,
   PauseIcon,
   PlayIcon,
@@ -9,7 +8,10 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Field, FieldLabel } from "@/components/ui/field"
 import { Progress } from "@/components/ui/progress"
+import { DONE_CHECKBOX_CLASS } from "@/lib/done-checkbox-class"
 import { cn } from "@/lib/utils"
 import type { DayItemCommand } from "../lib/day-item-command"
 import type { DayPlanActivity } from "../types/day-plan"
@@ -164,21 +166,22 @@ function CheckProgress({
     activity.kind === "todo"
       ? { type: "update_todo" }
       : { type: "toggle_check" }
+  const checkboxId = `${activity.id}-done`
 
   return (
     <Panel className="flex-row items-center justify-between">
-      <p className="text-sm text-muted-foreground">
-        {done ? "Nice — this one is done." : "Not done yet."}
-      </p>
-      <Button
-        variant={done ? "outline" : "default"}
-        disabled={disabled}
-        aria-pressed={done}
-        onClick={() => onCommand(command)}
-      >
-        {done ? null : <CheckIcon data-icon="inline-start" />}
-        {done ? "Mark not done" : "Mark done"}
-      </Button>
+      <Field orientation="horizontal" data-disabled={disabled || undefined}>
+        <Checkbox
+          id={checkboxId}
+          checked={done}
+          disabled={disabled}
+          onCheckedChange={() => onCommand(command)}
+          className={DONE_CHECKBOX_CLASS}
+        />
+        <FieldLabel htmlFor={checkboxId}>
+          {done ? "Done" : "Not done yet"}
+        </FieldLabel>
+      </Field>
     </Panel>
   )
 }
@@ -204,9 +207,13 @@ function SkippedProgress({ disabled, onCommand }: DayActivityProgressProps) {
 function DayActivityProgress(props: DayActivityProgressProps) {
   const { activity } = props
   if (activity.state === "skipped") return <SkippedProgress {...props} />
-  if (activity.type === "timed") return <TimedProgress {...props} />
-  if (activity.type === "count") return <CountProgress {...props} />
-  return <CheckProgress {...props} />
+  return (
+    <div className="flex flex-col gap-3">
+      {activity.type === "timed" ? <TimedProgress {...props} /> : null}
+      {activity.type === "count" ? <CountProgress {...props} /> : null}
+      <CheckProgress {...props} />
+    </div>
+  )
 }
 
 export { DayActivityProgress }

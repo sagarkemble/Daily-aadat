@@ -10,7 +10,7 @@ UI mockups in [`ui/`](ui/) are **concept references**, not final design.
 
 ## Goal
 
-Define how day-plan **activity placements** are completed: **check**, **timed** (start/stop), **count** (+1/−1), and **skip**.
+Define how day-plan **activity placements** are completed: **check**, **timed** (start/stop), **count** (+1/−1), and **skip**. **Done is only the checkbox** on every activity type. Timer and count are progress; they never flip Done.
 
 **Type comes from the day/template placement** (chosen when the activity was added), not from a fixed library binding. Same catalog “Gym” may be check for one user and timed for another.
 
@@ -40,8 +40,9 @@ Define how day-plan **activity placements** are completed: **check**, **timed** 
 | | |
 |--|--|
 | States | `pending` → `running` → `done` (with duration); or `skipped` from pending |
-| Start | Sets `running`, stores `startedAt`, shows **live elapsed** |
-| Stop | Sets `done`, stores `stoppedAt` and `durationMs` |
+| Start | Sets `running`, stores `startedAt`, shows **live elapsed**. Does not mark done. |
+| Stop | Sets `pending`, stores `stoppedAt` and `durationMs`. Does not mark done. |
+| Done | Checkbox. Ticking a running timer stops it, keeps the duration, then sets `done`. |
 
 ### One session per item per day (no multi-lap)
 
@@ -68,7 +69,8 @@ Only one timed activity may be `running` on that day. Starting another **auto-st
 | Display | `countValue / target` (target from **placement**, set when type was chosen as count) |
 | +1 | Increments count |
 | −1 | Decrements if `countValue > 0` (fix mistakes) |
-| Over target | Allowed (e.g. 12/10) — does not auto-lock |
+| Over target | Allowed (e.g. 12/10) — does not auto-lock and does not mark done |
+| Done | Checkbox, independent of the count |
 | Skip | Sets skipped; count controls frozen until undo skip |
 
 No interval “drink every 15 min” notifications in v1.
@@ -99,8 +101,8 @@ After **End day** (see Day plan / End day features):
 
 ## Acceptance criteria
 
-- [ ] Check: Done and undo; Skip and undo; not both at once  
-- [ ] Timed: Start shows elapsed; Stop saves one duration; no second session same row same day  
+- [ ] Check, timed, and count: Done is the checkbox; undo returns to pending; Skip and undo; not both at once  
+- [ ] Timed: Start shows elapsed; Stop saves duration and stays pending; checkbox marks done; no second session same row same day  
 - [ ] Starting Deep work while Gym runs auto-stops Gym and saves duration  
 - [ ] Count: +1 and −1; can exceed target  
 - [ ] Skip does not modify template  
