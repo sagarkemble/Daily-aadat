@@ -22,7 +22,7 @@ function SettingsPage() {
       window.matchMedia("(prefers-color-scheme: dark)").matches)
 
   return (
-    <PageShell>
+    <PageShell className="pb-24">
       <PageHeader
         title="You"
         description="Theme lives here for now. More settings later."

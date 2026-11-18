@@ -55,3 +55,19 @@ _Avoid_: overwrite, replace, sync
 **Template**:
 A named day shape: placements in the six slots (Day-wide first) and optional slot times on the time-of-day bands. Applying it copies that shape onto a date. A date can hold placements with no template applied.
 _Avoid_: routine, schedule, unplanned day (that is a date with no template, not a status)
+
+**Day completion**:
+For one date: ticked activity placements divided by activity placements that are not skipped. Todos are never in this number. A date with no activity placements has no Day completion (an empty calendar square, not 0%).
+_Avoid_: consistency (for a single day), score, progress (that is the timer or count on a row)
+
+**Consistency**:
+The calendar of Day completions over a span of dates (week, month, or year). Darker means a higher Day completion. It is not a run of consecutive days.
+_Avoid_: streak, habit score
+
+**Progress**:
+The Analytics-tab view of Consistency: week, month, year, or a custom range. Headline is Day completion. Activity filter is ticked or not ticked. Skip is out of the math. Empty dates have no score.
+_Avoid_: glance, streak graph
+
+**Used**:
+A catalog activity is used in a week, month, or year if it had at least one activity placement on a date in that span. Skip still counts as used. Todos are never used in this sense.
+_Avoid_: active, tracked, habit this period

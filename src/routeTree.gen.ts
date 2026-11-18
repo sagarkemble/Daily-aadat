@@ -16,6 +16,7 @@ import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedActivitesRouteImport } from './routes/_authenticated/activites'
+import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedDesignSystemRouteImport } from './routes/_authenticated/design-system'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedTemplatesRouteImport } from './routes/_authenticated/templates'
@@ -55,6 +56,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
 const AuthenticatedActivitesRoute = AuthenticatedActivitesRouteImport.update({
   id: '/activites',
   path: '/activites',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedDesignSystemRoute =
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/activites': typeof AuthenticatedActivitesRoute
+  '/analytics': typeof AuthenticatedAnalyticsRoute
   '/design-system': typeof AuthenticatedDesignSystemRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/templates': typeof AuthenticatedTemplatesRouteWithChildren
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/activites': typeof AuthenticatedActivitesRoute
+  '/analytics': typeof AuthenticatedAnalyticsRoute
   '/design-system': typeof AuthenticatedDesignSystemRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/todos': typeof AuthenticatedTodosRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/_authenticated/activites': typeof AuthenticatedActivitesRoute
+  '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/design-system': typeof AuthenticatedDesignSystemRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/templates': typeof AuthenticatedTemplatesRouteWithChildren
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/activites'
+    | '/analytics'
     | '/design-system'
     | '/settings'
     | '/templates'
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/activites'
+    | '/analytics'
     | '/design-system'
     | '/settings'
     | '/todos'
@@ -170,6 +181,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/_authenticated/activites'
+    | '/_authenticated/analytics'
     | '/_authenticated/design-system'
     | '/_authenticated/settings'
     | '/_authenticated/templates'
@@ -238,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedActivitesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/analytics': {
+      id: '/_authenticated/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/design-system': {
       id: '/_authenticated/design-system'
       path: '/design-system'
@@ -302,6 +321,7 @@ const AuthenticatedTemplatesRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedActivitesRoute: typeof AuthenticatedActivitesRoute
+  AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedDesignSystemRoute: typeof AuthenticatedDesignSystemRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTemplatesRoute: typeof AuthenticatedTemplatesRouteWithChildren
@@ -311,6 +331,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedActivitesRoute: AuthenticatedActivitesRoute,
+  AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedDesignSystemRoute: AuthenticatedDesignSystemRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTemplatesRoute: AuthenticatedTemplatesRouteWithChildren,

@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react"
 import {
+  ChartColumnIcon,
   HouseIcon,
   LayoutTemplateIcon,
   ListTodoIcon,
@@ -9,7 +10,13 @@ import {
 
 type AppNavItem = {
   title: string
-  url: "/" | "/templates" | "/activites" | "/todos" | "/settings"
+  url:
+    | "/"
+    | "/templates"
+    | "/activites"
+    | "/todos"
+    | "/analytics"
+    | "/settings"
   icon: LucideIcon
 }
 
@@ -18,6 +25,7 @@ const desktopNavItems = [
   { title: "Templates", url: "/templates", icon: LayoutTemplateIcon },
   { title: "Activities", url: "/activites", icon: SparklesIcon },
   { title: "Todos", url: "/todos", icon: ListTodoIcon },
+  { title: "Analytics", url: "/analytics", icon: ChartColumnIcon },
 ] as const satisfies readonly AppNavItem[]
 
 const phoneNavItems = [
@@ -37,6 +45,9 @@ function tabFromPathname(pathname: string): AppNavItem["url"] | undefined {
   }
   if (pathname.startsWith("/todos")) {
     return "/todos"
+  }
+  if (pathname.startsWith("/analytics")) {
+    return "/analytics"
   }
   if (pathname.startsWith("/settings")) {
     return "/settings"
