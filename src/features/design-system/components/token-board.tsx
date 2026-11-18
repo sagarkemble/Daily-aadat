@@ -72,7 +72,7 @@ function useCssVars(names: readonly string[]) {
     const observer = new MutationObserver(read)
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ["class"],
+      attributeFilter: ["class", "data-look"],
     })
     return () => observer.disconnect()
   }, [names])
@@ -108,7 +108,7 @@ export function TokenBoard() {
           <CardTitle>Color</CardTitle>
           <CardDescription>
             Live values from <span className="font-mono">src/index.css</span>.
-            Toggle light and dark on the bar.
+            Press d for light and dark.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2">
